@@ -19,7 +19,7 @@
 }
 
 /* Text */
-.about-text h2 {
+.about-text h1 {
   line-height: 1.15;   /* prevents overlap */
   margin: 0 0 16px;    /* clean spacing under heading */
 }

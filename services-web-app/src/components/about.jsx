@@ -7,7 +7,7 @@ const About = () => {
         <div className="about-content">
           {/* Text */}
           <div className="about-text">
-            <h2>About Subic Bay Home Services</h2>
+            <h1>About Subic Bay Home Services</h1>
             <p>
               We are dedicated to providing top-notch home services to residents
               in the Subic Bay area. Our team of professionals is committed to
