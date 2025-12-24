@@ -12,6 +12,11 @@ const Hero = () => {
               Connect with trusted handymen and cleaning professionals through one
               simple, secure platform.
             </p>
+            <div className="hero-actions">
+              <a className="btn btn-primary" href="#services">Get Started</a>
+              <a className="btn btn-secondary" href="#contact">Contact</a>
+            </div>
+
           </div>
 
           {/* Right */}
