@@ -37,6 +37,7 @@ const About = () => {
             <img src={require("../assets/about-image1.jpg")} alt="Home service 1" />
             <img src={require("../assets/about-image2.jpg")} alt="Home service 2" />
             <img src={require("../assets/about-image3.jpg")} alt="Home service 3" />
+            <img src={require("../assets/about-image4.jpg")} alt="Home service 4" />
           </div>
 
           {/* RIGHT: Main Card */}
