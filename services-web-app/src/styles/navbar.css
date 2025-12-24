@@ -1,7 +1,12 @@
 /* Navbar component */
 .navbar-area {
-  background: rgba(1, 118, 214, 0.556);
-  border-bottom: 1px solid rgba(13, 70, 194, 0.8);
+  background: rgba(1, 118, 214, 0.95);
+  position:fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  backdrop-filter: blur(10px); /* optional */
 }
 .site-navbar {
   display: flex;
