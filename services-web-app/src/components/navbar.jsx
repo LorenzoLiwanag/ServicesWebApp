@@ -34,7 +34,7 @@ const Navbar = () => {
                             onClick={toggle}
                         >
                             <span aria-hidden="true"></span>
-                            <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
+
                         </button>
                     </nav>
                 </div>
