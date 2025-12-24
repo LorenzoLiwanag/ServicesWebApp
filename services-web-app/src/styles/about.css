@@ -22,13 +22,15 @@
 /* Text */
 .about-text h1 {
   line-height: 1.15;   /* prevents overlap */
-  margin: 0 0 16px;    /* clean spacing under heading */
+  margin: 0 0 16px;  
+  color: whitesmoke;  /* clean spacing under heading */
 }
 
 .about-text p {
   font-size: clamp(14px, 1.6vw, 18px);
   line-height: 1.7;
   opacity: 0.9;
+  color: whitesmoke;
 }
 
 /* Images */
