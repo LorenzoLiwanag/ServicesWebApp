@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../styles/navbar.css';
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);

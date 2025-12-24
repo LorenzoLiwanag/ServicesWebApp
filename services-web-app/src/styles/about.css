@@ -1,0 +1,9 @@
+/* About component (no specific rules found in global.css) */
+/* Add about-specific styles here. Example placeholder: */
+.about-area {
+  padding: 60px 0;
+}
+.about-area h3 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
