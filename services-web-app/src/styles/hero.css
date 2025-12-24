@@ -1,39 +1,9 @@
-/* Hero / intro component */
+.hero-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-
-.intro-area {
-  /* keep hero visually large but allow for the added padding */
-  min-height: calc(100vh - 120px);
-
-  display: flex;
-  flex-direction: column;    /* stack heading + text vertically */
-  align-items: center;       /* center horizontally */
-  justify-content: center;   /* center vertically within the hero area */
-  gap: 16px;                 /* spacing between heading and paragraph */
-
-  text-align: center; /* ensure inline text centering */
-  color: #fff;
-}
-
-.intro-area h2 {
-  font-size: 50px;
-  font-weight: 300;
-  line-height: 50px;
-  margin-bottom: 0; /* controlled by gap on the flex container */
-}
-
-.intro-area p {
-  font-size: 18px;
-}
-
-/* Mobile adjustments for hero */
-@media screen and (max-width: 767px) {
-  .intro-area {
-    min-height: 50vh;
-    padding: 20px 0;
-  }
-  .intro-area h2 {
-    font-size: 36px;
-    margin-bottom: 0;
-  }
+    min-height: 80vh;
+    padding: 30px;
+    border: solid 1px black
 }
