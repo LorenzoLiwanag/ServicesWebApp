@@ -1,5 +1,5 @@
 .hero-area {
-  margin-top: var(--navbar-height);
+  margin-top: 50px;
   min-height: calc(100vh - var(--navbar-height));
   display: flex;
   align-items: center;
