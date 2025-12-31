@@ -19,6 +19,15 @@ const RegistrationForm = () => {
         <div className="registration-right">
           <form className="registrationForm">
             <div className="form-group">
+              <label htmlFor="username">Full Name</label>
+              <input
+                type="text"
+                id="username"
+                placeholder="Enter your frist and last name"
+                required
+              />
+            </div>
+            <div className="form-group">
               <label htmlFor="username">Username</label>
               <input
                 type="text"
@@ -29,11 +38,20 @@ const RegistrationForm = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="phone">Phone Number</label>
               <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
+                type="tel"
+                id="phone"
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="address">Address</label>
+              <input
+                type="text"
+                id="address"
+                placeholder="Enter your address"
                 required
               />
             </div>
