@@ -13,6 +13,10 @@ const Navbar = () => {
     navigate("/login");
   }
 
+  const handleRegister = () => {
+    navigate("/register");
+  }
+
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth > 768 && open) setOpen(false);
@@ -41,14 +45,14 @@ const Navbar = () => {
 
               {/* Mobile-only buttons inside dropdown */}
               <li className="nav-actions nav-actions-mobile">
-                <a className="nav-btn nav-btn-primary" href="#services">Get Started</a>
+                <a className="nav-btn nav-btn-primary" href="/register" onClick={handleRegister}>Get Started</a>
                 <a className="nav-btn nav-btn-ghost" href="/login" onClick={handleLogin}>Login</a>
               </li>
             </ul>
 
             {/* Desktop buttons on the right */}
             <div className="nav-actions nav-actions-desktop">
-              <a className="nav-btn nav-btn-primary" href="#services">Get Started</a>
+              <a className="nav-btn nav-btn-primary" href="/register" onClick={handleRegister}>Get Started</a>
               <a className="nav-btn nav-btn-ghost" href="/login" onClick={handleLogin}>Login</a>
             </div>
 
