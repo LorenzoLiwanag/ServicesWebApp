@@ -1,25 +1,57 @@
-import styles from '../styles/login.css';
+import { Link } from "react-router-dom";
+import "../styles/login.css";
 
 const LoginForm = () => {
-    return (
-        <div className="loginForm-area"> 
-            <form className="loginForm">
-                <div className="loginForm-title">
-                    <h1>Login to your Subic Bay Home Services Account</h1>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="username">Username:</label>
-                    <input type="text" id="username" name="username" required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" name="password" required />
-                </div>
-                <button type="submit">Login</button>
-                <a className='login-links form-group' href="/register">Don't have an account? Register here.</a>
-                <a className='login-links form-group' href="/forgot-password">Forgot your password?</a>
-            </form> 
+  return (
+    <div className="login-page">
+      <div className="login-card">
+
+        {/* LEFT PANEL */}
+        <div className="login-left">
+          <h1>Login to your account</h1>
+          <p>
+            Access your Subic Bay Home Services dashboard to manage services,
+            bookings, and requests all in one place.
+          </p>
         </div>
-    );
-}
+
+        {/* RIGHT PANEL */}
+        <div className="login-right">
+          <form className="loginForm">
+            <div className="form-group">
+              <label htmlFor="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <button type="submit" className="login-btn">
+              Login
+            </button>
+
+            <div className="login-links">
+              <Link to="/register">Don’t have an account? Register</Link>
+              <Link to="/forgot-password">Forgot your password?</Link>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
 export default LoginForm;

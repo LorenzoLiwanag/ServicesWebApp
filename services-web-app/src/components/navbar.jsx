@@ -42,7 +42,7 @@ const Navbar = () => {
               {/* Mobile-only buttons inside dropdown */}
               <li className="nav-actions nav-actions-mobile">
                 <a className="nav-btn nav-btn-primary" href="#services">Get Started</a>
-                <a className="nav-btn nav-btn-ghost" href="#login">Login</a>
+                <a className="nav-btn nav-btn-ghost" href="/login" onClick={handleLogin}>Login</a>
               </li>
             </ul>
 
