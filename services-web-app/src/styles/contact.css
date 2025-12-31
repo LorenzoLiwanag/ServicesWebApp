@@ -61,7 +61,7 @@
 .contact-title {
   margin: 0 0 16px;
   font-size: clamp(34px, 4vw, 48px);
-  line-height: 1.08;
+  line-height: 1.25; /* align with login/registration */
   font-weight: 900;
   letter-spacing: -0.8px;
 }
@@ -94,10 +94,11 @@
   gap: 18px;
 }
 
+/* ✅ STACK INPUTS VERTICALLY (instead of 2 columns) */
 .contact-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .contact-field {
@@ -117,8 +118,8 @@
   border-radius: 14px;
   border: 1px solid rgba(15, 42, 68, 0.16);
   background: #ffffff;
-  padding: 12px 14px;
-  font-size: 14px;
+  padding: 16px 18px; /* match login/registration input size */
+  font-size: 15px;    /* match login/registration */
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -129,22 +130,22 @@
 
 .contact-field input:focus,
 .contact-field textarea:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.14);
+  border-color: #1e90ff; /* match login/registration focus */
+  box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
 }
 
 /* SUBMIT */
 .contact-submit {
-  margin-top: 6px;
-  padding: 14px 18px;
+  margin-top: 10px;
+  padding: 16px;
   border: none;
   border-radius: 16px;
   color: #fff;
-  font-weight: 900;
+  font-weight: 800;
   cursor: pointer;
 
   background: linear-gradient(135deg, #0d6efd, #60a5fa);
-  box-shadow: 0 16px 34px rgba(13, 110, 253, 0.30);
+  box-shadow: 0 12px 30px rgba(13, 110, 253, 0.35);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -181,9 +182,5 @@
 
   .contact-right {
     padding: 36px 28px;
-  }
-
-  .contact-row {
-    grid-template-columns: 1fr;
   }
 }
