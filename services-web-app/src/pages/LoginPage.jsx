@@ -1,7 +1,10 @@
+import LoginForm from "../components/loginform";
 const LoginPage = () => {
     return (
         <div className="LoginPage">
-            <loginForm />
+            <LoginForm />
         </div>
     );
 }
+
+export default LoginPage;

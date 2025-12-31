@@ -1,7 +1,9 @@
-const loginForm = () => {
+const LoginForm = () => {
     return (
         <div className="loginForm-area"> 
-            <p>login form</p>
+            <h1>Login Form</h1>
         </div>
     );
 }
+
+export default LoginForm;

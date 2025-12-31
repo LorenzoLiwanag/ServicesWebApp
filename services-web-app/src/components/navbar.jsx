@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/navbar.css";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   const toggle = () => setOpen((prev) => !prev);
+
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/login");
+  }
 
   useEffect(() => {
     const onResize = () => {
@@ -42,7 +49,7 @@ const Navbar = () => {
             {/* Desktop buttons on the right */}
             <div className="nav-actions nav-actions-desktop">
               <a className="nav-btn nav-btn-primary" href="#services">Get Started</a>
-              <a className="nav-btn nav-btn-ghost" href="#login">Login</a>
+              <a className="nav-btn nav-btn-ghost" href="/login" onClick={handleLogin}>Login</a>
             </div>
 
             <button
