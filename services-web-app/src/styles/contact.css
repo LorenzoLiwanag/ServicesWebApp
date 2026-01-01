@@ -33,13 +33,6 @@
   background: linear-gradient(135deg, #0b3c6f, #0b2b52);
 }
 
-.contact-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 26px;
-}
-
 .contact-mark {
   width: 42px;
   height: 42px;
@@ -65,7 +58,7 @@
   line-height: 1.25; /* align with login/registration */
   font-weight: 900;
   letter-spacing: -0.8px;
-  text-align: left  ;
+  text-align: center;
 }
 
 .contact-subtitle {
@@ -74,7 +67,7 @@
   font-size: 16px;
   line-height: 2;
   opacity: 0.9;
-  text-align: left;
+  text-align: center;
 }
 
 /* RIGHT PANEL */

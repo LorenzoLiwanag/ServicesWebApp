@@ -75,7 +75,7 @@
 /* ===== FEATURE CARDS ===== */
 .about-features {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* grid-template-columns: 0.5fr 0.5fr; */
   gap: 22px;
   margin-bottom: 36px;
 }
@@ -128,16 +128,23 @@
   box-shadow: 0 22px 44px rgba(13, 110, 253, 0.48);
 }
 
+
 /* ===== MOBILE ===== */
-@media (max-width: 900px) {
+@media (max-width: 1250px) {
   .about-content {
     grid-template-columns: 1fr;
     gap: 42px;
   }
 
+  /* KEEP 2x2 grid, just shrink images */
   .about-images {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, 220px);
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, minmax(140px, 22vw));
+    gap: 14px;
+  }
+
+  .about-images img {
+    border-radius: 18px;
   }
 
   .about-card {

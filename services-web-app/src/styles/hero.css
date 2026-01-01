@@ -116,7 +116,7 @@
   height: 12px;
   border-radius: 999px;
   background: rgba(13, 110, 253, 0.35);
-  animation: bubbleFloat 7s ease-in-out infinite;
+  animation: bubbleFloat 2s ease-in-out infinite;
 }
 
 /* Rings */
@@ -125,7 +125,7 @@
   height: 44px;
   border-radius: 999px;
   border: 2px solid rgba(34, 61, 104, 0.18);
-  animation: bubbleFloat 7s ease-in-out infinite;
+  animation: bubbleFloat 2s ease-in-out infinite;
 }
 
 /* ----- Existing bubbles around image ----- */
