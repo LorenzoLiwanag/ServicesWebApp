@@ -3,6 +3,7 @@ import './App.css';
 import LandingPage from './pages/Landingpage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegistrationPage from './pages/RegistrationPage.jsx';  
+import ClientDashboard from './pages/ClientDashboardPage.jsx';
 function App() {
   return (
     <div className="App">
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/client-dashboard" element={<ClientDashboard />} />
       </Routes>
     </div>
   );

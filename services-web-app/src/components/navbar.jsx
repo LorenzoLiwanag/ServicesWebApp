@@ -17,6 +17,10 @@ const Navbar = () => {
     navigate("/register");
   }
 
+  const viewClientDashboard = () => {
+    navigate("/client-dashboard");
+  }
+
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth > 768 && open) setOpen(false);
@@ -54,6 +58,7 @@ const Navbar = () => {
             <div className="nav-actions nav-actions-desktop">
               <a className="nav-btn nav-btn-primary" href="/register" onClick={handleRegister}>Get Started</a>
               <a className="nav-btn nav-btn-ghost" href="/login" onClick={handleLogin}>Login</a>
+              <a className="nav-btn nav-btn-ghost" href="/client-dashboard" onClick={viewClientDashboard}>Dashboard</a>
             </div>
 
             <button
