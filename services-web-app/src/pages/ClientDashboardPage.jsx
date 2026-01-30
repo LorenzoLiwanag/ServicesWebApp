@@ -3,7 +3,7 @@ const ClientDashboard = () => {
     return (
         <div>
             <DashboardNavbar /> 
-            <h1>Client Dashboard</h1>
+            <h1>Welcome Back User Name!</h1>
         </div>
     );
 }   
