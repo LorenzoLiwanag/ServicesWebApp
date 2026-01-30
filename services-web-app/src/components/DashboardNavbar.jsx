@@ -5,7 +5,6 @@ const DashboardNavbar = () => {
           <ul className="dash-nav-left">
             <li><a href="/dashboard">Home</a></li>
             <li><a href="/services">Browse Services</a></li>
-            <li><a href="/services/category">Service Categories</a></li>
             <li><a href="/bookings">Bookings</a></li>
           </ul>
 
