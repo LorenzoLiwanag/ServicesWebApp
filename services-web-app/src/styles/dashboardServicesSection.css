@@ -1,0 +1,50 @@
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    height:30vh;
+
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.service-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.btn-contact,
+.btn-book-now {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-contact {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-contact:hover {
+    background-color: #e0e0e0;
+    border-color: #bbb;
+}
+
+.btn-book-now {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-book-now:hover {
+    background-color: #0056b3;
+}
