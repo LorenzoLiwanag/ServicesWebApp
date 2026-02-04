@@ -1,6 +1,7 @@
 import DashboardNavbar from "../components/DashboardNavbar";
 import DashboardSearch from "../components/dashboardSearch";
 import DashboardServiceSection from "../components/dashboardServiceSection";
+import DashboardMyBookings from "../components/dashboardMyBookings";    
 const ClientDashboard = () => { 
     return (
         <div>
@@ -8,7 +9,8 @@ const ClientDashboard = () => {
             <h1>Welcome Back User!</h1>
             <DashboardSearch /> 
             <DashboardServiceSection /> 
-            {/* <h1>Welcome Back User Name!</h1> */}
+            <DashboardMyBookings />
+
         </div>
     );
 }   
