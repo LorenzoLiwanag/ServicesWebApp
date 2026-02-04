@@ -5,6 +5,7 @@ const ClientDashboard = () => {
     return (
         <div>
             <DashboardNavbar /> 
+            <h1>Welcome Back User!</h1>
             <DashboardSearch /> 
             <DashboardServiceSection /> 
             {/* <h1>Welcome Back User Name!</h1> */}

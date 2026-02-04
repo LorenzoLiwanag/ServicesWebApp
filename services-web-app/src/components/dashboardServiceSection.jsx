@@ -50,6 +50,7 @@ const DashboardServiceSection = () => {
     return (
         <div className="services-section">
             {/* <button className="arrow arrow-left">‹</button> */}
+            <h2 className="services-heading">Browse Popular</h2>
             <div className="services-grid">
                 {demoServices.map((service, index) => (
                     <div className="service-card" key={index}>
