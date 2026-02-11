@@ -1,5 +1,13 @@
+import { useNavigate } from 'react-router-dom';
 import "../../styles/dashboard/dashboardNav.css";
+
 const DashboardNavbar = () => { 
+    const navigate = useNavigate();
+
+    const handleSwitchToProvider = () => {
+        navigate('/provider-mode');
+    };
+
     return (
         <nav className="dash-nav-area">
           <ul className="dash-nav-left">
@@ -10,7 +18,7 @@ const DashboardNavbar = () => {
 
           <ul className="dash-nav-right">
             <li><a href="/profile">Profile</a></li>
-            <li><a href="/provider-dashboard">Switch to Provider Mode</a></li>
+            <li><a href="#" onClick={handleSwitchToProvider}>Switch to Provider Mode</a></li>
             <li><a href="/logout">Logout</a></li>
           </ul>
         </nav>
