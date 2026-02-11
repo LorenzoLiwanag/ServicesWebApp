@@ -23,15 +23,42 @@
   min-width: 0;
 }
 
-/* Responsive layout */
+/* Tablet - Stack layout */
 @media (max-width: 1200px) {
   .dashboard-content-wrapper {
     flex-direction: column;
     gap: 24px;
+    padding: 20px 20px;
   }
 
   .dashboard-services-column,
   .dashboard-bookings-column {
     flex: 1;
+  }
+}
+
+/* Smaller tablets */
+@media (max-width: 768px) {
+  .welcome-heading {
+    margin: 16px 0 0 16px;
+    font-size: 24px;
+  }
+
+  .dashboard-content-wrapper {
+    padding: 16px 16px;
+    gap: 16px;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 480px) {
+  .welcome-heading {
+    margin: 16px 0 0 16px;
+    font-size: 20px;
+  }
+
+  .dashboard-content-wrapper {
+    padding: 12px;
+    gap: 12px;
   }
 }

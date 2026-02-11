@@ -27,35 +27,67 @@
     min-height: 300px;
 }
 
-.service-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+/* Tablet - 2 columns */
+@media (max-width: 1200px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .service-card {
+        min-height: 280px;
+        padding: 18px;
+    }
 }
 
-.service-title {
-    margin: 0 0 8px 0;
-    font-size: 16px;
-    font-weight: 700;
-    color: #333;
+/* Smaller tablets - 1 column */
+@media (max-width: 768px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .service-card {
+        min-height: auto;
+        padding: 16px;
+    }
+
+    .services-heading {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
 }
 
-.service-provider {
-    margin: 0 0 4px 0;
-    font-size: 13px;
-    color: #666;
-}
+/* Mobile devices */
+@media (max-width: 480px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
 
-.service-desc {
-    margin: 0 0 12px 0;
-    font-size: 14px;
-    color: #555;
-    font-weight: 500;
-}
+    .service-card {
+        min-height: auto;
+        padding: 14px;
+    }
 
-.service-rate,
-.service-price {
-    margin: 0 0 4px 0;
-    font-size: 13px;
-    color: #777;
+    .services-heading {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .service-title {
+        font-size: 15px;
+    }
+
+    .service-desc {
+        font-size: 13px;
+    }
+
+    .btn-contact,
+    .btn-book-now {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
 }
 
 .service-buttons {

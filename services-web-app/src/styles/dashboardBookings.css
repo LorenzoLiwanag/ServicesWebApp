@@ -273,3 +273,95 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Tablet */
+@media (max-width: 768px) {
+  .bookings-header h2 {
+    font-size: 18px;
+  }
+
+  .bookings-widget {
+    padding: 18px;
+    min-height: auto;
+  }
+
+  .bookings-containers {
+    gap: 14px;
+  }
+
+  .widget-heading {
+    font-size: 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .bookings-header h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .bookings-widget {
+    padding: 14px;
+    min-height: auto;
+  }
+
+  .bookings-containers {
+    gap: 12px;
+  }
+
+  .widget-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .widget-heading {
+    font-size: 15px;
+  }
+
+  .widget-badge {
+    height: 24px;
+    min-width: 24px;
+    font-size: 11px;
+    padding: 0 8px;
+  }
+
+  .booking-row,
+  .history-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .widget-date,
+  .widget-service,
+  .widget-provider {
+    font-size: 12px;
+  }
+
+  .status-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    align-self: flex-end;
+  }
+
+  .history-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .view-all-button,
+  .re-book-button,
+  .review-button {
+    padding: 8px 12px;
+    font-size: 12px;
+    flex: 1;
+  }
+
+  .booking-info {
+    width: 100%;
+  }
+}
