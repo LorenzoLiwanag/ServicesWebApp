@@ -4,9 +4,9 @@
 
 /* ---- Theme tokens (match your Services section here) ---- */
 :root {
-  /* Change these 3 to match your services section buttons */
-  --primary: #111;              /* primary button background */
-  --primary-hover: #000;
+  /* Updated to match landing page blue gradient */
+  --primary: linear-gradient(135deg, #0d6efd, #60a5fa);  /* primary button background */
+  --primary-hover: 0 12px 28px rgba(13, 110, 253, 0.25);
   --primary-text: #fff;
 
   --surface: #fff;
@@ -222,16 +222,16 @@
   padding: 12px 12px;
   border-radius: 14px;
   border: none;
-  background: var(--primary);
-  color: var(--primary-text);
+  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  color: #fff;
   font-weight: 900;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: transform 0.08s ease, box-shadow 0.15s ease;
 }
 
 .re-book-button:hover {
-  background: var(--primary-hover);
-  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.14);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(13, 110, 253, 0.25);
 }
 
 .re-book-button:active {
@@ -263,7 +263,7 @@
 .re-book-button:focus,
 .review-button:focus,
 .view-all-button:focus {
-  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline: 3px solid rgba(13, 110, 253, 0.35);
   outline-offset: 2px;
 }
 
