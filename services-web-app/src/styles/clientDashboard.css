@@ -1,0 +1,37 @@
+.welcome-heading {
+  margin: 24px 0 0 24px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.dashboard-content-wrapper {
+  display: flex;
+  gap: 20px;
+  padding: 20px 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.dashboard-services-column {
+  flex: 2.5;
+  min-width: 0;
+}
+
+.dashboard-bookings-column {
+  flex: 1.5;
+  min-width: 0;
+}
+
+/* Responsive layout */
+@media (max-width: 1200px) {
+  .dashboard-content-wrapper {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .dashboard-services-column,
+  .dashboard-bookings-column {
+    flex: 1;
+  }
+}

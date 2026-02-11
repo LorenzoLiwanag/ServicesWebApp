@@ -27,9 +27,7 @@
 /* ---- Section container: stops the “too wide” look ---- */
 .bookings-area {
   width: 100%;
-  max-width: 1100px;
-  margin: 24px auto;
-  padding: 0 16px;
+
 }
 
 /* ---- Header row ---- */
@@ -37,23 +35,23 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
+  margin-top: 0;
 }
 
 .bookings-header h2 {
   margin: 0;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: -0.3px;
   color: var(--text);
 }
 
 /* ---- Two widgets layout ---- */
 .bookings-containers {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(340px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--gap);
-  align-items: start;
 }
 
 /* ---- Widget card ---- */
@@ -61,8 +59,11 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 18px;
+  padding: 24px;
   box-shadow: var(--shadow);
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ---- Widget header (title + count badge) ---- */
@@ -76,8 +77,8 @@
 
 .widget-heading {
   margin: 0;
-  font-size: 16px;
-  font-weight: 900;
+  font-size: 17px;
+  font-weight: 700;
   letter-spacing: -0.2px;
   color: var(--text);
 }
