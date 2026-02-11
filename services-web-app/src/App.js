@@ -4,7 +4,7 @@ import LandingPage from './pages/Landingpage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegistrationPage from './pages/RegistrationPage.jsx';  
 import ClientDashboard from './pages/ClientDashboardPage.jsx';
-import ClientProviderModePage from './pages/ClientProviderModePage.jsx';
+import ProviderDashboard from './pages/ProviderDashboard.jsx';
 function App() {
   return (
     <div className="App">
@@ -13,7 +13,7 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/client-dashboard" element={<ClientDashboard />} />
-        <Route path="/provider-mode" element={<ClientProviderModePage />} />
+        <Route path="/provider-mode" element={<ProviderDashboard />} />
       </Routes>
     </div>
   );
