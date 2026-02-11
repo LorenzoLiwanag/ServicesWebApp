@@ -1,4 +1,4 @@
-import "../styles/about.css";
+import "../../styles/landing-page/about.css";
 
 const About = () => {
   return (
@@ -10,7 +10,7 @@ const About = () => {
             <h1>About Subic Bay Home Services</h1>
 
             <p>
-              Whether you’re a service provider looking for new opportunities or a
+              Whether you're a service provider looking for new opportunities or a
               client searching for dependable home services, Subic Bay Home Services
               connects you in one secure platform. We focus on quality,
               transparency, and making every service experience simple and reliable.
@@ -34,10 +34,10 @@ const About = () => {
           </div>
           {/* LEFT: Images */}
           <div className="about-images">
-            <img src={require("../assets/about-image1.jpg")} alt="Home service 1" />
-            <img src={require("../assets/about-image2.jpg")} alt="Home service 2" />
-            <img src={require("../assets/about-image3.jpg")} alt="Home service 3" />
-            <img src={require("../assets/about-image4.jpg")} alt="Home service 4" />
+            <img src={require("../../assets/about-image1.jpg")} alt="Home service 1" />
+            <img src={require("../../assets/about-image2.jpg")} alt="Home service 2" />
+            <img src={require("../../assets/about-image3.jpg")} alt="Home service 3" />
+            <img src={require("../../assets/about-image4.jpg")} alt="Home service 4" />
           </div>
 
           {/* RIGHT: Main Card */}

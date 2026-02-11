@@ -1,4 +1,4 @@
-import "../styles/dashboardServicesSection.css";
+import "../../styles/dashboard/dashboardServicesSection.css";
 const DashboardServiceSection = () => {
     const demoServices = [
         {

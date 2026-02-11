@@ -1,4 +1,4 @@
-import "../styles/dashboardSearch.css";
+import "../../styles/dashboard/dashboardSearch.css";
 import { useState } from "react";
 
 const DashboardSearch = () => {

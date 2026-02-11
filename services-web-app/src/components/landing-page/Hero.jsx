@@ -1,4 +1,4 @@
-import "../styles/hero.css";
+import "../../styles/landing-page/hero.css";
 
 const Hero = () => {
   return (
@@ -31,7 +31,7 @@ const Hero = () => {
             <div className="hero-visual">
               <div className="hero-blob">
                 <img
-                  src={require("../assets/heroimg.jpg")}
+                  src={require("../../assets/heroimg.jpg")}
                   alt="Hero"
                   className="hero-img"
                 />

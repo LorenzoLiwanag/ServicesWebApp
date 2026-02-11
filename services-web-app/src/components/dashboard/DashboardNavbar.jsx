@@ -1,4 +1,4 @@
-import "../styles/dashboardNav.css";
+import "../../styles/dashboard/dashboardNav.css";
 const DashboardNavbar = () => { 
     return (
         <nav className="dash-nav-area">

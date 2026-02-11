@@ -1,4 +1,4 @@
-import "../styles/contact.css";
+import "../../styles/landing-page/contact.css";
 
 const Contact = () => {
   return (
@@ -8,8 +8,8 @@ const Contact = () => {
         <div className="contact-left">
           <h2 className="contact-title">Get in touch with us now!</h2>
           <p className="contact-subtitle">
-            Whether you’re a client looking for services or a provider ready to
-            offer them, send us a message and we’ll help you get started.
+            Whether you're a client looking for services or a provider ready to
+            offer them, send us a message and we'll help you get started.
           </p>
         </div>
         <div className="contact-right">
@@ -43,7 +43,7 @@ const Contact = () => {
             </button>
           </form>
           <p className="contact-footnote">
-            By clicking “Send message”, you agree to our terms and privacy policy.
+            By clicking "Send message", you agree to our terms and privacy policy.
           </p>
         </div>
       </div>

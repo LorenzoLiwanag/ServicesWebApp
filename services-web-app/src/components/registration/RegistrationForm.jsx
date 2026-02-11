@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "../styles/registration.css";
+import "../../styles/registration/registration.css";
 
 const RegistrationForm = () => {
   return (

@@ -1,8 +1,8 @@
-import DashboardNavbar from "../components/DashboardNavbar";
-import DashboardSearch from "../components/dashboardSearch";
-import DashboardServiceSection from "../components/dashboardServiceSection";
-import DashboardMyBookings from "../components/dashboardMyBookings";
-import "../styles/clientDashboard.css";    
+import DashboardNavbar from "../components/dashboard/DashboardNavbar";
+import DashboardSearch from "../components/dashboard/DashboardSearch";
+import DashboardServiceSection from "../components/dashboard/DashboardServiceSection";
+import DashboardMyBookings from "../components/dashboard/DashboardMyBookings";
+import "../styles/dashboard/clientDashboard.css";    
 const ClientDashboard = () => { 
     return (
         <div>

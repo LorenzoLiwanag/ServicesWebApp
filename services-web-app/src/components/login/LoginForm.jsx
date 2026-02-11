@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "../styles/login.css";
+import "../../styles/login/login.css";
 
 const LoginForm = () => {
   return (
@@ -43,7 +43,7 @@ const LoginForm = () => {
             </button>
 
             <div className="login-links">
-              <Link to="/register">Don’t have an account? Register</Link>
+              <Link to="/register">Don't have an account? Register</Link>
               <Link to="/forgot-password">Forgot your password?</Link>
             </div>
           </form>

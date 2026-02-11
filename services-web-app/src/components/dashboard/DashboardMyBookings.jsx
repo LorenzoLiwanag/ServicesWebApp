@@ -1,4 +1,4 @@
-import "../styles/dashboardBookings.css";
+import "../../styles/dashboard/dashboardBookings.css";
 
 const DashboardMyBookings = () => {
     return (

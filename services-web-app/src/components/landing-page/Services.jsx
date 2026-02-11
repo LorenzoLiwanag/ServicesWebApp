@@ -1,4 +1,4 @@
-import "../styles/services.css";
+import "../../styles/landing-page/services.css";
 
 const Services = () => {
   const services = [

@@ -1,8 +1,8 @@
-import Navbar from '../components/navbar';
-import Hero from '../components/hero';
-import About from '../components/about';
-import Services from '../components/services';
-import Contact from '../components/contact';
+import Navbar from '../components/shared/Navbar';
+import Hero from '../components/landing-page/Hero';
+import About from '../components/landing-page/About';
+import Services from '../components/landing-page/Services';
+import Contact from '../components/landing-page/Contact';
 
 const LandingPage = () => {
   return (
