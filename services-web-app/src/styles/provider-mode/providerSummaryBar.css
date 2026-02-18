@@ -1,0 +1,134 @@
+/* Provider Summary Bar Styles */
+.provider-summary-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px;
+  margin-top: 0;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.summary-card:hover {
+  border-color: #d3d9e3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.summary-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.summary-card-icon.requests-icon {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.summary-card-icon.jobs-icon {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.summary-card-icon.next-job-icon {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.summary-card-content {
+  flex: 1;
+}
+
+.summary-card-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-card-value {
+  margin: 4px 0 0 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #223d68;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1200px) {
+  .provider-summary-bar {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .summary-card {
+    padding: 14px 16px;
+  }
+
+  .summary-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .summary-card-label {
+    font-size: 11px;
+  }
+
+  .summary-card-value {
+    font-size: 20px;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .provider-summary-bar {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
+    margin-top: 0;
+  }
+
+  .summary-card {
+    flex-direction: row;
+    padding: 12px 16px;
+  }
+
+  .summary-card-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .summary-card-content {
+    flex: 1;
+  }
+
+  .summary-card-label {
+    font-size: 10px;
+  }
+
+  .summary-card-value {
+    font-size: 18px;
+  }
+}

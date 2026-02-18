@@ -1,0 +1,151 @@
+/* Provider Quick Actions Styles */
+.provider-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 24px 20px 24px;
+  flex-wrap: wrap;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.quick-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.quick-action-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-text {
+  display: inline-block;
+}
+
+/* Add Service Button */
+.add-service-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.add-service-btn:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #663a91 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Set Availability Button */
+.set-availability-btn {
+  background: #f8f9fa;
+  color: #223d68;
+  border: 2px solid #e9ecef;
+}
+
+.set-availability-btn:hover {
+  background: #e9ecef;
+  border-color: #d3d9e3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* View Calendar Button */
+.view-calendar-btn {
+  background: #fff;
+  color: #223d68;
+  border: 2px solid #223d68;
+}
+
+.view-calendar-btn:hover {
+  background: #223d68;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(34, 61, 104, 0.3);
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1200px) {
+  .provider-quick-actions {
+    gap: 12px;
+    padding: 0 20px 16px 20px;
+  }
+
+  .quick-action-btn {
+    padding: 9px 18px;
+    font-size: 13px;
+  }
+
+  .btn-icon {
+    font-size: 14px;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .provider-quick-actions {
+    gap: 10px;
+    padding: 0 16px 12px 16px;
+  }
+
+  .quick-action-btn {
+    flex: 1;
+    min-width: calc(50% - 5px);
+    padding: 10px 12px;
+    font-size: 12px;
+    justify-content: center;
+  }
+
+  .btn-text {
+    display: none;
+  }
+
+  .btn-icon {
+    font-size: 18px;
+  }
+
+  /* Show text for first button on mobile */
+  .add-service-btn .btn-text {
+    display: inline-block;
+  }
+
+  .add-service-btn {
+    min-width: 100%;
+  }
+}
+
+/* Ultra-mobile: Stack buttons */
+@media (max-width: 480px) {
+  .provider-quick-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .quick-action-btn {
+    width: 100%;
+    min-width: 100%;
+    justify-content: center;
+  }
+
+  .btn-text {
+    display: inline-block;
+  }
+}
