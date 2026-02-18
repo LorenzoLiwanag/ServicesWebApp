@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import RegistrationPage from './pages/RegistrationPage.jsx';  
 import ClientDashboard from './pages/ClientDashboardPage.jsx';
 import ProviderDashboard from './pages/ProviderDashboard.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
 function App() {
   return (
     <div className="App">
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/client-dashboard" element={<ClientDashboard />} />
         <Route path="/provider-mode" element={<ProviderDashboard />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </div>
   );

@@ -5,21 +5,21 @@ const DashboardServiceSection = () => {
             ServiceName: "Service 1",
             ProviderName: "John A",
             ServiceDesc: "House Cleaning",
-            rate: 4.5 / 5,
+            rate: 4.5,
             price: "$50/hr"
         },
         {
             ServiceName: "Service 2",
             ProviderName: "Jane B",
             ServiceDesc: "Plumbing Repair",
-            rate: 4.7 / 5,
+            rate: 4.7,
             price: "$70/hr"
         },
         {
             ServiceName: "Service 3",
             ProviderName: "Mike C",
             ServiceDesc: "Lawn Mowing",
-            rate: 4.2 / 5,
+            rate: 4.2,
             price: "$50/hr "
 
         },
@@ -27,21 +27,21 @@ const DashboardServiceSection = () => {
             ServiceName: "Service 4",
             ProviderName: "Sara D",
             ServiceDesc: "Deep house and yard cleaning",
-            rate: 4.8 / 5,
+            rate: 4.8,
             price: "$60/hr"
         },
         {
             ServiceName: "Service 5",
             ProviderName: "Tom E",
             ServiceDesc: "Electrical Repairs",
-            rate: 4.6 / 5,
+            rate: 4.6,
             price: "$80/hr"
         },
         {
             ServiceName: "Service 6",
             ProviderName: "Lucy F",
             ServiceDesc: "Furniture Assembly",
-            rate: 4.3 / 5,
+            rate: 4.3,
             price: "$55/hr" 
         }
     ];
@@ -57,7 +57,7 @@ const DashboardServiceSection = () => {
                         <h3 className="service-title">{service.ServiceName}</h3>
                         <p className="service-provider">By: {service.ProviderName}</p>
                         <p className="service-desc">{service.ServiceDesc}</p>
-                        <p className="service-rate">Rating: {service.rate}</p>
+                        <p className="service-rate">Rating: {service.rate}/5</p>
                         <p className="service-price">Price: {service.price}</p>
                         <div className="service-buttons">
                             <button className="btn-contact">Contact</button>

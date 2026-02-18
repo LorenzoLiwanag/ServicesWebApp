@@ -8,6 +8,10 @@ const DashboardNavbar = () => {
         navigate('/provider-mode');
     };
 
+    const handleProfileClick = () => {
+        navigate('/profile');
+    };
+
     return (
         <nav className="dash-nav-area">
           <ul className="dash-nav-left">
@@ -17,7 +21,7 @@ const DashboardNavbar = () => {
           </ul>
 
           <ul className="dash-nav-right">
-            <li><a href="/profile">Profile</a></li>
+            <li><button onClick={handleProfileClick} className="nav-link-btn">Profile</button></li>
             <li><a href="#" onClick={handleSwitchToProvider}>Switch to Provider Mode</a></li>
             <li><a href="/logout">Logout</a></li>
           </ul>

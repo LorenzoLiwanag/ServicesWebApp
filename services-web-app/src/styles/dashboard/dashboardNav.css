@@ -20,7 +20,8 @@
 }
 
 .dash-nav-left li a,
-.dash-nav-right li a {
+.dash-nav-right li a,
+.dash-nav-right li .nav-link-btn {
   display: inline-block;
   padding: 10px 16px;
   color: #333;
@@ -30,20 +31,27 @@
   border-radius: 6px;
   transition: all 0.3s ease;
   white-space: nowrap;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .dash-nav-left li a:hover,
-.dash-nav-right li a:hover {
+.dash-nav-right li a:hover,
+.dash-nav-right li .nav-link-btn:hover {
   background: rgba(13, 110, 253, 0.1);
   color: #0d6efd;
   transition: all 0.3s ease;
 }
 
-.dash-nav-right li a {
+.dash-nav-right li a,
+.dash-nav-right li .nav-link-btn {
   color: #666;
 }
 
-.dash-nav-right li a:hover {
+.dash-nav-right li a:hover,
+.dash-nav-right li .nav-link-btn:hover {
   color: #0d6efd;
 }
 
@@ -63,7 +71,8 @@
   }
 
   .dash-nav-left li a,
-  .dash-nav-right li a {
+  .dash-nav-right li a,
+  .dash-nav-right li .nav-link-btn {
     width: 100%;
     text-align: center;
     padding: 12px 14px;
