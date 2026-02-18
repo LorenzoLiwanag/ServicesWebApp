@@ -8,9 +8,9 @@
 
 /* Page Header */
 .services-page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f7fa;
   padding: 48px 24px;
-  color: white;
+  color: #223d68;
   text-align: center;
   margin-bottom: 40px;
 }
