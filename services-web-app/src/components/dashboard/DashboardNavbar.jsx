@@ -12,11 +12,15 @@ const DashboardNavbar = () => {
         navigate('/profile');
     };
 
+    const handleBrowseServices = () => {
+        navigate('/services');
+    };
+
     return (
         <nav className="dash-nav-area">
           <ul className="dash-nav-left">
             <li><a href="/dashboard">Home</a></li>
-            <li><a href="/services">Browse Services</a></li>
+            <li><button onClick={handleBrowseServices} className="nav-link-btn">Browse Services</button></li>
             <li><a href="/bookings">Bookings</a></li>
           </ul>
 

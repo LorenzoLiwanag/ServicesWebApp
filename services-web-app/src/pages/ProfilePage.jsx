@@ -121,10 +121,10 @@ const ProfilePage = () => {
               className="profile-photo"
             />
             <p className="user-name">{mockUser.firstName} {mockUser.lastName}</p>
-            {mockUser.userType === "provider" || mockUser.userType === "both" && (
+            {(mockUser.userType === "provider" || mockUser.userType === "both") && (
               <span className="user-badge provider-badge">Provider</span>
             )}
-            {mockUser.userType === "client" || mockUser.userType === "both" && (
+            {(mockUser.userType === "client" || mockUser.userType === "both") && (
               <span className="user-badge client-badge">Client</span>
             )}
           </div>
