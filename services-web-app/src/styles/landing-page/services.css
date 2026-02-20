@@ -62,14 +62,17 @@
 }
 
 .service-icon {
-  width: 46px;
-  height: 46px;
+  width: 80px;
+  height: 80px;
   display: grid;
   place-items: center;
   border-radius: 14px;
   /* background: rgba(13, 130, 194, 0.12); */
-  font-size: 22px;
-  margin-bottom: 12px;
+  font-size: 56px;
+  margin-top: 16px;
+  margin-bottom: 0;
+  align-self: center;
+  justify-self: center;
 }
 
 .service-title {
