@@ -1,6 +1,7 @@
--- MySQL 8+ (InnoDB)
--- Recommended default charset/collation
--- (You can also set these at the database level.)
+CREATE DATABASE IF NOT EXISTS services_app CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE services_app;
+
+
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 
