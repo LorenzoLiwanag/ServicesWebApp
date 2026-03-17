@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { createUser } from "../models/userModel.js";
 
 export const registerUserService = async (userData) => {
   const { fullName, userName, phoneNumber, address, password } = userData;
@@ -7,14 +8,27 @@ export const registerUserService = async (userData) => {
     throw new Error("All fields are required");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  console.log("Hashed password:", hashedPassword);
+   const existingUser = await findUserByUsername(userName);
 
-  return {
+  if (existingUser) {
+    throw new Error("Username already taken");
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const result = await createUser({
     fullName,
     userName,
     phoneNumber,
     address,
-    hashedPassword
+    passwordHash
+  });
+
+  return {
+    userId: result.insertId,
+    fullName,
+    userName,
+    phoneNumber,
+    address
   };
 };
