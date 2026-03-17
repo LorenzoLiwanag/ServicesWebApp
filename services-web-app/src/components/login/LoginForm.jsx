@@ -1,12 +1,58 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/login/login.css";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    userName: "",
+    password: ""
+  });
+
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message);
+      } else {
+        
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // ✅ redirect to dashboard
+        navigate("/client-dashboard");
+      }
+
+    } catch (err) {
+      setError("Something went wrong");
+    }
+  };
+
   return (
     <div className="login-page">
       <div className="login-card">
 
-        {/* LEFT PANEL */}
         <div className="login-left">
           <h1>Login to your account</h1>
           <p>
@@ -15,28 +61,34 @@ const LoginForm = () => {
           </p>
         </div>
 
-        {/* RIGHT PANEL */}
         <div className="login-right">
-          <form className="loginForm">
+          <form className="loginForm" onSubmit={handleSubmit}>
+
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label>Username</label>
               <input
                 type="text"
-                id="username"
+                name="userName"
                 placeholder="Enter your username"
+                value={formData.userName}
+                onChange={handleChange}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label>Password</label>
               <input
                 type="password"
-                id="password"
+                name="password"
                 placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
                 required
               />
             </div>
+
+            {error && <p style={{ color: "red" }}>{error}</p>}
 
             <button type="submit" className="login-btn">
               Login
@@ -46,6 +98,7 @@ const LoginForm = () => {
               <Link to="/register">Don't have an account? Register</Link>
               <Link to="/forgot-password">Forgot your password?</Link>
             </div>
+
           </form>
         </div>
 

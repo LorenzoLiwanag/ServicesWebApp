@@ -2,16 +2,25 @@ import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import DashboardSearch from "../components/dashboard/DashboardSearch";
 import DashboardServiceSection from "../components/dashboard/DashboardServiceSection";
 import DashboardMyBookings from "../components/dashboard/DashboardMyBookings";
-import "../styles/dashboard/clientDashboard.css";    
-const ClientDashboard = () => { 
+import { useEffect, useState } from "react";
+import "../styles/dashboard/clientDashboard.css";
+const ClientDashboard = () => {
+
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        setUser(storedUser);
+    }, []);
+
+
     return (
         <div>
-            <DashboardNavbar /> 
-            <h1 className="welcome-heading">Welcome Back User!</h1>
-            <DashboardSearch /> 
+            <DashboardNavbar />
+            {user ? `Welcome back, ${user.fullName}` : "Welcome"}
+            <DashboardSearch />
             <div className="dashboard-content-wrapper">
                 <div className="dashboard-services-column">
-                    <DashboardServiceSection /> 
+                    <DashboardServiceSection />
                 </div>
                 <div className="dashboard-bookings-column">
                     <DashboardMyBookings />
@@ -19,6 +28,6 @@ const ClientDashboard = () => {
             </div>
         </div>
     );
-}   
+}
 
 export default ClientDashboard;

@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { createUser } from "../models/userModel.js";
+import { createUser, findUserByUsername } from "../models/userModel.js";
 
 export const registerUserService = async (userData) => {
   const { fullName, userName, phoneNumber, address, password } = userData;
@@ -30,5 +30,35 @@ export const registerUserService = async (userData) => {
     userName,
     phoneNumber,
     address
+  };
+};
+
+export const loginUserService = async (userData) => {
+  const { userName, password } = userData;
+
+  if (!userName || !password) {
+    throw new Error("Username and password are required");
+  }
+
+  const user = await findUserByUsername(userName);
+
+  if (!user) {
+    throw new Error("Invalid username or password");
+  }
+
+
+  const isMatch = await bcrypt.compare(password, user.password_hash);
+
+  if (!isMatch) {
+    throw new Error("Invalid username or password");
+  }
+
+
+  return {
+    userId: user.user_id,
+    fullName: user.full_name,
+    userName: user.user_name,
+    phoneNumber: user.phone_number,
+    address: user.address_text
   };
 };

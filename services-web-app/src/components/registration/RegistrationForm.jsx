@@ -1,12 +1,65 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/registration/registration.css";
 
 const RegistrationForm = () => {
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    userName: "",
+    phoneNumber: "",
+    address: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setMessage("");
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message);
+      } else {
+        setMessage("Account created successfully!");
+        setFormData({
+          fullName: "",
+          userName: "",
+          phoneNumber: "",
+          address: "",
+          password: ""
+        });
+      }
+
+    } catch (err) {
+      setError("Something went wrong");
+    }
+  };
+
   return (
     <div className="registration-page">
       <div className="registration-card">
-
-        {/* LEFT PANEL */}
         <div className="registration-left">
           <h1>Create your account</h1>
           <p>
@@ -15,56 +68,70 @@ const RegistrationForm = () => {
           </p>
         </div>
 
-        {/* RIGHT PANEL */}
         <div className="registration-right">
-          <form className="registrationForm">
+          <form className="registrationForm" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="username">Full Name</label>
+              <label>Full Name</label>
               <input
                 type="text"
-                id="username"
-                placeholder="Enter your frist and last name"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="username">Username</label>
-              <input
-                type="text"
-                id="username"
-                placeholder="Choose a username"
+                name="fullName"
+                placeholder="Enter your first and last name"
+                value={formData.fullName}
+                onChange={handleChange}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="phone">Phone Number</label>
+              <label>Username</label>
+              <input
+                type="text"
+                name="userName"
+                placeholder="Choose a username"
+                value={formData.userName}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Phone Number</label>
               <input
                 type="tel"
-                id="phone"
+                name="phoneNumber"
                 placeholder="Enter your phone number"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="address">Address</label>
-              <input
-                type="text"
-                id="address"
-                placeholder="Enter your address"
+                value={formData.phoneNumber}
+                onChange={handleChange}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label>Address</label>
               <input
-                type="password"
-                id="password"
-                placeholder="Create a password"
+                type="text"
+                name="address"
+                placeholder="Enter your address"
+                value={formData.address}
+                onChange={handleChange}
                 required
               />
             </div>
+
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Create a password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {message && <p style={{ color: "green" }}>{message}</p>}
+            {error && <p style={{ color: "red" }}>{error}</p>}
 
             <button type="submit" className="submit-btn">
               Register
@@ -75,7 +142,6 @@ const RegistrationForm = () => {
             </div>
           </form>
         </div>
-
       </div>
     </div>
   );
