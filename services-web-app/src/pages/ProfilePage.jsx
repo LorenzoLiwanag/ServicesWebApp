@@ -81,7 +81,8 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
-    navigate("/");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   const handleBackToDashboard = () => {

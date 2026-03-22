@@ -13,6 +13,16 @@
   margin: 0 auto;
 }
 
+.dashboard-services-column,
+.dashboard-bookings-column {
+  background: #ffffff;
+  border: 1px solid #ebeff5;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 3px 10px rgba(17, 20, 40, 0.04);
+  min-height: 320px;
+}
+
 .dashboard-services-column {
   flex: 2.5;
   min-width: 0;
@@ -22,6 +32,25 @@
   flex: 1.5;
   min-width: 0;
 }
+
+.dashboard-search-wrapper,
+.dashboard-top-section {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 24px 12px;
+  border-bottom: 1px solid #ebeff5;
+}
+
+.dashboard-search-wrapper {
+  background: #fafbfc;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.dashboard-search-wrapper + .dashboard-content-wrapper {
+  margin-top: 12px;
+}
+
 
 /* Tablet - Stack layout */
 @media (max-width: 1200px) {

@@ -24,15 +24,39 @@ const DashboardNavbar = () => {
   return (
     <nav className="dash-nav-area">
       <ul className="dash-nav-left">
-        <li><a href="/dashboard">Home</a></li>
-        <li><button onClick={handleBrowseServices} className="nav-link-btn">Browse Services</button></li>
-        <li><a href="/bookings">Bookings</a></li>
+        <li>
+          <button onClick={() => navigate('/')} className="nav-link-btn">
+            Home
+          </button>
+        </li>
+        <li>
+          <button onClick={handleBrowseServices} className="nav-link-btn">
+            Browse Services
+          </button>
+        </li>
+        <li>
+          <button className="nav-link-btn" disabled>
+            Bookings
+          </button>
+        </li>
       </ul>
 
       <ul className="dash-nav-right">
-        <li><button onClick={handleProfileClick} className="nav-link-btn">Profile</button></li>
-        <li><a href="#" onClick={handleSwitchToProvider}>Switch to Provider Mode</a></li>
-        <li><button onClick={handleLogout} className="nav-link-btn">Logout</button></li>
+        <li>
+          <button onClick={handleProfileClick} className="nav-link-btn">
+            Profile
+          </button>
+        </li>
+        <li>
+          <button onClick={handleSwitchToProvider} className="nav-link-btn">
+            Switch to Provider Mode
+          </button>
+        </li>
+        <li>
+          <button onClick={handleLogout} className="nav-link-btn">
+            Logout
+          </button>
+        </li>
       </ul>
     </nav>
   );
