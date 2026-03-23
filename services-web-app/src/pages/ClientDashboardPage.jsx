@@ -23,14 +23,8 @@ const ClientDashboard = () => {
   return (
     <div>
       <DashboardNavbar />
-      <div className="dashboard-top-section">
-        <h2 className="welcome-heading">
-          {user ? `Welcome back, ${user.fullName}` : "Welcome"}
-        </h2>
-      </div>
-      <div className="dashboard-search-wrapper">
-        <DashboardSearch />
-      </div>
+      {user ? `Welcome back, ${user.fullName}` : "Welcome"}
+      <DashboardSearch />
       <div className="dashboard-content-wrapper">
         <div className="dashboard-services-column">
           <DashboardServiceSection />

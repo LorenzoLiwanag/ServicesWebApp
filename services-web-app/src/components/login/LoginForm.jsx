@@ -37,8 +37,9 @@ const LoginForm = () => {
       if (!response.ok) {
         setError(data.message);
       } else {
-        
+
         localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
 
         // ✅ redirect to dashboard
         navigate("/client-dashboard");
