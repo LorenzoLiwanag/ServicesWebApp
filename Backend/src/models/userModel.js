@@ -8,7 +8,7 @@ export const createUser = async ({
   passwordHash
 }) => {
   const sql = `
-    INSERT INTO users (full_name, user_name, phone_number, address_text, password_hash)
+    INSERT INTO Users (full_name, user_name, phone_number, address, password_hash)
     VALUES (?, ?, ?, ?, ?)
   `;
 
