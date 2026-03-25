@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import ServicesSearchBar from "../components/services/ServicesSearchBar";
@@ -8,291 +8,10 @@ import "../styles/services/servicesPage.css";
 const ServicesPage = () => {
   const navigate = useNavigate();
 
-  // Mock data matching ERD structure
-  const mockProviderServices = [
-    {
-      providerServiceId: 1,
-      serviceName: "House Cleaning",
-      categoryName: "Cleaning",
-      providerName: "John's Cleaning Service",
-      pricingType: "hourly",
-      rateAmount: 500,
-      rateCurrency: "PHP",
-      avgRating: 4.8,
-      reviewCount: 24,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Professional house cleaning with eco-friendly products"
-    },
-    {
-      providerServiceId: 2,
-      serviceName: "Plumbing Repair",
-      categoryName: "Plumbing",
-      providerName: "Expert Plumbers Co.",
-      pricingType: "hourly",
-      rateAmount: 700,
-      rateCurrency: "PHP",
-      avgRating: 4.9,
-      reviewCount: 42,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Licensed plumbers for residential and commercial"
-    },
-    {
-      providerServiceId: 3,
-      serviceName: "Electrical Work",
-      categoryName: "Electrical",
-      providerName: "SafeElectric Solutions",
-      pricingType: "hourly",
-      rateAmount: 650,
-      rateCurrency: "PHP",
-      avgRating: 4.7,
-      reviewCount: 18,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Certified electrician for all your electrical needs"
-    },
-    {
-      providerServiceId: 4,
-      serviceName: "Painting Services",
-      categoryName: "Painting",
-      providerName: "Color & Design Studio",
-      pricingType: "fixed",
-      rateAmount: 3500,
-      rateCurrency: "PHP",
-      avgRating: 4.6,
-      reviewCount: 31,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Interior and exterior painting with premium finishes"
-    },
-    {
-      providerServiceId: 5,
-      serviceName: "Carpentry Work",
-      categoryName: "Carpentry",
-      providerName: "Master Carpenter",
-      pricingType: "hourly",
-      rateAmount: 800,
-      rateCurrency: "PHP",
-      avgRating: 4.5,
-      reviewCount: 15,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Custom furniture and wood installation"
-    },
-    {
-      providerServiceId: 6,
-      serviceName: "HVAC Maintenance",
-      categoryName: "HVAC",
-      providerName: "Cool Air Systems",
-      pricingType: "hourly",
-      rateAmount: 550,
-      rateCurrency: "PHP",
-      avgRating: 4.4,
-      reviewCount: 22,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Air conditioning and heating system maintenance"
-    },
-    {
-      providerServiceId: 7,
-      serviceName: "Locksmith Services",
-      categoryName: "Security",
-      providerName: "SecureKey Locksmiths",
-      pricingType: "hourly",
-      rateAmount: 480,
-      rateCurrency: "PHP",
-      avgRating: 4.7,
-      reviewCount: 29,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "24/7 emergency locksmith services"
-    },
-    {
-      providerServiceId: 8,
-      serviceName: "Personal Training",
-      categoryName: "Fitness",
-      providerName: "FitLife Trainers",
-      pricingType: "hourly",
-      rateAmount: 900,
-      rateCurrency: "PHP",
-      avgRating: 4.9,
-      reviewCount: 37,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Certified fitness coaches for personalized training"
-    },
-    {
-      providerServiceId: 9,
-      serviceName: "Computer Repair",
-      categoryName: "Technical",
-      providerName: "TechFix Solutions",
-      pricingType: "hourly",
-      rateAmount: 600,
-      rateCurrency: "PHP",
-      avgRating: 4.6,
-      reviewCount: 26,
-      isProviderActive: false,
-      isServiceVisible: false,
-      bio: "Laptop and desktop repair services"
-    },
-    {
-      providerServiceId: 10,
-      serviceName: "Home Cleaning Deep Clean",
-      categoryName: "Cleaning",
-      providerName: "Sparkle Homes",
-      pricingType: "fixed",
-      rateAmount: 2500,
-      rateCurrency: "PHP",
-      avgRating: 4.7,
-      reviewCount: 19,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Deep cleaning specialists for thorough home care"
-    },
-    {
-      providerServiceId: 11,
-      serviceName: "Gardening & Landscaping",
-      categoryName: "Landscaping",
-      providerName: "Green Thumb Landscapes",
-      pricingType: "quote",
-      rateAmount: null,
-      rateCurrency: "PHP",
-      avgRating: 4.5,
-      reviewCount: 11,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Professional landscape design and maintenance"
-    },
-    {
-      providerServiceId: 12,
-      serviceName: "Hair Styling",
-      categoryName: "Beauty",
-      providerName: "Salon Elegance",
-      pricingType: "fixed",
-      rateAmount: 800,
-      rateCurrency: "PHP",
-      avgRating: 4.8,
-      reviewCount: 45,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Professional hair styling and grooming"
-    },
-    {
-      providerServiceId: 13,
-      serviceName: "Pet Grooming",
-      categoryName: "Pet Services",
-      providerName: "Pawfect Grooming",
-      pricingType: "fixed",
-      rateAmount: 400,
-      rateCurrency: "PHP",
-      avgRating: 4.9,
-      reviewCount: 52,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Professional dog grooming and pet care"
-    },
-    {
-      providerServiceId: 14,
-      serviceName: "Tutoring Services",
-      categoryName: "Education",
-      providerName: "Study Masters",
-      pricingType: "hourly",
-      rateAmount: 500,
-      rateCurrency: "PHP",
-      avgRating: 4.6,
-      reviewCount: 28,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Academic tutoring in math, science, and languages"
-    },
-    {
-      providerServiceId: 15,
-      serviceName: "Photography",
-      categoryName: "Photography",
-      providerName: "Moments Captured",
-      pricingType: "fixed",
-      rateAmount: 5000,
-      rateCurrency: "PHP",
-      avgRating: 4.8,
-      reviewCount: 33,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Professional photography for events and portraits"
-    },
-    {
-      providerServiceId: 16,
-      serviceName: "Handyman Services",
-      categoryName: "Handyman",
-      providerName: "Jack of All Trades",
-      pricingType: "hourly",
-      rateAmount: 550,
-      rateCurrency: "PHP",
-      avgRating: 4.4,
-      reviewCount: 20,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "General repairs and home maintenance"
-    },
-    {
-      providerServiceId: 17,
-      serviceName: "Roof Repair",
-      categoryName: "Construction",
-      providerName: "Solid Roofing Inc.",
-      pricingType: "quote",
-      rateAmount: null,
-      rateCurrency: "PHP",
-      avgRating: 4.7,
-      reviewCount: 14,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Professional roof repair and installation"
-    },
-    {
-      providerServiceId: 18,
-      serviceName: "Window Cleaning",
-      categoryName: "Cleaning",
-      providerName: "Crystal Clear Windows",
-      pricingType: "hourly",
-      rateAmount: 400,
-      rateCurrency: "PHP",
-      avgRating: 4.5,
-      reviewCount: 16,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Professional window and glass cleaning"
-    },
-    {
-      providerServiceId: 19,
-      serviceName: "Massage Therapy",
-      categoryName: "Wellness",
-      providerName: "Relaxation Spa",
-      pricingType: "hourly",
-      rateAmount: 1000,
-      rateCurrency: "PHP",
-      avgRating: 4.9,
-      reviewCount: 38,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Therapeutic massage and spa treatments"
-    },
-    {
-      providerServiceId: 20,
-      serviceName: "Appliance Repair",
-      categoryName: "Technical",
-      providerName: "AppliancePro",
-      pricingType: "hourly",
-      rateAmount: 750,
-      rateCurrency: "PHP",
-      avgRating: 4.3,
-      reviewCount: 17,
-      isProviderActive: true,
-      isServiceVisible: true,
-      bio: "Repair services for all major appliances"
-    },
-  ];
+  const [providerServices, setProviderServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // State
   const [sortBy, setSortBy] = useState("recommended");
   const [filters, setFilters] = useState({
     searchText: "",
@@ -304,53 +23,69 @@ const ServicesPage = () => {
   });
   const [itemsToShow, setItemsToShow] = useState(12);
 
-  // Extract unique categories
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/services/browse");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch services");
+        }
+
+        setProviderServices(data.services || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
   const categories = Array.from(
-    new Set(mockProviderServices.map((s) => s.categoryName))
+    new Set(providerServices.map((s) => s.categoryName))
   ).sort();
 
-  // Filter logic
   const filteredServices = useMemo(() => {
-    return mockProviderServices.filter((service) => {
-      // Search text filter
+    return providerServices.filter((service) => {
       if (filters.searchText) {
         const searchLower = filters.searchText.toLowerCase();
         const matchesSearch =
           service.serviceName.toLowerCase().includes(searchLower) ||
           service.providerName.toLowerCase().includes(searchLower) ||
           service.categoryName.toLowerCase().includes(searchLower);
+
         if (!matchesSearch) return false;
       }
 
-      // Category filter
       if (filters.category !== "all" && service.categoryName !== filters.category) {
         return false;
       }
 
-      // Rating filter
       if (filters.rating !== "all") {
         const minRating = parseFloat(filters.rating);
         if (service.avgRating < minRating) return false;
       }
 
-      // Price range filter
       if (filters.priceRange !== "all") {
         if (service.pricingType === "quote" && !filters.includeQuote) {
           return false;
         }
+
         if (service.pricingType !== "quote") {
           const [min, max] = filters.priceRange.split("-").map(Number);
+
           if (max && service.rateAmount > max) return false;
           if (service.rateAmount < min) return false;
         }
       }
 
-      // Include quote filter
       if (service.pricingType === "quote" && !filters.includeQuote) {
         return false;
       }
 
-      // Availability/Provider status filter
       if (
         filters.availability === "active" &&
         (!service.isProviderActive || !service.isServiceVisible)
@@ -360,11 +95,11 @@ const ServicesPage = () => {
 
       return true;
     });
-  }, [filters, mockProviderServices]);
+  }, [filters, providerServices]);
 
-  // Sort logic
   const sortedServices = useMemo(() => {
     const sorted = [...filteredServices];
+
     switch (sortBy) {
       case "rating":
         return sorted.sort((a, b) => b.avgRating - a.avgRating);
@@ -385,8 +120,8 @@ const ServicesPage = () => {
       case "recommended":
       default:
         return sorted.sort((a, b) => {
-          const scoreA = a.avgRating * a.reviewCount;
-          const scoreB = b.avgRating * b.reviewCount;
+          const scoreA = a.avgRating * Math.max(a.reviewCount, 1);
+          const scoreB = b.avgRating * Math.max(b.reviewCount, 1);
           return scoreB - scoreA;
         });
     }
@@ -404,14 +139,35 @@ const ServicesPage = () => {
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
-    setItemsToShow(12); // Reset pagination when filters change
+    setItemsToShow(12);
   };
+
+  if (loading) {
+    return (
+      <div className="services-page">
+        <DashboardNavbar />
+        <div className="services-page-container">
+          <p>Loading services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="services-page">
+        <DashboardNavbar />
+        <div className="services-page-container">
+          <p style={{ color: "red" }}>Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="services-page">
       <DashboardNavbar />
 
-      {/* Page Header */}
       <div className="services-page-header">
         <div className="header-content">
           <h1 className="page-title">Browse Services</h1>
@@ -419,21 +175,18 @@ const ServicesPage = () => {
         </div>
       </div>
 
-      {/* Search & Filters */}
       <div className="services-page-container">
         <ServicesSearchBar
           onFiltersChange={handleFiltersChange}
           categories={categories}
         />
 
-        {/* Sort Bar */}
         <ServicesSortBar
           sortBy={sortBy}
           onSortChange={setSortBy}
           resultCount={sortedServices.length}
         />
 
-        {/* Results Section */}
         {displayedServices.length > 0 ? (
           <div className="services-results">
             <div className="services-grid">
@@ -454,10 +207,12 @@ const ServicesPage = () => {
                   <div className="card-stats">
                     <div className="stat">
                       <span className="stat-value">
-                        ⭐ {service.avgRating.toFixed(1)}
+                        ⭐ {service.reviewCount > 0 ? service.avgRating.toFixed(1) : "New"}
                       </span>
                       <span className="stat-label">
-                        ({service.reviewCount} reviews)
+                        {service.reviewCount > 0
+                          ? `(${service.reviewCount} reviews)`
+                          : "(No reviews yet)"}
                       </span>
                     </div>
                   </div>
@@ -501,7 +256,6 @@ const ServicesPage = () => {
               ))}
             </div>
 
-            {/* Load More Button */}
             {itemsToShow < sortedServices.length && (
               <div className="load-more-container">
                 <button className="btn-load-more" onClick={handleLoadMore}>
