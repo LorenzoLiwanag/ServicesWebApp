@@ -3,11 +3,18 @@ import { registerUserService, loginUserService } from "../services/authService.j
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
+const formatUser = (user) => ({
+  id: user.userId,                 // 🔥 FIX
+  fullName: user.fullName,
+  userName: user.userName,
+  phoneNumber: user.phoneNumber,
+  address: user.address
+});
+
 export const registerUser = async (req, res) => {
   try {
     const user = await registerUserService(req.body);
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user.userId, fullName: user.fullName },
       JWT_SECRET,
@@ -16,7 +23,7 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       message: "User registered successfully",
-      user,
+      user: formatUser(user),      // 🔥 FIX
       token
     });
   } catch (err) {
@@ -30,7 +37,6 @@ export const loginUser = async (req, res) => {
   try {
     const user = await loginUserService(req.body);
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user.userId, fullName: user.fullName },
       JWT_SECRET,
@@ -39,7 +45,7 @@ export const loginUser = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      user,
+      user: formatUser(user),      // 🔥 FIX
       token
     });
   } catch (err) {

@@ -38,3 +38,17 @@ export const getBrowseServices = async () => {
         reviewCount: 0,
     }));
 };
+
+export const getServiceCategories = async () => {
+  const query = `
+    SELECT
+      category_id AS categoryId,
+      name
+    FROM service_category
+    WHERE is_active = TRUE
+    ORDER BY sort_order ASC, name ASC
+  `;
+
+  const [rows] = await db.execute(query);
+  return rows;
+};
