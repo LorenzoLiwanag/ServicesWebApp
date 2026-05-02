@@ -1,16 +1,13 @@
 .hero-area {
-  margin-top: 50px;
   min-height: calc(100vh - var(--navbar-height));
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 20px;
+  padding: calc(var(--navbar-height) + 48px) 20px 48px;
   position: relative;
   overflow: hidden;
-  min-height: 100vh;
 }
 
-/* Soft background like the reference */
 .hero-area::before {
   content: "";
   position: absolute;
@@ -29,7 +26,6 @@
   z-index: 1;
 }
 
-/* 2-column layout */
 .hero-grid {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
@@ -37,18 +33,17 @@
   align-items: center;
 }
 
-/* Left side */
 .hero-left {
-  position: relative; /* allows left-side bubbles to position correctly */
+  position: relative;
 }
 
-.hero-left h2 {
+.hero-left h1 {
   font-size: clamp(34px, 4.4vw, 54px);
   line-height: 1.08;
   font-weight: 900;
   margin: 0 0 14px;
   color: #223d68;
-  letter-spacing: -0.8px;
+  letter-spacing: 0;
 }
 
 .hero-left p {
@@ -60,129 +55,10 @@
   opacity: 0.85;
 }
 
-/* Right side */
-.hero-right {
-  display: flex;
-  justify-content: center;
-}
-
-.hero-visual {
-  position: relative;
-  width: min(520px, 100%);
-}
-
-/* Blob frame */
-.hero-blob {
-  width: 100%;
-  aspect-ratio: 1 / 1.05;
-  border-radius: 38% 62% 55% 45% / 45% 45% 55% 55%;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(34, 61, 104, 0.10);
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(12px);
-  padding: 14px;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.hero-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 5% center;
-  border-radius: 30% 70% 60% 40% / 45% 40% 60% 55%;
-}
-
-/* Decorative dots/rings */
-.hero-dot,
-.hero-ring {
-  position: absolute;
-  display: block;
-  pointer-events: none;
-  will-change: transform;
-}
-
-/* ✅ ONE shared animation for ALL bubbles */
-@keyframes bubbleFloat {
-  0%   { transform: translate(0, 0); }
-  50%  { transform: translate(10px, -14px); }
-  100% { transform: translate(0, 0); }
-}
-
-/* Dots */
-.hero-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: rgba(13, 110, 253, 0.35);
-  animation: bubbleFloat 2s ease-in-out infinite;
-}
-
-/* Rings */
-.hero-ring {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 2px solid rgba(34, 61, 104, 0.18);
-  animation: bubbleFloat 2s ease-in-out infinite;
-}
-
-/* ----- Existing bubbles around image ----- */
-.hero-dot-1 { top: 12%; left: -4%; }
-.hero-dot-2 { top: 52%; right: -6%; background: rgba(96, 165, 250, 0.45); }
-.hero-dot-3 { bottom: 8%; left: 12%; background: rgba(13, 110, 253, 0.22); }
-
-.hero-ring-1 { top: 6%; right: 6%; }
-.hero-ring-2 { bottom: 10%; right: 18%; width: 28px; height: 28px; opacity: 0.8; }
-
-/* ----- New bubbles around image ----- */
-.hero-dot-7 { top: 28%; left: -10%; background: rgba(96, 165, 250, 0.35); }
-.hero-dot-8 { top: -4%; left: 36%; background: rgba(13, 110, 253, 0.22); }
-.hero-dot-9 { bottom: -6%; right: 6%; background: rgba(96, 165, 250, 0.28); }
-
-.hero-ring-5 { top: 18%; right: -10%; width: 34px; height: 34px; opacity: 0.7; }
-.hero-ring-6 { bottom: 22%; left: -8%; width: 26px; height: 26px; opacity: 0.75; }
-
-/* ----- New bubbles around title/text (positioned relative to .hero-left) ----- */
-.hero-dot-4 { top: -10px; left: -18px; background: rgba(13, 110, 253, 0.22); }
-.hero-dot-5 { top: 54px; right: 28px; background: rgba(96, 165, 250, 0.35); }
-.hero-dot-6 { bottom: 34px; left: 36px; background: rgba(13, 110, 253, 0.30); }
-
-.hero-ring-3 { top: 10px; right: -18px; width: 30px; height: 30px; opacity: 0.75; }
-.hero-ring-4 { bottom: -10px; right: 90px; width: 24px; height: 24px; opacity: 0.7; }
-
-/* Mobile: stack */
-@media (max-width: 900px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    text-align: center;
-  }
-
-  .hero-left p {
-    margin: 0 auto;
-  }
-
-  .hero-visual {
-    width: min(520px, 100%);
-  }
-
-  /* keep left-side bubbles from drifting off-screen */
-  .hero-dot-4,
-  .hero-dot-5,
-  .hero-dot-6,
-  .hero-ring-3,
-  .hero-ring-4 {
-    display: none;
-  }
-}
-
 .hero-actions {
   margin-top: 18px;
   display: flex;
   gap: 12px;
-  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -190,6 +66,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 46px;
   padding: 12px 18px;
   border-radius: 14px;
   font-weight: 700;
@@ -220,20 +97,132 @@
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.10);
 }
 
+.hero-right {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-visual {
+  position: relative;
+  width: min(520px, 100%);
+}
+
+.hero-blob {
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  border-radius: 38% 62% 55% 45% / 45% 45% 55% 55%;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(34, 61, 104, 0.10);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(12px);
+  padding: 14px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 5% center;
+  border-radius: 30% 70% 60% 40% / 45% 40% 60% 55%;
+}
+
+.hero-dot,
+.hero-ring {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@keyframes bubbleFloat {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(10px, -14px); }
+  100% { transform: translate(0, 0); }
+}
+
+.hero-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(13, 110, 253, 0.35);
+  animation: bubbleFloat 2s ease-in-out infinite;
+}
+
+.hero-ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid rgba(34, 61, 104, 0.18);
+  animation: bubbleFloat 2s ease-in-out infinite;
+}
+
+.hero-dot-1 { top: 12%; left: -4%; }
+.hero-dot-2 { top: 52%; right: -6%; background: rgba(96, 165, 250, 0.45); }
+.hero-dot-3 { bottom: 8%; left: 12%; background: rgba(13, 110, 253, 0.22); }
+.hero-dot-4 { top: -10px; left: -18px; background: rgba(13, 110, 253, 0.22); }
+.hero-dot-5 { top: 54px; right: 28px; background: rgba(96, 165, 250, 0.35); }
+.hero-dot-6 { bottom: 34px; left: 36px; background: rgba(13, 110, 253, 0.30); }
+.hero-dot-7 { top: 28%; left: -10%; background: rgba(96, 165, 250, 0.35); }
+.hero-dot-8 { top: -4%; left: 36%; background: rgba(13, 110, 253, 0.22); }
+.hero-dot-9 { bottom: -6%; right: 6%; background: rgba(96, 165, 250, 0.28); }
+
+.hero-ring-1 { top: 6%; right: 6%; }
+.hero-ring-2 { bottom: 10%; right: 18%; width: 28px; height: 28px; opacity: 0.8; }
+.hero-ring-3 { top: 10px; right: -18px; width: 30px; height: 30px; opacity: 0.75; }
+.hero-ring-4 { bottom: -10px; right: 90px; width: 24px; height: 24px; opacity: 0.7; }
+.hero-ring-5 { top: 18%; right: -10%; width: 34px; height: 34px; opacity: 0.7; }
+.hero-ring-6 { bottom: 22%; left: -8%; width: 26px; height: 26px; opacity: 0.75; }
+
+@media (max-width: 900px) {
+  .hero-area {
+    min-height: auto;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    text-align: center;
+  }
+
+  .hero-left p,
+  .hero-actions {
+    margin-inline: auto;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-dot-4,
+  .hero-dot-5,
+  .hero-dot-6,
+  .hero-ring-3,
+  .hero-ring-4 {
+    display: none;
+  }
+}
+
 @media (max-width: 520px) {
+  .hero-area {
+    padding-inline: 16px;
+  }
+
   .hero-actions {
     flex-direction: column;
     align-items: center;
   }
+
   .btn {
     width: min(320px, 100%);
   }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .hero-dot,
   .hero-ring {
-    animation: none !important;
+    animation: none;
   }
 }

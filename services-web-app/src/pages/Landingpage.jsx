@@ -6,15 +6,16 @@ import Contact from '../components/landing-page/Contact';
 
 const LandingPage = () => {
   return (
-    <div className="Landingpage">
-        <Navbar />
+    <div className="landing-page">
+      <Navbar />
+      <main>
         <Hero />
         <About />
         <Services />
         <Contact />
-
+      </main>
     </div>
-    );
-}
+  );
+};
 
 export default LandingPage;

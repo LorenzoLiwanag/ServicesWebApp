@@ -1,8 +1,15 @@
-/* default css start */
+:root {
+  --navbar-height: 64px;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -10,7 +17,6 @@ body {
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-
 }
 
 li {
@@ -24,19 +30,6 @@ li {
   padding: 0 15px;
 }
 
-
-
-
-/* default css end */
-
-/* NOTE:
-   Component-specific styles (moved out of global.css):
-   - Header/hero: moved to src/styles/hero.css
-   - Navbar & nav-toggler: moved to src/styles/navbar.css
-   - About component styles: moved to src/styles/about.css (placeholder)
-*/
-
-/* mobile breakpoint (keep global container rule only) */
 @media screen and (max-width: 767px) {
   .container {
     max-width: 720px;

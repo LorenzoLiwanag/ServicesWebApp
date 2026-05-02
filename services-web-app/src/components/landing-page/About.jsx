@@ -1,13 +1,34 @@
 import "../../styles/landing-page/about.css";
+import aboutImageOne from "../../assets/about-image1.jpg";
+import aboutImageTwo from "../../assets/about-image2.jpg";
+import aboutImageThree from "../../assets/about-image3.jpg";
+import aboutImageFour from "../../assets/about-image4.jpg";
+
+const aboutFeatures = [
+  {
+    title: "Trusted Professionals",
+    description: "Connect with verified service providers you can rely on.",
+  },
+  {
+    title: "Easy Booking",
+    description: "Find, communicate, and book services in minutes.",
+  },
+];
+
+const aboutImages = [
+  { src: aboutImageOne, alt: "Home service provider preparing cleaning supplies" },
+  { src: aboutImageTwo, alt: "Clean living space after a home service visit" },
+  { src: aboutImageThree, alt: "Service professional working inside a home" },
+  { src: aboutImageFour, alt: "Organized home maintenance tools" },
+];
 
 const About = () => {
   return (
     <section className="about-area full-section" id="about">
       <div className="about-container">
         <div className="about-content">
-
           <div className="about-card">
-            <h1>About Subic Bay Home Services</h1>
+            <h2>About Subic Bay Home Services</h2>
 
             <p>
               Whether you're a service provider looking for new opportunities or a
@@ -17,31 +38,24 @@ const About = () => {
             </p>
 
             <div className="about-features">
-              <div className="about-feature">
-                <h4>Trusted Professionals</h4>
-                <p>Connect with verified service providers you can rely on.</p>
-              </div>
-
-              <div className="about-feature">
-                <h4>Easy Booking</h4>
-                <p>Find, communicate, and book services in minutes.</p>
-              </div>
+              {aboutFeatures.map((feature) => (
+                <div className="about-feature" key={feature.title}>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </div>
+              ))}
             </div>
 
             <a href="#services" className="about-btn">
-              View Services →
+              View Services &rarr;
             </a>
           </div>
-          {/* LEFT: Images */}
-          <div className="about-images">
-            <img src={require("../../assets/about-image1.jpg")} alt="Home service 1" />
-            <img src={require("../../assets/about-image2.jpg")} alt="Home service 2" />
-            <img src={require("../../assets/about-image3.jpg")} alt="Home service 3" />
-            <img src={require("../../assets/about-image4.jpg")} alt="Home service 4" />
+
+          <div className="about-images" aria-label="Home service examples">
+            {aboutImages.map((image) => (
+              <img src={image.src} alt={image.alt} key={image.src} />
+            ))}
           </div>
-
-          {/* RIGHT: Main Card */}
-
         </div>
       </div>
     </section>
