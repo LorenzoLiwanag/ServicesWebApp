@@ -1,0 +1,224 @@
+CREATE DATABASE IF NOT EXISTS Services_Web_App;
+USE Services_Web_App;
+
+CREATE TABLE user (
+  user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  phone_number VARCHAR(30) NOT NULL,
+  address_text VARCHAR(500) NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'active',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  last_login_at DATETIME NULL
+);
+
+CREATE TABLE role (
+  role_id INT PRIMARY KEY AUTO_INCREMENT,
+  code VARCHAR(50) NOT NULL UNIQUE,
+  name VARCHAR(100) NOT NULL,
+  description VARCHAR(255) NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE user_role (
+  user_id BIGINT NOT NULL,
+  role_id INT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, role_id),
+  CONSTRAINT fk_user_role_user
+    FOREIGN KEY (user_id) REFERENCES user (user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_user_role_role
+    FOREIGN KEY (role_id) REFERENCES role (role_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE provider_profile (
+  provider_id BIGINT PRIMARY KEY,
+  is_provider_active BOOLEAN NOT NULL DEFAULT TRUE,
+  display_name VARCHAR(150) NOT NULL,
+  bio TEXT NULL,
+  profile_photo_url VARCHAR(500) NULL,
+  verification_status VARCHAR(50) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_provider_profile_user
+    FOREIGN KEY (provider_id) REFERENCES user (user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE address (
+  address_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NULL,
+  label VARCHAR(50) NOT NULL,
+  line1 VARCHAR(255) NOT NULL,
+  line2 VARCHAR(255) NULL,
+  barangay VARCHAR(150) NULL,
+  city VARCHAR(150) NOT NULL,
+  province_region VARCHAR(150) NULL,
+  postal_code VARCHAR(20) NULL,
+  latitude DECIMAL(10, 8) NULL,
+  longitude DECIMAL(11, 8) NULL,
+  is_default BOOLEAN NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_address_user
+    FOREIGN KEY (user_id) REFERENCES user (user_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE service_category (
+  category_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  parent_category_id BIGINT NULL,
+  name VARCHAR(150) NOT NULL,
+  description TEXT NULL,
+  sort_order INT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_service_category_parent
+    FOREIGN KEY (parent_category_id) REFERENCES service_category (category_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE service (
+  service_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  category_id BIGINT NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  description TEXT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_service_category
+    FOREIGN KEY (category_id) REFERENCES service_category (category_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE provider_service (
+  provider_service_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  provider_id BIGINT NOT NULL,
+  service_id BIGINT NOT NULL,
+  pricing_type VARCHAR(20) NOT NULL,
+  rate_amount DECIMAL(10, 2) NULL,
+  rate_currency VARCHAR(3) NOT NULL DEFAULT 'PHP',
+  is_service_visible BOOLEAN NOT NULL DEFAULT TRUE,
+  provider_notes TEXT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_provider_service_provider
+    FOREIGN KEY (provider_id) REFERENCES provider_profile (provider_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_provider_service_service
+    FOREIGN KEY (service_id) REFERENCES service (service_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE booking (
+  booking_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  client_user_id BIGINT NOT NULL,
+  provider_service_id BIGINT NOT NULL,
+  service_address_id BIGINT NOT NULL,
+  scheduled_start_at DATETIME NOT NULL,
+  scheduled_end_at DATETIME NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'requested',
+  client_notes TEXT NULL,
+  provider_notes TEXT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_booking_client_user
+    FOREIGN KEY (client_user_id) REFERENCES user (user_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_booking_provider_service
+    FOREIGN KEY (provider_service_id) REFERENCES provider_service (provider_service_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_booking_service_address
+    FOREIGN KEY (service_address_id) REFERENCES address (address_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE payment_method (
+  payment_method_id INT PRIMARY KEY AUTO_INCREMENT,
+  code VARCHAR(50) NOT NULL UNIQUE,
+  display_name VARCHAR(100) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE payment (
+  payment_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  booking_id BIGINT NOT NULL,
+  payer_user_id BIGINT NOT NULL,
+  payment_method_id INT NOT NULL,
+  amount DECIMAL(10, 2) NOT NULL,
+  currency VARCHAR(3) NOT NULL DEFAULT 'PHP',
+  status VARCHAR(30) NOT NULL DEFAULT 'created',
+  gateway_provider VARCHAR(100) NULL,
+  gateway_reference VARCHAR(255) NULL,
+  checkout_url VARCHAR(500) NULL,
+  paid_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payment_booking
+    FOREIGN KEY (booking_id) REFERENCES booking (booking_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_payment_payer_user
+    FOREIGN KEY (payer_user_id) REFERENCES user (user_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_payment_method
+    FOREIGN KEY (payment_method_id) REFERENCES payment_method (payment_method_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE payment_event (
+  payment_event_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  payment_id BIGINT NOT NULL,
+  event_type VARCHAR(100) NOT NULL,
+  new_status VARCHAR(30) NULL,
+  raw_payload TEXT NULL,
+  received_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payment_event_payment
+    FOREIGN KEY (payment_id) REFERENCES payment (payment_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+CREATE TABLE review (
+  review_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  booking_id BIGINT NOT NULL,
+  reviewer_user_id BIGINT NOT NULL,
+  provider_user_id BIGINT NOT NULL,
+  rating TINYINT NOT NULL,
+  comment TEXT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_review_booking
+    FOREIGN KEY (booking_id) REFERENCES booking (booking_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_review_reviewer_user
+    FOREIGN KEY (reviewer_user_id) REFERENCES user (user_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_review_provider_user
+    FOREIGN KEY (provider_user_id) REFERENCES user (user_id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT uq_review_booking UNIQUE (booking_id),
+  CONSTRAINT chk_review_rating CHECK (rating BETWEEN 1 AND 5)
+);
