@@ -1,13 +1,13 @@
 import "../../styles/landing-page/hero.css";
+import heroImage from "../../assets/heroimg.jpg";
 
 const Hero = () => {
   return (
     <section className="hero-area full-section" id="home">
       <div className="hero-container">
         <div className="hero-grid">
-          {/* Left */}
           <div className="hero-left">
-            <h2>Reliable Home Services, Book in Minutes</h2>
+            <h1>Reliable Home Services, Book in Minutes</h1>
             <p>
               Connect with trusted handymen and cleaning professionals through one
               simple, secure platform.
@@ -18,7 +18,6 @@ const Hero = () => {
               <a className="btn btn-secondary" href="#contact">Contact</a>
             </div>
 
-            {/* Extra bubbles around title/text */}
             <span className="hero-dot hero-dot-4" />
             <span className="hero-dot hero-dot-5" />
             <span className="hero-dot hero-dot-6" />
@@ -26,18 +25,16 @@ const Hero = () => {
             <span className="hero-ring hero-ring-4" />
           </div>
 
-          {/* Right */}
           <div className="hero-right">
             <div className="hero-visual">
               <div className="hero-blob">
                 <img
-                  src={require("../../assets/heroimg.jpg")}
-                  alt="Hero"
+                  src={heroImage}
+                  alt="Home service professional cleaning a kitchen"
                   className="hero-img"
                 />
               </div>
 
-              {/* Bubbles around picture */}
               <span className="hero-dot hero-dot-1" />
               <span className="hero-dot hero-dot-2" />
               <span className="hero-dot hero-dot-3" />

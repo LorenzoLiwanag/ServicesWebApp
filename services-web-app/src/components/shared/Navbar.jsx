@@ -1,40 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "../../styles/shared/navbar.css";
+
+const NAV_BREAKPOINT = 1050;
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   const toggle = () => setOpen((prev) => !prev);
-
-  const navigate = useNavigate();
-
-  const handleLogin = () => {
-    navigate("/login");
-  }
-
-  const handleRegister = () => {
-    navigate("/register");
-  }
-
-  const viewClientDashboard = () => {
-    navigate("/client-dashboard");
-  }
+  const closeMenu = () => setOpen(false);
 
   useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth > 768 && open) setOpen(false);
+      if (window.innerWidth > NAV_BREAKPOINT) {
+        setOpen(false);
+      }
     };
+
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [open]);
+  }, []);
 
   return (
     <header className="header-area">
       <div className="navbar-area">
         <div className="container">
           <nav className="site-navbar" aria-label="Main navigation">
-            <a href="#home" className="site-logo">
+            <a href="#home" className="site-logo" onClick={closeMenu}>
               Subic Bay Home Services
             </a>
 
@@ -42,29 +34,29 @@ const Navbar = () => {
               id="main-navigation"
               className={`nav-menu ${open ? "open" : ""}`}
             >
-              <li><a href="#home">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#services">Services</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="#home" onClick={closeMenu}>Home</a></li>
+              <li><a href="#about" onClick={closeMenu}>About</a></li>
+              <li><a href="#services" onClick={closeMenu}>Services</a></li>
+              <li><a href="#contact" onClick={closeMenu}>Contact</a></li>
 
-              {/* Mobile-only buttons inside dropdown */}
               <li className="nav-actions nav-actions-mobile">
-                <a className="nav-btn nav-btn-primary" href="/register" onClick={handleRegister}>Get Started</a>
-                <a className="nav-btn nav-btn-ghost" href="/login" onClick={handleLogin}>Login</a>
+                <Link className="nav-btn nav-btn-primary" to="/register" onClick={closeMenu}>Get Started</Link>
+                <Link className="nav-btn nav-btn-ghost" to="/login" onClick={closeMenu}>Login</Link>
+                <Link className="nav-btn nav-btn-ghost" to="/client-dashboard" onClick={closeMenu}>Dashboard</Link>
               </li>
             </ul>
 
-            {/* Desktop buttons on the right */}
             <div className="nav-actions nav-actions-desktop">
-              <a className="nav-btn nav-btn-primary" href="/register" onClick={handleRegister}>Get Started</a>
-              <a className="nav-btn nav-btn-ghost" href="/login" onClick={handleLogin}>Login</a>
-              <a className="nav-btn nav-btn-ghost" href="/client-dashboard" onClick={viewClientDashboard}>Dashboard</a>
+              <Link className="nav-btn nav-btn-primary" to="/register">Get Started</Link>
+              <Link className="nav-btn nav-btn-ghost" to="/login">Login</Link>
+              <Link className="nav-btn nav-btn-ghost" to="/client-dashboard">Dashboard</Link>
             </div>
 
             <button
               className={`nav-toggler ${open ? "toggler-open" : ""}`}
               aria-expanded={open}
               aria-controls="main-navigation"
+              aria-label="Toggle navigation menu"
               onClick={toggle}
             >
               <span aria-hidden="true"></span>

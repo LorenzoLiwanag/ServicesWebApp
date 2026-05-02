@@ -1,39 +1,39 @@
 import "../../styles/landing-page/services.css";
 
-const Services = () => {
-  const services = [
-    {
-      icon: "🛠️",
-      title: "Handyman Services",
-      description: "Repairs, installations, and odd jobs handled by trusted pros.",
-    },
-    {
-      icon: "🧹",
-      title: "General Cleaning",
-      description: "Routine home cleaning to keep your space fresh and tidy.",
-    },
-    {
-      icon: "🧼",
-      title: "Deep Cleaning",
-      description: "A detailed clean for kitchens, bathrooms, and hard-to-reach areas.",
-    },
-    {
-      icon: "🚚",
-      title: "Moving Help",
-      description: "Packing support, loading/unloading, and light moving assistance.",
-    },
-    {
-      icon: "🪴",
-      title: "Yard & Outdoor",
-      description: "Basic yard cleanup, trimming, and outdoor maintenance help.",
-    },
-    {
-      icon: "🔧",
-      title: "Minor Repairs",
-      description: "Quick fixes around the house to keep everything working smoothly.",
-    },
-  ];
+const services = [
+  {
+    icon: "\u{1F6E0}\uFE0F",
+    title: "Handyman Services",
+    description: "Repairs, installations, and odd jobs handled by trusted pros.",
+  },
+  {
+    icon: "\u{1F9F9}",
+    title: "General Cleaning",
+    description: "Routine home cleaning to keep your space fresh and tidy.",
+  },
+  {
+    icon: "\u{1F9FC}",
+    title: "Deep Cleaning",
+    description: "A detailed clean for kitchens, bathrooms, and hard-to-reach areas.",
+  },
+  {
+    icon: "\u{1F69A}",
+    title: "Moving Help",
+    description: "Packing support, loading/unloading, and light moving assistance.",
+  },
+  {
+    icon: "\u{1FAB4}",
+    title: "Yard & Outdoor",
+    description: "Basic yard cleanup, trimming, and outdoor maintenance help.",
+  },
+  {
+    icon: "\u{1F527}",
+    title: "Minor Repairs",
+    description: "Quick fixes around the house to keep everything working smoothly.",
+  },
+];
 
+const Services = () => {
   return (
     <section className="services-area full-section" id="services">
       <div className="services-container">
@@ -45,16 +45,26 @@ const Services = () => {
         </div>
 
         <div className="services-grid">
-          {services.map((s) => (
-            <div className="service-card" key={s.title}>
-              <h3 className="service-title">{s.title}</h3>
-              <p className="service-desc">{s.description}</p>
+          {services.map((service) => (
+            <article className="service-card" key={service.title}>
+              <h3 className="service-title">{service.title}</h3>
+              <p className="service-desc">{service.description}</p>
               <div className="service-icon" aria-hidden="true">
-                {s.icon}
+                {service.icon}
               </div>
-            </div>
+            </article>
           ))}
         </div>
+
+        <span className="services-dot services-dot-1" />
+        <span className="services-dot services-dot-2" />
+        <span className="services-dot services-dot-3" />
+        <span className="services-dot services-dot-4" />
+        <span className="services-dot services-dot-5" />
+        <span className="services-ring services-ring-1" />
+        <span className="services-ring services-ring-2" />
+        <span className="services-ring services-ring-3" />
+        <span className="services-ring services-ring-4" />
       </div>
     </section>
   );

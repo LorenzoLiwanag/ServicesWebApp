@@ -4,12 +4,9 @@
   align-items: center;
   justify-content: center;
   padding: 80px 20px;
-
-  /* match login form scheme */
   background: linear-gradient(135deg, #0b2b52, #6b86a6);
 }
 
-/* Big rounded "modal" container */
 .contact-modal {
   width: 100%;
   max-width: 1200px;
@@ -17,60 +14,36 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1.15fr;
-
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.20);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(14px);
 }
 
-/* LEFT PANEL */
 .contact-left {
   padding: 56px 52px;
   color: #eaf2ff;
-
-  /* match login left panel scheme */
   background: linear-gradient(135deg, #0b3c6f, #0b2b52);
 }
 
-.contact-mark {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-}
-
-.contact-brand-text {
-  font-weight: 800;
-  opacity: 0.95;
-}
-
 .contact-title {
-  margin: 0 0 16px;
-  margin-top: 50px;
+  margin: 50px 0 16px;
   font-size: clamp(34px, 4vw, 48px);
-  line-height: 1.25; /* align with login/registration */
+  line-height: 1.25;
   font-weight: 900;
-  letter-spacing: -0.8px;
+  letter-spacing: 0;
   text-align: center;
 }
 
 .contact-subtitle {
-  margin-top: 50px;
   max-width: 460px;
+  margin-top: 50px;
   font-size: 16px;
   line-height: 2;
   opacity: 0.9;
   text-align: center;
 }
 
-/* RIGHT PANEL */
 .contact-right {
   background: rgba(255, 255, 255, 0.94);
   padding: 44px 42px;
@@ -83,14 +56,12 @@
   color: #0f2a44;
 }
 
-/* FORM */
 .contact-form {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-/* ✅ STACK INPUTS VERTICALLY (instead of 2 columns) */
 .contact-row {
   display: flex;
   flex-direction: column;
@@ -112,26 +83,27 @@
 
 .contact-field input,
 .contact-field textarea {
+  width: 100%;
   border-radius: 14px;
   border: 1px solid rgba(15, 42, 68, 0.16);
   background: #ffffff;
-  padding: 16px 18px; /* match login/registration input size */
-  font-size: 15px;    /* match login/registration */
+  padding: 16px 18px;
+  font-size: 15px;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .contact-field textarea {
-  resize: none;
+  resize: vertical;
+  min-height: 150px;
 }
 
 .contact-field input:focus,
 .contact-field textarea:focus {
-  border-color: #1e90ff; /* match login/registration focus */
+  border-color: #1e90ff;
   box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
 }
 
-/* SUBMIT */
 .contact-submit {
   margin-top: 10px;
   padding: 16px;
@@ -140,7 +112,6 @@
   color: #fff;
   font-weight: 800;
   cursor: pointer;
-
   background: linear-gradient(135deg, #0d6efd, #60a5fa);
   box-shadow: 0 12px 30px rgba(13, 110, 253, 0.35);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -158,7 +129,6 @@
   color: #64748b;
 }
 
-/* MOBILE */
 @media (max-width: 950px) {
   .contact-modal {
     grid-template-columns: 1fr;
@@ -169,15 +139,35 @@
     text-align: center;
   }
 
-  .contact-brand {
-    justify-content: center;
-  }
-
   .contact-subtitle {
-    margin: 0 auto;
+    margin-inline: auto;
   }
 
   .contact-right {
     padding: 36px 28px;
+  }
+}
+
+@media (max-width: 560px) {
+  .contact-area {
+    min-height: auto;
+    padding: 64px 16px;
+  }
+
+  .contact-modal {
+    border-radius: 24px;
+  }
+
+  .contact-left,
+  .contact-right {
+    padding: 32px 22px;
+  }
+
+  .contact-title {
+    margin-top: 0;
+  }
+
+  .contact-subtitle {
+    margin-top: 24px;
   }
 }
