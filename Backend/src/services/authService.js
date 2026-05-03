@@ -55,7 +55,7 @@ export const loginUserService = async (userData) => {
 
 
   return {
-    userId: user.user_id,
+    userId: user.id,
     fullName: user.full_name,
     userName: user.user_name,
     phoneNumber: user.phone_number,
