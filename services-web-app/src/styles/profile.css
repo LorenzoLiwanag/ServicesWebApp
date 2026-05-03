@@ -239,6 +239,118 @@
   border-color: #e9ecef;
 }
 
+.change-password-btn {
+  padding: 12px 16px;
+  border: 1px solid #d3d9e3;
+  border-radius: 8px;
+  background: white;
+  color: #223d68;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.change-password-btn:hover:not(:disabled) {
+  border-color: #667eea;
+  color: #667eea;
+  background: #f8f9fa;
+}
+
+.change-password-btn:disabled {
+  background: #f8f9fa;
+  color: #666;
+  cursor: not-allowed;
+  border-color: #e9ecef;
+}
+
+.password-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(34, 61, 104, 0.35);
+}
+
+.password-modal {
+  width: min(100%, 460px);
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.password-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.password-modal-title {
+  margin: 0;
+  color: #223d68;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.password-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #f8f9fa;
+  color: #333;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.password-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.password-modal-error {
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffebee;
+  color: #b71c1c;
+  font-size: 13px;
+}
+
+.password-modal-error p {
+  margin: 0;
+}
+
+.password-modal-error-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.password-modal-error-actions button {
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+  background: white;
+  color: #b71c1c;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 10px;
+}
+
+.password-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
+
 /* Provider Info Section */
 .provider-info {
   display: grid;
