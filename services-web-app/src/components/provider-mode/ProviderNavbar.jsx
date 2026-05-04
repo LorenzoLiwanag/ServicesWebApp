@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/provider-mode/providerNavbar.css";
+import { clearAuthSession } from "../../utils/auth.js";
 
 const ProviderNavbar = ({ isProviderMode = true }) => {
   const [open, setOpen] = useState(false);
@@ -42,8 +43,8 @@ const ProviderNavbar = ({ isProviderMode = true }) => {
   };
 
   const handleLogout = () => {
-    // TODO: Implement logout logic
-    navigate("/");
+    clearAuthSession();
+    navigate("/login", { replace: true });
     setOpen(false);
   };
 

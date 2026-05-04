@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/profile.css";
+import { clearAuthSession } from "../utils/auth.js";
 
 const emptyUser = {
   id: null,
@@ -301,9 +302,8 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/login");
+    clearAuthSession();
+    navigate("/login", { replace: true });
   };
 
   const handleBackToDashboard = () => {

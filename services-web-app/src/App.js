@@ -7,10 +7,11 @@ import ClientDashboard from './pages/ClientDashboardPage.jsx';
 import ProviderDashboard from './pages/ProviderDashboard.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
+import { getStoredAuthSession } from './utils/auth.js';
 
 const RequireAuth = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  return user ? children : <Navigate to="/login" replace />;
+  const authSession = getStoredAuthSession();
+  return authSession ? children : <Navigate to="/login" replace />;
 };
 
 function App() {
@@ -28,7 +29,14 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route path="/provider-mode" element={<ProviderDashboard />} />
+        <Route
+          path="/provider-mode"
+          element={
+            <RequireAuth>
+              <ProviderDashboard />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/profile"
           element={
@@ -37,7 +45,14 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route path="/services" element={<ServicesPage />} />
+        <Route
+          path="/services"
+          element={
+            <RequireAuth>
+              <ServicesPage />
+            </RequireAuth>
+          }
+        />
       </Routes>
     </div>
   );
