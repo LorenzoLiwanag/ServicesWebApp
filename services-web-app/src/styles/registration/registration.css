@@ -3,11 +3,45 @@
 .registration-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
   background: linear-gradient(135deg, #0b2b52, #6b86a6);
   padding: 40px 20px;
+}
+
+.auth-home-button {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-home-button:hover {
+  background: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+  transform: translateY(-1px);
+}
+
+.auth-home-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 3px;
+}
+
+.auth-home-button svg {
+  width: 24px;
+  height: 24px;
 }
 
 .registration-card {
@@ -124,6 +158,10 @@
 
 /* MOBILE */
 @media (max-width: 900px) {
+  .auth-home-button {
+    margin-bottom: 18px;
+  }
+
   .registration-card {
     grid-template-columns: 1fr;
   }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import AuthHomeButton from "../shared/AuthHomeButton.jsx";
 import "../../styles/registration/registration.css";
 
 const RegistrationForm = () => {
@@ -59,6 +60,8 @@ const RegistrationForm = () => {
 
   return (
     <div className="registration-page">
+      <AuthHomeButton />
+
       <div className="registration-card">
         <div className="registration-left">
           <h1>Create your account</h1>

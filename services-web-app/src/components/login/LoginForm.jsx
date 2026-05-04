@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import AuthHomeButton from "../shared/AuthHomeButton.jsx";
 import "../../styles/login/login.css";
 
 const LoginForm = () => {
@@ -52,6 +53,8 @@ const LoginForm = () => {
 
   return (
     <div className="login-page">
+      <AuthHomeButton />
+
       <div className="login-card">
 
         <div className="login-left">
