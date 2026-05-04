@@ -17,7 +17,9 @@ const ClientDashboard = () => {
   return (
     <div>
       <DashboardNavbar />
-      {user ? `Welcome back, ${user.fullName}` : "Welcome"}
+      <h1 className="welcome-heading">
+        {user ? `Welcome back, ${user.fullName}` : "Welcome"}
+      </h1>
       <DashboardSearch />
       <div className="dashboard-content-wrapper">
         <div className="dashboard-services-column">

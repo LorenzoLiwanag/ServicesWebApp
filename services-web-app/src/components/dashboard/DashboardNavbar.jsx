@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import "../../styles/dashboard/dashboardNav.css";
 import { clearAuthSession } from "../../utils/auth.js";
 
@@ -25,9 +25,9 @@ const DashboardNavbar = () => {
     return (
         <nav className="dash-nav-area">
           <ul className="dash-nav-left">
-            <li><a href="/dashboard">Home</a></li>
+            <li><Link to="/">Home</Link></li>
             <li><button onClick={handleBrowseServices} className="nav-link-btn">Browse Services</button></li>
-            <li><a href="/bookings">Bookings</a></li>
+            <li><Link to="/bookings">Bookings</Link></li>
           </ul>
 
           <ul className="dash-nav-right">
