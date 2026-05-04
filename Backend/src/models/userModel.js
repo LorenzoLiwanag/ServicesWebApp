@@ -30,6 +30,17 @@ export const findUserByUsername = async (userName) => {
   return rows[0];
 };
 
+export const findOtherUserByUsername = async (userName, userId) => {
+  const sql = `
+    SELECT *
+    FROM users
+    WHERE user_name = ? AND id <> ?
+  `;
+
+  const [rows] = await database.execute(sql, [userName, userId]);
+  return rows[0];
+};
+
 export const findUserProfileById = async (userId) => {
   const sql = `
     SELECT
@@ -90,5 +101,23 @@ export const updateUserPasswordById = async (userId, passwordHash) => {
   `;
 
   const [result] = await database.execute(sql, [passwordHash, userId]);
+  return result;
+};
+
+export const updateUserProfileById = async (
+  userId,
+  { fullName, userName, phoneNumber, address }
+) => {
+  const sql = `
+    UPDATE users
+    SET full_name = ?,
+        user_name = ?,
+        phone_number = ?,
+        address_text = ?
+    WHERE id = ?
+  `;
+
+  const values = [fullName, userName, phoneNumber, address, userId];
+  const [result] = await database.execute(sql, values);
   return result;
 };

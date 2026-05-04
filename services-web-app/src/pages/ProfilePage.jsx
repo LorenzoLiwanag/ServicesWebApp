@@ -3,40 +3,11 @@ import { useNavigate } from "react-router-dom";
 import "../styles/profile.css";
 
 const emptyUser = {
-  userId: null,
-  firstName: "",
-  lastName: "",
+  id: null,
+  fullName: "",
+  userName: "",
   phoneNumber: "",
-  userType: "client",
-  profilePhoto: "https://via.placeholder.com/150",
-};
-
-const emptyProviderProfile = {
-  displayName: "",
-  bio: "",
-  verificationStatus: "pending",
-  servicesCount: 0,
-  averageRating: 0,
-  totalReviews: 0,
-};
-
-const emptyAddress = {
-  label: "Home",
-  line1: "",
-  line2: "",
-  barangay: "",
-  city: "",
-  province: "",
-  postalCode: "",
-};
-
-const splitFullName = (fullName = "") => {
-  const nameParts = fullName.trim().split(/\s+/).filter(Boolean);
-
-  return {
-    firstName: nameParts[0] || "",
-    lastName: nameParts.slice(1).join(" "),
-  };
+  address: "",
 };
 
 const parseJsonResponse = async (response) => {
@@ -69,62 +40,23 @@ const parsePasswordResponse = async (response) => {
   }
 };
 
-const mapProfileData = (profileUser, providerProfile) => {
-  const { firstName, lastName } = splitFullName(profileUser?.fullName);
-
-  return {
-    user: {
-      userId: profileUser?.id || null,
-      firstName,
-      lastName,
-      phoneNumber: profileUser?.phoneNumber || "",
-      userType: providerProfile ? "both" : "client",
-      profilePhoto:
-        providerProfile?.profilePhotoUrl || "https://via.placeholder.com/150",
-    },
-    providerProfile: providerProfile
-      ? {
-          displayName: providerProfile.displayName || "",
-          bio: providerProfile.bio || "",
-          verificationStatus: providerProfile.verificationStatus || "pending",
-          servicesCount: providerProfile.servicesCount || 0,
-          averageRating: providerProfile.averageRating || 0,
-          totalReviews: providerProfile.totalReviews || 0,
-        }
-      : emptyProviderProfile,
-    address: {
-      ...emptyAddress,
-      line1: profileUser?.address || "",
-    },
-  };
-};
-
 const ProfilePage = () => {
   const navigate = useNavigate();
 
   const [profileUser, setProfileUser] = useState(emptyUser);
-  const [providerProfile, setProviderProfile] = useState(emptyProviderProfile);
-  const [profileAddress, setProfileAddress] = useState(emptyAddress);
+  const [profileFormData, setProfileFormData] = useState(emptyUser);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [passwordMessage, setPasswordMessage] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordStep, setPasswordStep] = useState("current");
-
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: emptyUser.firstName,
-    lastName: emptyUser.lastName,
-    phoneNumber: emptyUser.phoneNumber,
-  });
+  const [passwordError, setPasswordError] = useState("");
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-
-  const [addressData, setAddressData] = useState(emptyAddress);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -137,21 +69,23 @@ const ProfilePage = () => {
       }
 
       if (storedUser) {
-        const mappedStoredData = mapProfileData(storedUser, null);
-        setProfileUser(mappedStoredData.user);
-        setProfileAddress(mappedStoredData.address);
-        setFormData({
-          firstName: mappedStoredData.user.firstName,
-          lastName: mappedStoredData.user.lastName,
-          phoneNumber: mappedStoredData.user.phoneNumber,
-        });
-        setAddressData(mappedStoredData.address);
+        const storedProfile = {
+          id: storedUser.id || null,
+          fullName: storedUser.fullName || "",
+          userName: storedUser.userName || "",
+          phoneNumber: storedUser.phoneNumber || "",
+          address: storedUser.address || "",
+        };
+
+        setProfileUser(storedProfile);
+        setProfileFormData(storedProfile);
       }
 
       try {
         const response = await fetch("http://localhost:3000/api/auth/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
+            "x-user-id": storedUser?.id ? String(storedUser.id) : "",
           },
         });
 
@@ -161,21 +95,17 @@ const ProfilePage = () => {
           throw new Error(data.message || "Failed to load profile");
         }
 
-        const mappedProfileData = mapProfileData(
-          data.user,
-          data.providerProfile
-        );
+        const loadedUser = {
+          id: data.user?.id || null,
+          fullName: data.user?.fullName || "",
+          userName: data.user?.userName || "",
+          phoneNumber: data.user?.phoneNumber || "",
+          address: data.user?.address || "",
+        };
 
-        setProfileUser(mappedProfileData.user);
-        setProviderProfile(mappedProfileData.providerProfile);
-        setProfileAddress(mappedProfileData.address);
-        setFormData({
-          firstName: mappedProfileData.user.firstName,
-          lastName: mappedProfileData.user.lastName,
-          phoneNumber: mappedProfileData.user.phoneNumber,
-        });
-        setAddressData(mappedProfileData.address);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        setProfileUser(loadedUser);
+        setProfileFormData(loadedUser);
+        localStorage.setItem("user", JSON.stringify(loadedUser));
       } catch (err) {
         if (!storedUser) {
           setError(err.message || "Failed to load profile");
@@ -188,17 +118,10 @@ const ProfilePage = () => {
     loadProfile();
   }, [navigate]);
 
-  const handleInputChange = (e) => {
+  const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
-  const handleAddressChange = (e) => {
-    const { name, value } = e.target;
-    setAddressData((prev) => ({
+    setProfileFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -221,12 +144,7 @@ const ProfilePage = () => {
     setPasswordStep("current");
   };
 
-  const handleSave = () => {
-    setIsEditMode(false);
-  };
-
   const openPasswordModal = () => {
-    setPasswordMessage("");
     setPasswordError("");
     resetPasswordFields();
     setIsPasswordModalOpen(true);
@@ -234,19 +152,18 @@ const ProfilePage = () => {
 
   const closePasswordModal = () => {
     setIsPasswordModalOpen(false);
-    resetPasswordFields();
     setPasswordError("");
+    resetPasswordFields();
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setPasswordMessage("");
     setPasswordError("");
 
     try {
       const token = localStorage.getItem("token");
       const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-      const userId = storedUser?.id || profileUser.userId;
+      const userId = storedUser?.id || profileUser.id;
 
       if (passwordStep === "current") {
         if (!passwordData.currentPassword) {
@@ -313,23 +230,74 @@ const ProfilePage = () => {
       resetPasswordFields();
       window.alert("Password updated successfully");
       setIsPasswordModalOpen(false);
+      setIsEditMode(false);
     } catch (err) {
       setPasswordError(err.message || "Failed to update password.");
     }
   };
 
   const handleCancel = () => {
-    setFormData({
-      firstName: profileUser.firstName,
-      lastName: profileUser.lastName,
-      phoneNumber: profileUser.phoneNumber,
-    });
-    setAddressData(profileAddress);
-    resetPasswordFields();
-    setPasswordMessage("");
-    setPasswordError("");
-    setIsPasswordModalOpen(false);
+    closePasswordModal();
+    setProfileFormData(profileUser);
+    setProfileError("");
     setIsEditMode(false);
+  };
+
+  const handleSaveProfile = async () => {
+    setProfileError("");
+
+    if (
+      !profileFormData.fullName ||
+      !profileFormData.userName ||
+      !profileFormData.phoneNumber ||
+      !profileFormData.address
+    ) {
+      setProfileError("All profile fields are required.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+      const userId = storedUser?.id || profileUser.id;
+
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "x-user-id": userId ? String(userId) : "",
+        },
+        body: JSON.stringify({
+          fullName: profileFormData.fullName,
+          userName: profileFormData.userName,
+          phoneNumber: profileFormData.phoneNumber,
+          address: profileFormData.address,
+        }),
+      });
+
+      const data = await parseJsonResponse(response);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update profile");
+      }
+
+      const updatedUser = {
+        id: data.user?.id || null,
+        fullName: data.user?.fullName || "",
+        userName: data.user?.userName || "",
+        phoneNumber: data.user?.phoneNumber || "",
+        address: data.user?.address || "",
+      };
+
+      setProfileUser(updatedUser);
+      setProfileFormData(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setIsEditMode(false);
+      window.alert("Profile updated successfully");
+    } catch (err) {
+      setProfileError(err.message || "Failed to update profile.");
+    }
   };
 
   const handleLogout = () => {
@@ -356,7 +324,7 @@ const ProfilePage = () => {
       <div className="profile-page">
         <div className="profile-header">
           <button className="back-btn" onClick={handleBackToDashboard}>
-            ← Back
+            Back
           </button>
           <h1 className="profile-title">My Profile</h1>
         </div>
@@ -372,7 +340,7 @@ const ProfilePage = () => {
       <div className="profile-page">
         <div className="profile-header">
           <button className="back-btn" onClick={handleBackToDashboard}>
-            ← Back
+            Back
           </button>
           <h1 className="profile-title">My Profile</h1>
         </div>
@@ -385,10 +353,9 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
-      {/* Profile Header */}
       <div className="profile-header">
         <button className="back-btn" onClick={handleBackToDashboard}>
-          ← Back
+          Back
         </button>
         <h1 className="profile-title">My Profile</h1>
         <div className="header-actions">
@@ -397,7 +364,7 @@ const ProfilePage = () => {
               className="edit-profile-btn"
               onClick={() => setIsEditMode(true)}
             >
-              ✏️ Edit Profile
+              Edit Profile
             </button>
           )}
           <button className="logout-btn" onClick={handleLogout}>
@@ -407,97 +374,48 @@ const ProfilePage = () => {
       </div>
 
       <div className="profile-container">
-        {/* Profile Card */}
         <div className="profile-card">
           <div className="profile-photo-section">
-            <img
-              src={profileUser.profilePhoto}
-              alt="Profile"
-              className="profile-photo"
-            />
-            <p className="user-name">
-              {profileUser.firstName} {profileUser.lastName}
-            </p>
-            {(profileUser.userType === "provider" ||
-              profileUser.userType === "both") && (
-              <span className="user-badge provider-badge">Provider</span>
-            )}
-            {(profileUser.userType === "client" ||
-              profileUser.userType === "both") && (
-              <span className="user-badge client-badge">Client</span>
-            )}
+            <p className="user-name">{profileUser.fullName}</p>
+            <span className="user-badge client-badge">User</span>
           </div>
-
-          {profileUser.userType === "provider" ||
-          profileUser.userType === "both" ? (
-            <div className="provider-stats">
-              <div className="stat-item">
-                <p className="stat-label">Rating</p>
-                <p className="stat-value">⭐ {providerProfile.averageRating}</p>
-              </div>
-              <div className="stat-item">
-                <p className="stat-label">Reviews</p>
-                <p className="stat-value">{providerProfile.totalReviews}</p>
-              </div>
-              <div className="stat-item">
-                <p className="stat-label">Services</p>
-                <p className="stat-value">{providerProfile.servicesCount}</p>
-              </div>
-            </div>
-          ) : null}
         </div>
 
-        {/* Main Content */}
         <div className="profile-content">
-          {/* Personal Information Section */}
           <section className="profile-section">
             <div className="section-header">
-              <h2 className="section-title">Personal Information</h2>
+              <h2 className="section-title">Account Information</h2>
             </div>
 
             <div className="form-grid">
               <div className="form-group">
-                <label htmlFor="firstName" className="form-label">
-                  First Name
+                <label htmlFor="fullName" className="form-label">
+                  Full Name
                 </label>
                 <input
                   type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
+                  id="fullName"
+                  name="fullName"
+                  value={profileFormData.fullName}
+                  onChange={handleProfileChange}
                   disabled={!isEditMode}
                   className="form-input"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="lastName" className="form-label">
-                  Last Name
+                <label htmlFor="userName" className="form-label">
+                  Username
                 </label>
                 <input
                   type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
+                  id="userName"
+                  name="userName"
+                  value={profileFormData.userName}
+                  onChange={handleProfileChange}
                   disabled={!isEditMode}
                   className="form-input"
                 />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">
-                  Password
-                </label>
-                <button
-                  type="button"
-                  className="change-password-btn"
-                  onClick={openPasswordModal}
-                  disabled={!isEditMode}
-                >
-                  Change Password
-                </button>
               </div>
 
               <div className="form-group">
@@ -508,172 +426,50 @@ const ProfilePage = () => {
                   type="tel"
                   id="phoneNumber"
                   name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
+                  value={profileFormData.phoneNumber}
+                  onChange={handleProfileChange}
                   disabled={!isEditMode}
                   className="form-input"
                 />
               </div>
-            </div>
-            {passwordMessage && <p style={{ color: "green" }}>{passwordMessage}</p>}
-          </section>
 
-          {/* Address Section */}
-          <section className="profile-section">
-            <div className="section-header">
-              <h2 className="section-title">Address Information</h2>
-            </div>
-
-            <div className="form-grid">
               <div className="form-group">
-                <label htmlFor="addressLabel" className="form-label">
-                  Address Label
-                </label>
-                <input
-                  type="text"
-                  id="addressLabel"
-                  name="label"
-                  value={addressData.label}
-                  onChange={handleAddressChange}
+                <label className="form-label">Password</label>
+                <button
+                  type="button"
+                  className="change-password-btn"
+                  onClick={openPasswordModal}
                   disabled={!isEditMode}
-                  className="form-input"
-                />
+                >
+                  Change Password
+                </button>
               </div>
 
               <div className="form-group full-width">
-                <label htmlFor="line1" className="form-label">
-                  Street Address
+                <label htmlFor="address" className="form-label">
+                  Address
                 </label>
                 <input
                   type="text"
-                  id="line1"
-                  name="line1"
-                  value={addressData.line1}
-                  onChange={handleAddressChange}
-                  disabled={!isEditMode}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group full-width">
-                <label htmlFor="line2" className="form-label">
-                  Apartment / Suite (Optional)
-                </label>
-                <input
-                  type="text"
-                  id="line2"
-                  name="line2"
-                  value={addressData.line2}
-                  onChange={handleAddressChange}
-                  disabled={!isEditMode}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="barangay" className="form-label">
-                  Barangay
-                </label>
-                <input
-                  type="text"
-                  id="barangay"
-                  name="barangay"
-                  value={addressData.barangay}
-                  onChange={handleAddressChange}
-                  disabled={!isEditMode}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="city" className="form-label">
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={addressData.city}
-                  onChange={handleAddressChange}
-                  disabled={!isEditMode}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="province" className="form-label">
-                  Province
-                </label>
-                <input
-                  type="text"
-                  id="province"
-                  name="province"
-                  value={addressData.province}
-                  onChange={handleAddressChange}
-                  disabled={!isEditMode}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="postalCode" className="form-label">
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  id="postalCode"
-                  name="postalCode"
-                  value={addressData.postalCode}
-                  onChange={handleAddressChange}
+                  id="address"
+                  name="address"
+                  value={profileFormData.address}
+                  onChange={handleProfileChange}
                   disabled={!isEditMode}
                   className="form-input"
                 />
               </div>
             </div>
+            {profileError && <p style={{ color: "red" }}>{profileError}</p>}
           </section>
 
-          {/* Provider Profile Section (if applicable) */}
-          {profileUser.userType === "provider" ||
-          profileUser.userType === "both" ? (
-            <section className="profile-section">
-              <div className="section-header">
-                <h2 className="section-title">Provider Information</h2>
-              </div>
-
-              <div className="provider-info">
-                <div className="info-item">
-                  <p className="info-label">Display Name</p>
-                  <p className="info-value">{providerProfile.displayName}</p>
-                </div>
-
-                <div className="info-item">
-                  <p className="info-label">Bio</p>
-                  <p className="info-value">{providerProfile.bio}</p>
-                </div>
-
-                <div className="info-item">
-                  <p className="info-label">Verification Status</p>
-                  <p className="info-value">
-                    <span
-                      className={`status-badge ${providerProfile.verificationStatus}`}
-                    >
-                      {providerProfile.verificationStatus.charAt(0).toUpperCase() +
-                        providerProfile.verificationStatus.slice(1)}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </section>
-          ) : null}
-
-          {/* Action Buttons */}
           {isEditMode && (
             <div className="form-actions">
-              <button className="btn-save" onClick={handleSave}>
-                💾 Save Changes
+              <button className="btn-save" onClick={handleSaveProfile}>
+                Save Changes
               </button>
               <button className="btn-cancel" onClick={handleCancel}>
-                ✕ Cancel
+                Cancel
               </button>
             </div>
           )}
@@ -691,7 +487,7 @@ const ProfilePage = () => {
                 onClick={closePasswordModal}
                 aria-label="Close password prompt"
               >
-                ×
+                x
               </button>
             </div>
 
@@ -763,7 +559,11 @@ const ProfilePage = () => {
               )}
 
               <div className="password-modal-actions">
-                <button type="button" className="btn-cancel" onClick={closePasswordModal}>
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={closePasswordModal}
+                >
                   Cancel
                 </button>
                 <button type="submit" className="btn-save">

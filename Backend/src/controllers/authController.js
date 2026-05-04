@@ -2,9 +2,11 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import { registerUserService, loginUserService } from "../services/authService.js";
 import {
+  findOtherUserByUsername,
   findUserPasswordById,
   findUserProfileById,
   updateUserPasswordById,
+  updateUserProfileById,
 } from "../models/userModel.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -119,6 +121,55 @@ export const getCurrentUserProfile = async (req, res) => {
     }
 
     res.status(500).json({ message: "Failed to load profile" });
+  }
+};
+
+export const updateCurrentUserProfile = async (req, res) => {
+  try {
+    const userId = getAuthenticatedUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Missing authorization token" });
+    }
+
+    const { fullName, userName, phoneNumber, address } = req.body;
+
+    if (!fullName || !userName || !phoneNumber || !address) {
+      return res.status(400).json({ message: "All profile fields are required" });
+    }
+
+    const existingUser = await findOtherUserByUsername(userName, userId);
+
+    if (existingUser) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+
+    await updateUserProfileById(userId, {
+      fullName,
+      userName,
+      phoneNumber,
+      address,
+    });
+
+    const updatedUser = await findUserProfileById(userId);
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        id: updatedUser.id,
+        fullName: updatedUser.full_name,
+        userName: updatedUser.user_name,
+        phoneNumber: updatedUser.phone_number,
+        address: updatedUser.address_text,
+        createdAt: updatedUser.created_at,
+      },
+    });
+  } catch (err) {
+    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
+    res.status(500).json({ message: "Failed to update profile" });
   }
 };
 
