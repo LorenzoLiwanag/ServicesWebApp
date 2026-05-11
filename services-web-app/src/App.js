@@ -8,11 +8,20 @@ import ProviderDashboard from './pages/ProviderDashboard.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
 import MessagesPage from './pages/MessagesPage.jsx';
+import AdminPage from './pages/AdminPage.jsx';
+import AdminMessagesPage from './pages/AdminMessagesPage.jsx';
 import { getStoredAuthSession } from './utils/auth.js';
 
 const RequireAuth = ({ children }) => {
   const authSession = getStoredAuthSession();
   return authSession ? children : <Navigate to="/login" replace />;
+};
+
+const RequireRole = ({ children, role }) => {
+  const authSession = getStoredAuthSession();
+  if (!authSession) return <Navigate to="/login" replace />;
+  if (authSession.user?.role !== role) return <Navigate to="/client-dashboard" replace />;
+  return children;
 };
 
 function App() {
@@ -60,6 +69,22 @@ function App() {
             <RequireAuth>
               <MessagesPage />
             </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RequireRole role="admin">
+              <AdminPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/messages"
+          element={
+            <RequireRole role="admin">
+              <AdminMessagesPage />
+            </RequireRole>
           }
         />
       </Routes>
