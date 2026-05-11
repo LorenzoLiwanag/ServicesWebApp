@@ -1,6 +1,6 @@
-// DashboardServiceSection.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ContactModal from "../messaging/ContactModal";
 import "../../styles/dashboard/dashboardServicesSection.css";
 
 const DashboardServiceSection = () => {
@@ -8,6 +8,7 @@ const DashboardServiceSection = () => {
   const [featuredServices, setFeaturedServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [modal, setModal] = useState(null); // { recipientId, serviceId }
 
   useEffect(() => {
     const fetchFeaturedServices = async () => {
@@ -81,7 +82,10 @@ const DashboardServiceSection = () => {
             <div className="service-buttons">
               <button
                 className="btn-contact"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setModal({ recipientId: service.providerId, serviceId: service.providerServiceId });
+                }}
               >
                 Contact
               </button>
@@ -98,6 +102,12 @@ const DashboardServiceSection = () => {
           </div>
         ))}
       </div>
+      <ContactModal
+        isOpen={modal !== null}
+        onClose={() => setModal(null)}
+        recipientId={modal?.recipientId}
+        serviceId={modal?.serviceId}
+      />
     </div>
   );
 };

@@ -6,6 +6,7 @@ export const getBrowseServices = async () => {
       ps.provider_service_id AS providerServiceId,
       s.name AS serviceName,
       sc.name AS categoryName,
+      pp.provider_id AS providerId,
       pp.display_name AS providerName,
       ps.pricing_type AS pricingType,
       ps.rate_amount AS rateAmount,

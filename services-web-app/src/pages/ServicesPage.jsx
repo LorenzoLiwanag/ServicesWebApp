@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import ServicesSearchBar from "../components/services/ServicesSearchBar";
 import ServicesSortBar from "../components/services/ServicesSortBar";
+import ContactModal from "../components/messaging/ContactModal";
 import "../styles/services/servicesPage.css";
 
 const ServicesPage = () => {
@@ -12,6 +13,7 @@ const ServicesPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [modal, setModal] = useState(null); // { recipientId, serviceId }
   const [sortBy, setSortBy] = useState("recommended");
   const [filters, setFilters] = useState({
     searchText: "",
@@ -244,7 +246,13 @@ const ServicesPage = () => {
                     >
                       Book Now
                     </button>
-                    <button className="btn-contact" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      className="btn-contact"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setModal({ recipientId: service.providerId, serviceId: service.providerServiceId });
+                      }}
+                    >
                       Contact
                     </button>
                   </div>
@@ -289,6 +297,13 @@ const ServicesPage = () => {
           </div>
         )}
       </div>
+
+      <ContactModal
+        isOpen={modal !== null}
+        onClose={() => setModal(null)}
+        recipientId={modal?.recipientId}
+        serviceId={modal?.serviceId}
+      />
     </div>
   );
 };
