@@ -2,11 +2,12 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import LandingPage from './pages/Landingpage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import RegistrationPage from './pages/RegistrationPage.jsx';  
+import RegistrationPage from './pages/RegistrationPage.jsx';
 import ClientDashboard from './pages/ClientDashboardPage.jsx';
 import ProviderDashboard from './pages/ProviderDashboard.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
+import MessagesPage from './pages/MessagesPage.jsx';
 import { getStoredAuthSession } from './utils/auth.js';
 
 const RequireAuth = ({ children }) => {
@@ -50,6 +51,14 @@ function App() {
           element={
             <RequireAuth>
               <ServicesPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/messages"
+          element={
+            <RequireAuth>
+              <MessagesPage />
             </RequireAuth>
           }
         />
