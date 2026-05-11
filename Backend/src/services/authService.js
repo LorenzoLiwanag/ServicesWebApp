@@ -59,6 +59,7 @@ export const loginUserService = async (userData) => {
     fullName: user.full_name,
     userName: user.user_name,
     phoneNumber: user.phone_number,
-    address: user.address_text
+    address: user.address_text,
+    role: user.role ?? "client",
   };
 };

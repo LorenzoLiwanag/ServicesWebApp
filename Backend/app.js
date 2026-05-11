@@ -4,6 +4,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import serviceRoutes from "./src/routes/serviceRoutes.js";
 import providerRoutes from "./src/routes/providerRoutes.js";
 import messageRoutes from "./src/routes/messageRoutes.js";
+import contactRoutes from "./src/routes/contactRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -17,5 +18,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/provider", providerRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api", contactRoutes);
 
 export default app;

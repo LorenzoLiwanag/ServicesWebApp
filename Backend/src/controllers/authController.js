@@ -12,11 +12,12 @@ import {
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 const formatUser = (user) => ({
-  id: user.userId,                 // 🔥 FIX
+  id: user.userId,
   fullName: user.fullName,
   userName: user.userName,
   phoneNumber: user.phoneNumber,
-  address: user.address
+  address: user.address,
+  role: user.role ?? "client",
 });
 
 const getAuthenticatedUserId = (req) => {
@@ -41,7 +42,7 @@ export const registerUser = async (req, res) => {
     const user = await registerUserService(req.body);
 
     const token = jwt.sign(
-      { userId: user.userId, fullName: user.fullName },
+      { userId: user.userId, fullName: user.fullName, role: user.role ?? "client" },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -63,7 +64,7 @@ export const loginUser = async (req, res) => {
     const user = await loginUserService(req.body);
 
     const token = jwt.sign(
-      { userId: user.userId, fullName: user.fullName },
+      { userId: user.userId, fullName: user.fullName, role: user.role ?? "client" },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
