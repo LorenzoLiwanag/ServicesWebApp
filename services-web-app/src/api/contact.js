@@ -1,12 +1,20 @@
 const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 
+const parseJSON = async (res) => {
+  try {
+    return await res.json();
+  } catch {
+    throw new Error(res.ok ? "Unexpected server response" : `Server error ${res.status}`);
+  }
+};
+
 export const submitContact = async ({ name, email, message }) => {
   const res = await fetch(`${API}/api/contact`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, message }),
   });
-  const data = await res.json();
+  const data = await parseJSON(res);
   if (!res.ok) throw new Error(data.message || "Failed to send message");
   return data;
 };
@@ -17,7 +25,7 @@ export const getContactSubmissions = async (token, status) => {
   const res = await fetch(url.toString(), {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const data = await res.json();
+  const data = await parseJSON(res);
   if (!res.ok) throw new Error(data.message || "Failed to load submissions");
   return data;
 };
@@ -31,7 +39,7 @@ export const updateContactSubmission = async (token, id, status) => {
     },
     body: JSON.stringify({ status }),
   });
-  const data = await res.json();
+  const data = await parseJSON(res);
   if (!res.ok) throw new Error(data.message || "Failed to update submission");
   return data;
 };
