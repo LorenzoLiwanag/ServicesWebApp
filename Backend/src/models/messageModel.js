@@ -1,106 +1,114 @@
 import db from "../config/Database.js";
 
-// Returns the thread_id for the (sender, recipient, context) pair, creating it if needed.
-// participant_a is always LEAST(a,b) so the UNIQUE KEY on the table fires correctly.
-export const findOrCreateThread = async (senderId, recipientId, serviceId, bookingId) => {
-  const a = Math.min(senderId, recipientId);
-  const b = Math.max(senderId, recipientId);
-  const svc = serviceId ?? null;
-  const bkg = bookingId ?? null;
-
+export const findOrCreateConversation = async (clientId, providerId, providerServiceId) => {
   const [existing] = await db.execute(
-    `SELECT thread_id FROM message_thread
-     WHERE participant_a = ? AND participant_b = ?
-       AND (service_id <=> ?) AND (booking_id <=> ?)
+    `SELECT id FROM conversation
+     WHERE client_id = ? AND provider_id = ? AND (provider_service_id <=> ?)
      LIMIT 1`,
-    [a, b, svc, bkg]
+    [clientId, providerId, providerServiceId ?? null]
   );
 
-  if (existing.length > 0) return existing[0].thread_id;
+  if (existing.length > 0) return existing[0].id;
 
   const [result] = await db.execute(
-    `INSERT INTO message_thread (participant_a, participant_b, service_id, booking_id)
-     VALUES (?, ?, ?, ?)`,
-    [a, b, svc, bkg]
+    `INSERT INTO conversation (client_id, provider_id, provider_service_id)
+     VALUES (?, ?, ?)`,
+    [clientId, providerId, providerServiceId ?? null]
   );
   return result.insertId;
 };
 
-export const insertMessage = async (threadId, senderId, body) => {
+export const insertMessage = async (conversationId, senderId, body) => {
   const [result] = await db.execute(
-    `INSERT INTO message (thread_id, sender_id, body) VALUES (?, ?, ?)`,
-    [threadId, senderId, body]
+    `INSERT INTO message (conversation_id, sender_id, body) VALUES (?, ?, ?)`,
+    [conversationId, senderId, body]
   );
   return result.insertId;
 };
 
-export const insertNotification = async (userId, type, payload) => {
-  await db.execute(
-    `INSERT INTO notification (user_id, type, payload) VALUES (?, ?, ?)`,
-    [userId, type, JSON.stringify(payload)]
-  );
-};
-
-export const getThreadsForUser = async (userId) => {
+export const getConversationsForUser = async (userId) => {
   const [rows] = await db.execute(
     `SELECT
-       mt.thread_id    AS threadId,
-       mt.service_id   AS serviceId,
-       mt.booking_id   AS bookingId,
-       m.body          AS lastMessage,
-       m.created_at    AS lastMessageAt,
-       m.sender_id     AS lastSenderId,
-       u.full_name     AS otherUserName,
-       u.id            AS otherUserId
-     FROM message_thread mt
-     JOIN message m
-       ON m.message_id = (
-         SELECT message_id FROM message
-         WHERE thread_id = mt.thread_id
-         ORDER BY created_at DESC
-         LIMIT 1
-       )
-     JOIN users u
-       ON u.id = IF(mt.participant_a = ?, mt.participant_b, mt.participant_a)
-     WHERE mt.participant_a = ? OR mt.participant_b = ?
-     ORDER BY m.created_at DESC`,
-    [userId, userId, userId]
+       c.id                                                          AS conversationId,
+       c.client_id                                                   AS clientId,
+       c.provider_id                                                 AS providerId,
+       c.provider_service_id                                         AS providerServiceId,
+       c.updated_at                                                  AS updatedAt,
+       ps.title                                                      AS serviceTitle,
+       IF(c.client_id = ?, c.provider_id, c.client_id)              AS otherUserId,
+       CONCAT(ou.first_name, ' ', ou.last_name)                     AS otherUserName,
+       lm.body                                                       AS lastMessage,
+       lm.created_at                                                 AS lastMessageAt,
+       lm.sender_id                                                  AS lastSenderId,
+       (SELECT COUNT(*) FROM message
+        WHERE conversation_id = c.id
+          AND sender_id != ?
+          AND is_read = FALSE)                                        AS unreadCount
+     FROM conversation c
+     JOIN users ou ON ou.id = IF(c.client_id = ?, c.provider_id, c.client_id)
+     LEFT JOIN provider_service ps ON ps.id = c.provider_service_id
+     LEFT JOIN message lm ON lm.id = (
+       SELECT id FROM message
+       WHERE conversation_id = c.id
+       ORDER BY created_at DESC
+       LIMIT 1
+     )
+     WHERE c.client_id = ? OR c.provider_id = ?
+     ORDER BY COALESCE(lm.created_at, c.created_at) DESC`,
+    [userId, userId, userId, userId, userId]
   );
   return rows;
 };
 
-// Returns null if the user is not a participant in the thread.
-export const getThreadMessages = async (threadId, userId) => {
-  const [threads] = await db.execute(
-    `SELECT thread_id, participant_a, participant_b
-     FROM message_thread
-     WHERE thread_id = ? AND (participant_a = ? OR participant_b = ?)`,
-    [threadId, userId, userId]
-  );
-  if (threads.length === 0) return null;
-
-  const [messages] = await db.execute(
+export const getConversationById = async (conversationId) => {
+  const [rows] = await db.execute(
     `SELECT
-       m.message_id  AS messageId,
-       m.sender_id   AS senderId,
-       m.body,
-       m.is_read     AS isRead,
-       m.created_at  AS createdAt,
-       u.full_name   AS senderName
-     FROM message m
-     JOIN users u ON u.id = m.sender_id
-     WHERE m.thread_id = ?
-     ORDER BY m.created_at ASC`,
-    [threadId]
+       c.id                AS id,
+       c.client_id         AS clientId,
+       c.provider_id       AS providerId,
+       c.provider_service_id AS providerServiceId,
+       ps.title            AS serviceTitle,
+       CONCAT(cu.first_name, ' ', cu.last_name) AS clientName,
+       CONCAT(pu.first_name, ' ', pu.last_name) AS providerName
+     FROM conversation c
+     JOIN users cu ON cu.id = c.client_id
+     JOIN users pu ON pu.id = c.provider_id
+     LEFT JOIN provider_service ps ON ps.id = c.provider_service_id
+     WHERE c.id = ?`,
+    [conversationId]
   );
-
-  return { thread: threads[0], messages };
+  return rows[0] ?? null;
 };
 
-export const markThreadRead = async (threadId, userId) => {
+export const getMessagesForConversation = async (conversationId) => {
+  const [rows] = await db.execute(
+    `SELECT
+       m.id           AS messageId,
+       m.sender_id    AS senderId,
+       m.body,
+       m.is_read      AS isRead,
+       m.created_at   AS createdAt,
+       CONCAT(u.first_name, ' ', u.last_name) AS senderName
+     FROM message m
+     JOIN users u ON u.id = m.sender_id
+     WHERE m.conversation_id = ?
+     ORDER BY m.created_at ASC`,
+    [conversationId]
+  );
+  return rows.map((r) => ({ ...r, isRead: Boolean(r.isRead) }));
+};
+
+export const markConversationRead = async (conversationId, userId) => {
   await db.execute(
-    `UPDATE message SET is_read = 1
-     WHERE thread_id = ? AND sender_id != ?`,
-    [threadId, userId]
+    `UPDATE message SET is_read = TRUE
+     WHERE conversation_id = ? AND sender_id != ? AND is_read = FALSE`,
+    [conversationId, userId]
+  );
+};
+
+export const touchConversation = async (conversationId) => {
+  await db.execute(
+    `UPDATE conversation SET updated_at = NOW() WHERE id = ?`,
+    [conversationId]
   );
 };

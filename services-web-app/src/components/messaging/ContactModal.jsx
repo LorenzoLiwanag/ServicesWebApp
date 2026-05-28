@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStoredAuthSession } from "../../utils/auth.js";
+import { startConversation } from "../../api/conversations.js";
 import "../../styles/messaging/contactModal.css";
 
-const ContactModal = ({ isOpen, onClose, recipientId, serviceId, bookingId }) => {
+const ContactModal = ({ isOpen, onClose, serviceId }) => {
   const navigate = useNavigate();
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
-  const [toast, setToast] = useState(null); // { type: 'success'|'error', message, threadId? }
+  const [toast, setToast] = useState(null);
 
   if (!isOpen) return null;
 
@@ -24,26 +25,11 @@ const ContactModal = ({ isOpen, onClose, recipientId, serviceId, bookingId }) =>
     setToast(null);
 
     try {
-      const res = await fetch("http://localhost:3000/api/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.token}`,
-        },
-        body: JSON.stringify({ recipientId, body: body.trim(), serviceId, bookingId }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setToast({ type: "error", message: data.message || "Failed to send message" });
-        return;
-      }
-
+      const data = await startConversation(session.token, serviceId, body.trim());
       setBody("");
-      setToast({ type: "success", message: "Message sent!", threadId: data.threadId });
-    } catch {
-      setToast({ type: "error", message: "Network error. Please try again." });
+      setToast({ type: "success", message: "Message sent successfully.", conversationId: data.conversationId });
+    } catch (err) {
+      setToast({ type: "error", message: err.message || "Unable to send message. Please try again." });
     } finally {
       setSending(false);
     }
@@ -59,7 +45,7 @@ const ContactModal = ({ isOpen, onClose, recipientId, serviceId, bookingId }) =>
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2 className="modal-title">Send a message</h2>
+          <h2 className="modal-title">Contact Provider</h2>
           <button className="modal-close" onClick={handleClose} aria-label="Close">
             ×
           </button>
@@ -68,12 +54,12 @@ const ContactModal = ({ isOpen, onClose, recipientId, serviceId, bookingId }) =>
         {toast && (
           <div className={`modal-toast ${toast.type}`}>
             <span>{toast.message}</span>
-            {toast.type === "success" && toast.threadId && (
+            {toast.type === "success" && toast.conversationId && (
               <button
                 className="modal-toast-link"
                 onClick={() => {
                   handleClose();
-                  navigate(`/messages?thread=${toast.threadId}`);
+                  navigate(`/messages?conversation=${toast.conversationId}`);
                 }}
               >
                 View conversation →

@@ -4,6 +4,8 @@ import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import ServicesSearchBar from "../components/services/ServicesSearchBar";
 import ServicesSortBar from "../components/services/ServicesSortBar";
 import ContactModal from "../components/messaging/ContactModal";
+import BookModal from "../components/booking/BookModal";
+import { fetchBrowseServices } from "../api/services.js";
 import "../styles/services/servicesPage.css";
 
 const ServicesPage = () => {
@@ -13,7 +15,9 @@ const ServicesPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [modal, setModal] = useState(null); // { recipientId, serviceId }
+  const [contactModal, setContactModal] = useState(null); // { recipientId, serviceId }
+  const [bookModal, setBookModal] = useState(null); // service object
+  const [successToast, setSuccessToast] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
   const [filters, setFilters] = useState({
     searchText: "",
@@ -26,24 +30,10 @@ const ServicesPage = () => {
   const [itemsToShow, setItemsToShow] = useState(12);
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/services/browse");
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch services");
-        }
-
-        setProviderServices(data.services || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchServices();
+    fetchBrowseServices()
+      .then(setProviderServices)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, []);
 
   const categories = Array.from(
@@ -57,8 +47,8 @@ const ServicesPage = () => {
         const matchesSearch =
           service.serviceName.toLowerCase().includes(searchLower) ||
           service.providerName.toLowerCase().includes(searchLower) ||
-          service.categoryName.toLowerCase().includes(searchLower);
-
+          (service.categoryName || "").toLowerCase().includes(searchLower) ||
+          (service.description || "").toLowerCase().includes(searchLower);
         if (!matchesSearch) return false;
       }
 
@@ -78,7 +68,6 @@ const ServicesPage = () => {
 
         if (service.pricingType !== "quote") {
           const [min, max] = filters.priceRange.split("-").map(Number);
-
           if (max && service.rateAmount > max) return false;
           if (service.rateAmount < min) return false;
         }
@@ -131,10 +120,6 @@ const ServicesPage = () => {
 
   const displayedServices = sortedServices.slice(0, itemsToShow);
 
-  const handleServiceClick = (providerServiceId) => {
-    navigate(`/service/${providerServiceId}`);
-  };
-
   const handleLoadMore = () => {
     setItemsToShow((prev) => prev + 6);
   };
@@ -142,6 +127,11 @@ const ServicesPage = () => {
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
     setItemsToShow(12);
+  };
+
+  const handleBookSuccess = () => {
+    setSuccessToast(true);
+    setTimeout(() => setSuccessToast(false), 4000);
   };
 
   if (loading) {
@@ -170,6 +160,17 @@ const ServicesPage = () => {
     <div className="services-page">
       <DashboardNavbar />
 
+      {successToast && (
+        <div style={{
+          position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
+          background: "linear-gradient(135deg, #0d6efd, #60a5fa)", color: "#fff",
+          padding: "12px 24px", borderRadius: 12, fontWeight: 700, fontSize: 14,
+          zIndex: 2000, boxShadow: "0 8px 24px rgba(13,110,253,0.3)", whiteSpace: "nowrap"
+        }} role="status">
+          Booking request sent! The provider will respond shortly.
+        </div>
+      )}
+
       <div className="services-page-header">
         <div className="header-content">
           <h1 className="page-title">Browse Services</h1>
@@ -196,7 +197,7 @@ const ServicesPage = () => {
                 <div
                   key={service.providerServiceId}
                   className="service-card"
-                  onClick={() => handleServiceClick(service.providerServiceId)}
+                  onClick={() => navigate(`/service/${service.providerServiceId}`)}
                 >
                   <div className="card-header">
                     <h3 className="card-title">{service.serviceName}</h3>
@@ -204,7 +205,7 @@ const ServicesPage = () => {
                   </div>
 
                   <p className="card-provider">{service.providerName}</p>
-                  <p className="card-description">{service.bio}</p>
+                  <p className="card-description">{service.description}</p>
 
                   <div className="card-stats">
                     <div className="stat">
@@ -241,7 +242,7 @@ const ServicesPage = () => {
                       className="btn-book-now"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleServiceClick(service.providerServiceId);
+                        setBookModal(service);
                       }}
                     >
                       Book Now
@@ -250,7 +251,7 @@ const ServicesPage = () => {
                       className="btn-contact"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setModal({ recipientId: service.providerId, serviceId: service.providerServiceId });
+                        setContactModal({ serviceId: service.providerServiceId });
                       }}
                     >
                       Contact
@@ -299,10 +300,16 @@ const ServicesPage = () => {
       </div>
 
       <ContactModal
-        isOpen={modal !== null}
-        onClose={() => setModal(null)}
-        recipientId={modal?.recipientId}
-        serviceId={modal?.serviceId}
+        isOpen={contactModal !== null}
+        onClose={() => setContactModal(null)}
+        serviceId={contactModal?.serviceId}
+      />
+
+      <BookModal
+        isOpen={bookModal !== null}
+        onClose={() => setBookModal(null)}
+        service={bookModal}
+        onSuccess={handleBookSuccess}
       />
     </div>
   );

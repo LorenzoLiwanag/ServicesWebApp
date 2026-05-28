@@ -129,6 +129,45 @@
   color: #64748b;
 }
 
+.contact-banner {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.contact-banner--success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.contact-banner--error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.contact-field--error input,
+.contact-field--error textarea {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.contact-error-text {
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.contact-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 12px 30px rgba(13, 110, 253, 0.20);
+}
+
 @media (max-width: 950px) {
   .contact-modal {
     grid-template-columns: 1fr;

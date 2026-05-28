@@ -5,10 +5,36 @@ import { clearAuthSession } from "../utils/auth.js";
 
 const emptyUser = {
   id: null,
+  firstName: "",
+  lastName: "",
   fullName: "",
-  userName: "",
+  email: "",
   phoneNumber: "",
-  address: "",
+  role: "",
+  profilePhotoUrl: "",
+};
+
+const getFullName = (user) =>
+  user.fullName ||
+  [user.firstName, user.lastName].filter(Boolean).join(" ");
+
+const getProfileUser = (user = {}) => ({
+  id: user.id || null,
+  firstName: user.firstName || "",
+  lastName: user.lastName || "",
+  fullName: user.fullName || [user.firstName, user.lastName].filter(Boolean).join(" "),
+  email: user.email || "",
+  phoneNumber: user.phoneNumber || "",
+  role: user.role || "client",
+  profilePhotoUrl: user.profilePhotoUrl || "",
+});
+
+const splitFullName = (fullName) => {
+  const parts = fullName.trim().split(/\s+/);
+  const firstName = parts.shift() || "";
+  const lastName = parts.join(" ");
+
+  return { firstName, lastName };
 };
 
 const parseJsonResponse = async (response) => {
@@ -70,13 +96,7 @@ const ProfilePage = () => {
       }
 
       if (storedUser) {
-        const storedProfile = {
-          id: storedUser.id || null,
-          fullName: storedUser.fullName || "",
-          userName: storedUser.userName || "",
-          phoneNumber: storedUser.phoneNumber || "",
-          address: storedUser.address || "",
-        };
+        const storedProfile = getProfileUser(storedUser);
 
         setProfileUser(storedProfile);
         setProfileFormData(storedProfile);
@@ -96,13 +116,7 @@ const ProfilePage = () => {
           throw new Error(data.message || "Failed to load profile");
         }
 
-        const loadedUser = {
-          id: data.user?.id || null,
-          fullName: data.user?.fullName || "",
-          userName: data.user?.userName || "",
-          phoneNumber: data.user?.phoneNumber || "",
-          address: data.user?.address || "",
-        };
+        const loadedUser = getProfileUser(data.user);
 
         setProfileUser(loadedUser);
         setProfileFormData(loadedUser);
@@ -249,11 +263,16 @@ const ProfilePage = () => {
 
     if (
       !profileFormData.fullName ||
-      !profileFormData.userName ||
-      !profileFormData.phoneNumber ||
-      !profileFormData.address
+      !profileFormData.phoneNumber
     ) {
       setProfileError("All profile fields are required.");
+      return;
+    }
+
+    const { firstName, lastName } = splitFullName(profileFormData.fullName);
+
+    if (!firstName || !lastName) {
+      setProfileError("Enter both first and last name.");
       return;
     }
 
@@ -270,10 +289,9 @@ const ProfilePage = () => {
           "x-user-id": userId ? String(userId) : "",
         },
         body: JSON.stringify({
-          fullName: profileFormData.fullName,
-          userName: profileFormData.userName,
+          firstName,
+          lastName,
           phoneNumber: profileFormData.phoneNumber,
-          address: profileFormData.address,
         }),
       });
 
@@ -283,13 +301,10 @@ const ProfilePage = () => {
         throw new Error(data.message || "Failed to update profile");
       }
 
-      const updatedUser = {
-        id: data.user?.id || null,
-        fullName: data.user?.fullName || "",
-        userName: data.user?.userName || "",
-        phoneNumber: data.user?.phoneNumber || "",
-        address: data.user?.address || "",
-      };
+      const updatedUser = getProfileUser({
+        ...profileUser,
+        ...data.user,
+      });
 
       setProfileUser(updatedUser);
       setProfileFormData(updatedUser);
@@ -310,6 +325,11 @@ const ProfilePage = () => {
     navigate("/client-dashboard");
   };
 
+  const profileDisplayName =
+    getFullName(profileUser) ||
+    profileUser.email ||
+    "User";
+
   const handleForgotPassword = () => {
     setPasswordError("Forgot password reset is not available yet.");
   };
@@ -326,8 +346,8 @@ const ProfilePage = () => {
           <button className="back-btn" onClick={handleBackToDashboard}>
             Back
           </button>
-          <h1 className="profile-title">My Profile</h1>
         </div>
+        <h1 className="profile-title">My Profile</h1>
         <div className="profile-container">
           <div className="profile-content">Loading profile...</div>
         </div>
@@ -342,8 +362,8 @@ const ProfilePage = () => {
           <button className="back-btn" onClick={handleBackToDashboard}>
             Back
           </button>
-          <h1 className="profile-title">My Profile</h1>
         </div>
+        <h1 className="profile-title">My Profile</h1>
         <div className="profile-container">
           <div className="profile-content">{error}</div>
         </div>
@@ -357,7 +377,6 @@ const ProfilePage = () => {
         <button className="back-btn" onClick={handleBackToDashboard}>
           Back
         </button>
-        <h1 className="profile-title">My Profile</h1>
         <div className="header-actions">
           {!isEditMode && (
             <button
@@ -373,10 +392,15 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      <h1 className="profile-title">My Profile</h1>
+
       <div className="profile-container">
         <div className="profile-card">
           <div className="profile-photo-section">
-            <p className="user-name">{profileUser.fullName}</p>
+            <div className="profile-photo-placeholder" aria-hidden="true">
+              {profileDisplayName.charAt(0).toUpperCase()}
+            </div>
+            <p className="user-name">{profileDisplayName}</p>
             <span className="user-badge client-badge">User</span>
           </div>
         </div>
@@ -404,16 +428,15 @@ const ProfilePage = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="userName" className="form-label">
-                  Username
+                <label htmlFor="email" className="form-label">
+                  Email
                 </label>
                 <input
-                  type="text"
-                  id="userName"
-                  name="userName"
-                  value={profileFormData.userName}
-                  onChange={handleProfileChange}
-                  disabled={!isEditMode}
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={profileFormData.email}
+                  disabled
                   className="form-input"
                 />
               </div>
@@ -445,20 +468,6 @@ const ProfilePage = () => {
                 </button>
               </div>
 
-              <div className="form-group full-width">
-                <label htmlFor="address" className="form-label">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  value={profileFormData.address}
-                  onChange={handleProfileChange}
-                  disabled={!isEditMode}
-                  className="form-input"
-                />
-              </div>
             </div>
             {profileError && <p style={{ color: "red" }}>{profileError}</p>}
           </section>

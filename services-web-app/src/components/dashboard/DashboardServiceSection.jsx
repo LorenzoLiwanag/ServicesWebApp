@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ContactModal from "../messaging/ContactModal";
+import BookModal from "../booking/BookModal";
+import { fetchBrowseServices } from "../../api/services.js";
 import "../../styles/dashboard/dashboardServicesSection.css";
 
 const DashboardServiceSection = () => {
@@ -8,31 +10,20 @@ const DashboardServiceSection = () => {
   const [featuredServices, setFeaturedServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [modal, setModal] = useState(null); // { recipientId, serviceId }
+  const [contactModal, setContactModal] = useState(null); // { recipientId, serviceId }
+  const [bookModal, setBookModal] = useState(null); // service object
+  const [successToast, setSuccessToast] = useState(false);
 
   useEffect(() => {
-    const fetchFeaturedServices = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/services/browse");
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch featured services");
-        }
-
-        setFeaturedServices((data.services || []).slice(0, 6));
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFeaturedServices();
+    fetchBrowseServices()
+      .then((services) => setFeaturedServices(services.slice(0, 6)))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleServiceClick = (providerServiceId) => {
-    navigate(`/service/${providerServiceId}`);
+  const handleBookSuccess = () => {
+    setSuccessToast(true);
+    setTimeout(() => setSuccessToast(false), 4000);
   };
 
   if (loading) {
@@ -55,6 +46,17 @@ const DashboardServiceSection = () => {
 
   return (
     <div className="services-section">
+      {successToast && (
+        <div style={{
+          position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
+          background: "linear-gradient(135deg, #0d6efd, #60a5fa)", color: "#fff",
+          padding: "12px 24px", borderRadius: 12, fontWeight: 700, fontSize: 14,
+          zIndex: 2000, boxShadow: "0 8px 24px rgba(13,110,253,0.3)", whiteSpace: "nowrap"
+        }} role="status">
+          Booking request sent! The provider will respond shortly.
+        </div>
+      )}
+
       <h2 className="services-heading">Featured Services</h2>
 
       <div className="services-grid">
@@ -62,13 +64,13 @@ const DashboardServiceSection = () => {
           <div
             className="service-card"
             key={service.providerServiceId}
-            onClick={() => handleServiceClick(service.providerServiceId)}
+            onClick={() => navigate(`/service/${service.providerServiceId}`)}
           >
             <h3 className="service-title">{service.serviceName}</h3>
             <p className="service-provider">By: {service.providerName}</p>
-            <p className="service-desc">{service.bio}</p>
+            <p className="service-desc">{service.description}</p>
             <p className="service-rate">
-              Rating: {service.reviewCount > 0 ? `${service.avgRating}/5` : "New"}
+              Rating: {service.reviewCount > 0 ? `${service.avgRating.toFixed(1)}/5` : "New"}
             </p>
             <p className="service-price">
               Price:{" "}
@@ -84,7 +86,7 @@ const DashboardServiceSection = () => {
                 className="btn-contact"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setModal({ recipientId: service.providerId, serviceId: service.providerServiceId });
+                  setContactModal({ serviceId: service.providerServiceId });
                 }}
               >
                 Contact
@@ -93,7 +95,7 @@ const DashboardServiceSection = () => {
                 className="btn-book-now"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleServiceClick(service.providerServiceId);
+                  setBookModal(service);
                 }}
               >
                 Book Now
@@ -102,11 +104,18 @@ const DashboardServiceSection = () => {
           </div>
         ))}
       </div>
+
       <ContactModal
-        isOpen={modal !== null}
-        onClose={() => setModal(null)}
-        recipientId={modal?.recipientId}
-        serviceId={modal?.serviceId}
+        isOpen={contactModal !== null}
+        onClose={() => setContactModal(null)}
+        serviceId={contactModal?.serviceId}
+      />
+
+      <BookModal
+        isOpen={bookModal !== null}
+        onClose={() => setBookModal(null)}
+        service={bookModal}
+        onSuccess={handleBookSuccess}
       />
     </div>
   );

@@ -240,3 +240,52 @@
     max-height: 240px;
   }
 }
+
+.thread-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.thread-unread-badge {
+  background: #3b82f6;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  flex-shrink: 0;
+}
+
+.thread-service {
+  font-size: 11px;
+  color: #3b82f6;
+  font-weight: 500;
+  margin: 1px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conversation-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.conversation-header-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f2a44;
+}
+
+.conversation-header-service {
+  font-size: 12px;
+  color: #3b82f6;
+}

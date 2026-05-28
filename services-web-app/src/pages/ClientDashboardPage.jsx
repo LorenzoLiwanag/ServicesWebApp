@@ -10,14 +10,18 @@ const ClientDashboard = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    setUser(storedUser);
+    const storedUser = localStorage.getItem("user");
+    setUser(storedUser ? JSON.parse(storedUser) : null);
   }, []);
+
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ");
 
   return (
     <div>
       <DashboardNavbar />
-      {user ? `Welcome back, ${user.fullName}` : "Welcome"}
+      <h1 className="welcome-heading">
+        {fullName ? `Welcome back, ${fullName}` : "Welcome back"}
+      </h1>
       <DashboardSearch />
       <div className="dashboard-content-wrapper">
         <div className="dashboard-services-column">
