@@ -4,7 +4,7 @@ import { submitContact } from "../../api/contact.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const validate = ({ name, email, message }) => {
+const validate = ({ name, email, subject, message }) => {
   const errors = {};
   if (!name.trim()) errors.name = "Name is required.";
   if (!email.trim()) {
@@ -12,6 +12,7 @@ const validate = ({ name, email, message }) => {
   } else if (!EMAIL_RE.test(email)) {
     errors.email = "Enter a valid email address.";
   }
+  if (!subject.trim()) errors.subject = "Subject is required.";
   if (!message.trim()) {
     errors.message = "Message is required.";
   } else if (message.trim().length < 10) {
@@ -21,7 +22,7 @@ const validate = ({ name, email, message }) => {
 };
 
 const Contact = () => {
-  const [fields, setFields] = useState({ name: "", email: "", message: "" });
+  const [fields, setFields] = useState({ name: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -46,7 +47,7 @@ const Contact = () => {
     try {
       await submitContact(fields);
       setSuccessMsg("Message sent! We'll be in touch soon.");
-      setFields({ name: "", email: "", message: "" });
+      setFields({ name: "", email: "", subject: "", message: "" });
       setErrors({});
     } catch (err) {
       setErrorMsg(err.message || "Something went wrong. Please try again.");
@@ -109,6 +110,21 @@ const Contact = () => {
                   <span className="contact-error-text">{errors.email}</span>
                 )}
               </div>
+            </div>
+
+            <div className={`contact-field${errors.subject ? " contact-field--error" : ""}`}>
+              <label htmlFor="subject">Subject</label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                placeholder="What's this about?"
+                value={fields.subject}
+                onChange={handleChange}
+              />
+              {errors.subject && (
+                <span className="contact-error-text">{errors.subject}</span>
+              )}
             </div>
 
             <div className={`contact-field${errors.message ? " contact-field--error" : ""}`}>
