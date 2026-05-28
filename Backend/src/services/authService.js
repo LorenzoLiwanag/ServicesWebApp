@@ -1,11 +1,26 @@
 import bcrypt from "bcrypt";
 import { createUser, findUserByEmail } from "../models/userModel.js";
 
-export const registerUserService = async (userData) => {
-  const { firstName, lastName, email, phoneNumber, password } = userData;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
 
-  if (!firstName || !lastName || !email || !phoneNumber || !password) {
-    throw new Error("All fields are required");
+export const registerUserService = async (userData) => {
+  const { firstName, lastName, email, phoneNumber, password, confirmPassword } = userData;
+
+  if (!firstName || !lastName || !email || !password) {
+    throw new Error("First name, last name, email, and password are required");
+  }
+
+  if (!EMAIL_REGEX.test(email)) {
+    throw new Error("Invalid email format");
+  }
+
+  if (!PASSWORD_REGEX.test(password)) {
+    throw new Error("Password must be at least 8 characters and include at least one letter and one number");
+  }
+
+  if (confirmPassword !== undefined && password !== confirmPassword) {
+    throw new Error("Passwords do not match");
   }
 
   const existingUser = await findUserByEmail(email);
@@ -14,7 +29,7 @@ export const registerUserService = async (userData) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const result = await createUser({ firstName, lastName, email, phoneNumber, passwordHash });
+  const result = await createUser({ firstName, lastName, email, phoneNumber: phoneNumber || null, passwordHash });
 
   return {
     userId: result.insertId,

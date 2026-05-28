@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import LandingPage from './pages/Landingpage.jsx';
@@ -10,7 +11,7 @@ import ServicesPage from './pages/ServicesPage.jsx';
 import MessagesPage from './pages/MessagesPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import AdminMessagesPage from './pages/AdminMessagesPage.jsx';
-import { getStoredAuthSession } from './utils/auth.js';
+import { getStoredAuthSession, validateStoredSession } from './utils/auth.js';
 
 const RequireAuth = ({ children }) => {
   const authSession = getStoredAuthSession();
@@ -25,6 +26,10 @@ const RequireRole = ({ children, role }) => {
 };
 
 function App() {
+  useEffect(() => {
+    validateStoredSession();
+  }, []);
+
   return (
     <div className="App">
       <Routes>

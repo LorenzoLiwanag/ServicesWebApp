@@ -33,8 +33,14 @@ const run = async () => {
       const sql = readFileSync(join(migrationsDir, file), "utf8");
       const statements = sql
         .split(/;\s*\n/)
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0 && !s.startsWith("--"));
+        .map((s) =>
+          s
+            .split("\n")
+            .filter((line) => !line.trim().startsWith("--"))
+            .join("\n")
+            .trim()
+        )
+        .filter((s) => s.length > 0);
 
       for (const statement of statements) {
         await database.execute(statement);

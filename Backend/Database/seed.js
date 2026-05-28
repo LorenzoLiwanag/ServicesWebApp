@@ -37,7 +37,7 @@ const run = async () => {
         email: "carol@example.com",
         phone: "416-555-0103",
         password: "password123",
-        role: "client",
+        role: "provider",
       },
       {
         firstName: "Dan",
@@ -45,7 +45,7 @@ const run = async () => {
         email: "dan@example.com",
         phone: "416-555-0104",
         password: "password123",
-        role: "client",
+        role: "provider",
       },
       {
         firstName: "Admin",

@@ -154,6 +154,26 @@ export const verifyCurrentUserPassword = async (req, res) => {
   }
 };
 
+export const getMe = async (req, res) => {
+  try {
+    const profile = await findUserProfileById(req.userId);
+    if (!profile) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({
+      user: {
+        id: profile.id,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        email: profile.email,
+        phoneNumber: profile.phone_number,
+        role: profile.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load user" });
+  }
+};
+
 export const changeCurrentUserPassword = async (req, res) => {
   try {
     const userId = getUserIdFromRequest(req);

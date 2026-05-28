@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/registration/registration.css";
 
 const RegistrationForm = () => {
+  const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    userName: "",
+    firstName: "",
+    lastName: "",
+    email: "",
     phoneNumber: "",
-    address: "",
-    password: ""
+    password: "",
+    confirmPassword: ""
   });
 
   const handleChange = (e) => {
@@ -28,6 +31,13 @@ const RegistrationForm = () => {
     setMessage("");
     setError("");
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const response = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
@@ -42,18 +52,23 @@ const RegistrationForm = () => {
       if (!response.ok) {
         setError(data.message);
       } else {
-        setMessage("Account created successfully!");
-        setFormData({
-          fullName: "",
-          userName: "",
-          phoneNumber: "",
-          address: "",
-          password: ""
-        });
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+
+        const role = data.user?.role;
+        if (role === "admin") {
+          navigate("/admin");
+        } else if (role === "provider") {
+          navigate("/provider-mode");
+        } else {
+          navigate("/client-dashboard");
+        }
       }
 
     } catch (err) {
       setError("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,24 +86,36 @@ const RegistrationForm = () => {
         <div className="registration-right">
           <form className="registrationForm" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Full Name</label>
+              <label>First Name</label>
               <input
                 type="text"
-                name="fullName"
-                placeholder="Enter your first and last name"
-                value={formData.fullName}
+                name="firstName"
+                placeholder="Enter your first name"
+                value={formData.firstName}
                 onChange={handleChange}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label>Username</label>
+              <label>Last Name</label>
               <input
                 type="text"
-                name="userName"
-                placeholder="Choose a username"
-                value={formData.userName}
+                name="lastName"
+                placeholder="Enter your last name"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
@@ -102,19 +129,6 @@ const RegistrationForm = () => {
                 placeholder="Enter your phone number"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Address</label>
-              <input
-                type="text"
-                name="address"
-                placeholder="Enter your address"
-                value={formData.address}
-                onChange={handleChange}
-                required
               />
             </div>
 
@@ -130,11 +144,23 @@ const RegistrationForm = () => {
               />
             </div>
 
+            <div className="form-group">
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
             {message && <p style={{ color: "green" }}>{message}</p>}
             {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <button type="submit" className="submit-btn">
-              Register
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? "Creating account..." : "Register"}
             </button>
 
             <div className="login-links">

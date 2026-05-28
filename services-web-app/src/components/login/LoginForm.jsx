@@ -6,11 +6,12 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    userName: "",
+    email: "",
     password: ""
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -22,6 +23,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
@@ -37,16 +39,23 @@ const LoginForm = () => {
       if (!response.ok) {
         setError(data.message);
       } else {
-
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("token", data.token);
 
-        // ✅ redirect to dashboard
-        navigate("/client-dashboard");
+        const role = data.user?.role;
+        if (role === "admin") {
+          navigate("/admin");
+        } else if (role === "provider") {
+          navigate("/provider-mode");
+        } else {
+          navigate("/client-dashboard");
+        }
       }
 
     } catch (err) {
       setError("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,12 +75,12 @@ const LoginForm = () => {
           <form className="loginForm" onSubmit={handleSubmit}>
 
             <div className="form-group">
-              <label>Username</label>
+              <label>Email</label>
               <input
-                type="text"
-                name="userName"
-                placeholder="Enter your username"
-                value={formData.userName}
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
@@ -91,8 +100,8 @@ const LoginForm = () => {
 
             {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <button type="submit" className="login-btn">
-              Login
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
             </button>
 
             <div className="login-links">
