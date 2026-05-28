@@ -81,9 +81,10 @@ export const createBooking = async ({
   scheduledEnd,
   clientMessage,
 }) => {
-  // Prevent self-booking
+  // Prevent self-booking; also verify service is approved, visible, and not deleted
   const [serviceRows] = await db.execute(
-    `SELECT provider_id FROM provider_service WHERE id = ? AND is_deleted = FALSE AND is_visible = TRUE`,
+    `SELECT provider_id FROM provider_service
+     WHERE id = ? AND is_deleted = FALSE AND is_visible = TRUE AND approval_status = 'approved'`,
     [providerServiceId]
   );
 
@@ -148,14 +149,31 @@ export const updateBookingStatus = async (bookingId, status, responseMessage, ac
     }
   }
 
-  const fields = responseMessage
-    ? `status = ?, provider_response_message = ?`
-    : `status = ?`;
-  const params = responseMessage
-    ? [status, responseMessage, bookingId]
-    : [status, bookingId];
+  const timestampCol = {
+    accepted: "accepted_at",
+    declined: "declined_at",
+    cancelled: "cancelled_at",
+    completed: "completed_at",
+  }[status];
 
-  await db.execute(`UPDATE booking_request SET ${fields} WHERE id = ?`, params);
+  const setParts = ["status = ?"];
+  const params = [status];
+
+  if (responseMessage) {
+    setParts.push("provider_response_message = ?");
+    params.push(responseMessage);
+  }
+
+  if (timestampCol) {
+    setParts.push(`${timestampCol} = NOW()`);
+  }
+
+  params.push(bookingId);
+
+  await db.execute(
+    `UPDATE booking_request SET ${setParts.join(", ")} WHERE id = ?`,
+    params
+  );
 
   return getBookingById(bookingId);
 };

@@ -10,6 +10,9 @@ import "../styles/provider-mode/providerDashboard.css";
 const ProviderDashboard = () => {
   const [providerProfile, setProviderProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [jobsRefreshKey, setJobsRefreshKey] = useState(0);
+
+  const handleBookingResponded = () => setJobsRefreshKey((k) => k + 1);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -58,8 +61,8 @@ const ProviderDashboard = () => {
 
         <div className="provider-content-wrapper">
           <div className="provider-column-left">
-            <ProviderRequestsWidget />
-            <ProviderUpcomingJobsWidget />
+            <ProviderRequestsWidget onResponded={handleBookingResponded} />
+            <ProviderUpcomingJobsWidget refreshKey={jobsRefreshKey} />
           </div>
 
           <div className="provider-column-right">

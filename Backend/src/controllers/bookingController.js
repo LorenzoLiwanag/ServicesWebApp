@@ -34,10 +34,8 @@ const notifyOnStatusChange = async (booking, status) => {
       message: `Your booking for "${booking.serviceTitle}" was declined.`,
     });
   } else if (status === "cancelled") {
-    const notifyUserId =
-      booking.clientId === base.bookingRequestId ? booking.providerId : booking.clientId;
     await createNotification({
-      userId: notifyUserId,
+      userId: booking.providerId,
       bookingRequestId: booking.bookingId,
       type: "booking_cancelled",
       title: "Booking cancelled",

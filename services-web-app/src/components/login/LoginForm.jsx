@@ -42,7 +42,11 @@ const LoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("token", data.token);
 
-        navigate("/client-dashboard");
+        if (data.user?.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/client-dashboard");
+        }
       }
 
     } catch (err) {

@@ -6,22 +6,14 @@ import {
   respondToBooking,
   cancelBooking,
 } from "../controllers/bookingController.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Client — submit a booking request
-router.post("/", submitBooking);
-
-// Client — view own booking requests (filter by ?status=pending|accepted|etc.)
-router.get("/client", getMyClientBookings);
-
-// Provider — view incoming booking requests
-router.get("/provider", getMyProviderBookings);
-
-// Provider — accept, decline, or complete a booking
-router.patch("/:bookingId/respond", respondToBooking);
-
-// Client — cancel a booking
-router.patch("/:bookingId/cancel", cancelBooking);
+router.post("/", requireAuth, submitBooking);
+router.get("/client", requireAuth, getMyClientBookings);
+router.get("/provider", requireAuth, getMyProviderBookings);
+router.patch("/:bookingId/respond", requireAuth, respondToBooking);
+router.patch("/:bookingId/cancel", requireAuth, cancelBooking);
 
 export default router;

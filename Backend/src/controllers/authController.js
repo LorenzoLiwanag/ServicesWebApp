@@ -30,13 +30,8 @@ const getUserIdFromRequest = (req) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const user = await registerUserService(req.body);
-    const token = jwt.sign(
-      { userId: user.userId, firstName: user.firstName, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "24h" }
-    );
-    res.status(201).json({ message: "User registered successfully", user: formatUser(user), token });
+    await registerUserService(req.body);
+    res.status(201).json({ message: "Registration successful. Please wait for admin approval before logging in." });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

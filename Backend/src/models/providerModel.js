@@ -11,6 +11,7 @@ const SERVICE_SELECT = `
     ps.service_location_type AS serviceLocationType,
     ps.is_visible AS isVisible,
     ps.is_deleted AS isDeleted,
+    ps.approval_status AS approvalStatus,
     sc.id AS categoryId,
     sc.name AS categoryName
   FROM provider_service ps
@@ -22,6 +23,7 @@ const mapService = (row) => ({
   priceAmount: row.priceAmount !== null ? Number(row.priceAmount) : null,
   isVisible: Boolean(row.isVisible),
   isDeleted: Boolean(row.isDeleted),
+  approvalStatus: row.approvalStatus || "pending",
 });
 
 const ensureProviderProfile = async (userId) => {
@@ -109,8 +111,8 @@ export const createProviderServiceForUser = async (userId, data) => {
   const [result] = await db.execute(
     `INSERT INTO provider_service
        (provider_id, category_id, title, description, pricing_type, price_amount,
-        currency, service_location_type, is_visible)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        currency, service_location_type, is_visible, approval_status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
     [
       userId,
       categoryId || null,
@@ -156,7 +158,8 @@ export const updateProviderServiceForUser = async (userId, providerServiceId, da
   await db.execute(
     `UPDATE provider_service
      SET category_id = ?, title = ?, description = ?, pricing_type = ?,
-         price_amount = ?, currency = ?, service_location_type = ?, is_visible = ?
+         price_amount = ?, currency = ?, service_location_type = ?, is_visible = ?,
+         approval_status = 'pending', approved_at = NULL, approved_by = NULL
      WHERE id = ? AND provider_id = ?`,
     [
       categoryId || null,

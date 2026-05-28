@@ -2,9 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import { getStoredAuthSession } from "../utils/auth.js";
+import {
+  fetchConversations,
+  fetchConversationMessages,
+  sendReply,
+  markConversationRead,
+} from "../api/conversations.js";
 import "../styles/messaging/messagesPage.css";
-
-const API = "http://localhost:3000";
 
 const formatTime = (iso) => {
   if (!iso) return "";
@@ -22,14 +26,15 @@ const MessagesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const session = getStoredAuthSession();
+  const token = session?.token;
   const myUserId = session?.user?.id;
 
-  const [threads, setThreads] = useState([]);
-  const [threadsLoading, setThreadsLoading] = useState(true);
-  const [threadsError, setThreadsError] = useState("");
+  const [conversations, setConversations] = useState([]);
+  const [convsLoading, setConvsLoading] = useState(true);
+  const [convsError, setConvsError] = useState("");
 
-  const [activeThreadId, setActiveThreadId] = useState(null);
-  const [conversation, setConversation] = useState(null); // { thread, messages }
+  const [activeId, setActiveId] = useState(null);
+  const [convData, setConvData] = useState(null); // { conversation, messages }
   const [convLoading, setConvLoading] = useState(false);
 
   const [replyBody, setReplyBody] = useState("");
@@ -37,158 +42,139 @@ const MessagesPage = () => {
 
   const messagesEndRef = useRef(null);
 
-  const authHeader = session ? { Authorization: `Bearer ${session.token}` } : {};
-
-  // Load thread list on mount
   useEffect(() => {
-    if (!session) {
-      navigate("/login");
-      return;
-    }
-
-    const fetchThreads = async () => {
-      try {
-        const res = await fetch(`${API}/api/messages/threads`, { headers: authHeader });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message);
-        setThreads(data.threads || []);
-      } catch (err) {
-        setThreadsError(err.message || "Failed to load conversations");
-      } finally {
-        setThreadsLoading(false);
-      }
-    };
-
-    fetchThreads();
+    if (!session) { navigate("/login"); return; }
+    loadConversations();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Open thread from ?thread= query param
   useEffect(() => {
-    const qThread = Number(searchParams.get("thread"));
-    if (qThread && qThread !== activeThreadId) {
-      openThread(qThread);
-    }
+    const qId = Number(searchParams.get("conversation"));
+    if (qId && qId !== activeId) openConversation(qId);
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const openThread = async (threadId) => {
-    setActiveThreadId(threadId);
-    setSearchParams({ thread: threadId });
-    setConvLoading(true);
-    setConversation(null);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [convData?.messages]);
 
+  const loadConversations = async () => {
     try {
-      const res = await fetch(`${API}/api/messages?thread=${threadId}`, {
-        headers: authHeader,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      setConversation(data);
+      const data = await fetchConversations(token);
+      setConversations(data);
+    } catch (err) {
+      setConvsError(err.message || "Failed to load conversations");
+    } finally {
+      setConvsLoading(false);
+    }
+  };
+
+  const openConversation = async (id) => {
+    setActiveId(id);
+    setSearchParams({ conversation: id });
+    setConvLoading(true);
+    setConvData(null);
+    try {
+      const data = await fetchConversationMessages(token, id);
+      setConvData(data);
+      await markConversationRead(token, id);
+      setConversations((prev) =>
+        prev.map((c) => (c.conversationId === id ? { ...c, unreadCount: 0 } : c))
+      );
     } catch {
-      setConversation(null);
+      setConvData(null);
     } finally {
       setConvLoading(false);
     }
   };
 
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation?.messages]);
-
   const handleSendReply = async () => {
-    if (!replyBody.trim() || !conversation) return;
-
-    const { thread } = conversation;
-    const recipientId =
-      thread.participant_a === myUserId ? thread.participant_b : thread.participant_a;
-
+    if (!replyBody.trim() || !convData) return;
     setSending(true);
     try {
-      const res = await fetch(`${API}/api/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeader },
-        body: JSON.stringify({
-          recipientId,
-          body: replyBody.trim(),
-          serviceId: thread.service_id ?? undefined,
-          bookingId: thread.booking_id ?? undefined,
-        }),
-      });
-      if (!res.ok) return;
+      await sendReply(token, activeId, replyBody.trim());
       setReplyBody("");
-      // Refresh the conversation
-      await openThread(activeThreadId);
-      // Refresh thread list preview
-      const tRes = await fetch(`${API}/api/messages/threads`, { headers: authHeader });
-      const tData = await tRes.json();
-      if (tRes.ok) setThreads(tData.threads || []);
+      const data = await fetchConversationMessages(token, activeId);
+      setConvData(data);
+      const convs = await fetchConversations(token);
+      setConversations(convs);
     } finally {
       setSending(false);
     }
   };
 
-  const activeThread = threads.find((t) => t.threadId === activeThreadId);
+  const activeConv = conversations.find((c) => c.conversationId === activeId);
 
   return (
     <div className="messages-page">
       <DashboardNavbar />
 
       <div className="messages-container">
-        {/* ── Left: thread list ── */}
+        {/* Left: conversation list */}
         <div className="threads-panel">
           <div className="threads-panel-header">
             <h2 className="threads-panel-title">Messages</h2>
           </div>
 
           <div className="threads-list">
-            {threadsLoading && (
-              <p className="messages-loading">Loading conversations…</p>
-            )}
-            {threadsError && (
-              <p className="messages-error">{threadsError}</p>
-            )}
-            {!threadsLoading && !threadsError && threads.length === 0 && (
+            {convsLoading && <p className="messages-loading">Loading conversations…</p>}
+            {convsError && <p className="messages-error">{convsError}</p>}
+            {!convsLoading && !convsError && conversations.length === 0 && (
               <p className="threads-empty">No conversations yet.</p>
             )}
-            {threads.map((t) => (
+            {conversations.map((c) => (
               <div
-                key={t.threadId}
-                className={`thread-item ${t.threadId === activeThreadId ? "active" : ""}`}
-                onClick={() => openThread(t.threadId)}
+                key={c.conversationId}
+                className={`thread-item ${c.conversationId === activeId ? "active" : ""}`}
+                onClick={() => openConversation(c.conversationId)}
               >
-                <p className="thread-name">{t.otherUserName}</p>
+                <div className="thread-item-row">
+                  <p className="thread-name">{c.otherUserName}</p>
+                  {Number(c.unreadCount) > 0 && (
+                    <span className="thread-unread-badge">{c.unreadCount}</span>
+                  )}
+                </div>
+                {c.serviceTitle && (
+                  <p className="thread-service">{c.serviceTitle}</p>
+                )}
                 <p className="thread-preview">
-                  {t.lastSenderId === myUserId ? "You: " : ""}
-                  {t.lastMessage}
+                  {c.lastSenderId === myUserId ? "You: " : ""}
+                  {c.lastMessage ?? "No messages yet"}
                 </p>
-                <p className="thread-time">{formatTime(t.lastMessageAt)}</p>
+                <p className="thread-time">{formatTime(c.lastMessageAt ?? c.updatedAt)}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── Right: conversation ── */}
+        {/* Right: conversation view */}
         <div className="conversation-panel">
-          {!activeThreadId && (
+          {!activeId && (
             <div className="no-thread-selected">
               <span className="no-thread-icon">💬</span>
               <span>Select a conversation to read messages</span>
             </div>
           )}
 
-          {activeThreadId && (
+          {activeId && (
             <>
               <div className="conversation-header">
-                {activeThread?.otherUserName ?? "Conversation"}
+                <span className="conversation-header-name">
+                  {activeConv?.otherUserName ?? convData?.conversation?.clientName ?? "Conversation"}
+                </span>
+                {(activeConv?.serviceTitle ?? convData?.conversation?.serviceTitle) && (
+                  <span className="conversation-header-service">
+                    Re: {activeConv?.serviceTitle ?? convData?.conversation?.serviceTitle}
+                  </span>
+                )}
               </div>
 
-              {convLoading && (
-                <p className="messages-loading">Loading messages…</p>
-              )}
+              {convLoading && <p className="messages-loading">Loading messages…</p>}
 
-              {!convLoading && conversation && (
+              {!convLoading && convData && (
                 <div className="messages-list">
-                  {conversation.messages.map((m) => {
+                  {convData.messages.length === 0 && (
+                    <p className="threads-empty" style={{ padding: "20px" }}>No messages yet.</p>
+                  )}
+                  {convData.messages.map((m) => {
                     const mine = m.senderId === myUserId;
                     return (
                       <div key={m.messageId}>
@@ -197,10 +183,7 @@ const MessagesPage = () => {
                             {m.body}
                           </div>
                         </div>
-                        <div
-                          className="bubble-meta"
-                          style={{ textAlign: mine ? "right" : "left" }}
-                        >
+                        <div className="bubble-meta" style={{ textAlign: mine ? "right" : "left" }}>
                           {formatTime(m.createdAt)}
                         </div>
                       </div>

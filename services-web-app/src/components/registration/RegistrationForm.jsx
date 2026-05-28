@@ -116,7 +116,7 @@ const RegistrationForm = () => {
       if (!response.ok) {
         setError(data.message);
       } else {
-        setMessage("Registered successfully");
+        setMessage(data.message);
         setFormData({
           firstName: "",
           lastName: "",
@@ -125,7 +125,7 @@ const RegistrationForm = () => {
           password: "",
           confirmPassword: ""
         });
-        setTimeout(() => navigate("/login"), 1500);
+        setTimeout(() => navigate("/login"), 2500);
       }
 
     } catch (err) {

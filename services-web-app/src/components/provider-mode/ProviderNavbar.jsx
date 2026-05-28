@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/provider-mode/providerNavbar.css";
 import { clearAuthSession } from "../../utils/auth.js";
+import NotificationBell from "../shared/NotificationBell.jsx";
 
 const ProviderNavbar = ({ isProviderMode = true }) => {
   const [open, setOpen] = useState(false);
@@ -20,6 +21,11 @@ const ProviderNavbar = ({ isProviderMode = true }) => {
     closeMenu();
   };
 
+  const handleMessages = () => {
+    navigate("/messages");
+    closeMenu();
+  };
+
   const handleLogout = () => {
     clearAuthSession();
     navigate("/login", { replace: true });
@@ -35,7 +41,6 @@ const ProviderNavbar = ({ isProviderMode = true }) => {
   }, []);
 
   if (!isProviderMode) {
-    // Return regular navbar
     return null;
   }
 
@@ -53,10 +58,15 @@ const ProviderNavbar = ({ isProviderMode = true }) => {
               className={`provider-nav-menu ${open ? "open" : ""}`}
             >
               <li><Link to="/" onClick={closeMenu}>Home</Link></li>
+              <li><button onClick={handleMessages} className="provider-nav-link-btn">Messages</button></li>
               <li><button onClick={handleSwitchToClient} className="provider-nav-link-btn">Switch to Client Mode</button></li>
               <li><button onClick={handleProfile} className="provider-nav-link-btn">Profile</button></li>
               <li><button onClick={handleLogout} className="provider-nav-link-btn">Logout</button></li>
             </ul>
+
+            <div className="provider-nav-actions">
+              <NotificationBell />
+            </div>
 
             <button
               className={`provider-nav-toggler ${open ? "toggler-open" : ""}`}

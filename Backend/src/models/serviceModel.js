@@ -22,7 +22,8 @@ export const getBrowseServices = async () => {
     JOIN provider_profile pp ON ps.provider_id = pp.provider_id
     LEFT JOIN service_category sc ON ps.category_id = sc.id
     WHERE
-      ps.is_visible = TRUE
+      ps.approval_status = 'approved'
+      AND ps.is_visible = TRUE
       AND ps.is_deleted = FALSE
       AND pp.is_provider_active = TRUE
       AND u.is_active = TRUE
@@ -73,6 +74,7 @@ export const getServiceById = async (serviceId) => {
     JOIN provider_profile pp ON ps.provider_id = pp.provider_id
     LEFT JOIN service_category sc ON ps.category_id = sc.id
     WHERE ps.id = ?
+      AND ps.approval_status = 'approved'
       AND ps.is_visible = TRUE
       AND ps.is_deleted = FALSE
       AND pp.is_provider_active = TRUE

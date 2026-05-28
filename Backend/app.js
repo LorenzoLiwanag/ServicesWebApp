@@ -6,6 +6,8 @@ import providerRoutes from "./src/routes/providerRoutes.js";
 import bookingRoutes from "./src/routes/bookingRoutes.js";
 import notificationRoutes from "./src/routes/notificationRoutes.js";
 import contactRoutes from "./src/routes/contactRoutes.js";
+import conversationRoutes from "./src/routes/messageRoutes.js";
+import adminRoutes from "./src/routes/adminRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -20,6 +22,8 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/provider", providerRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/conversations", conversationRoutes);
 app.use("/api", contactRoutes);
+app.use("/api/admin", adminRoutes);
 
 export default app;

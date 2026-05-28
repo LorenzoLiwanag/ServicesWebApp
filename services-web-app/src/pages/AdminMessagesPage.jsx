@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import { getStoredAuthSession } from "../utils/auth.js";
-import { getContactSubmissions, updateContactSubmission } from "../api/contact.js";
+import { fetchAdminMessageLogs } from "../api/conversations.js";
 import "../styles/admin/adminMessages.css";
-
-const STATUS_OPTIONS = ["all", "new", "read", "archived"];
 
 const formatDate = (iso) => {
   if (!iso) return "";
@@ -23,44 +21,18 @@ const AdminMessagesPage = () => {
   const session = getStoredAuthSession();
   const token = session?.token;
 
-  const [submissions, setSubmissions] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [patching, setPatching] = useState(null);
 
   useEffect(() => {
     if (!session) { navigate("/login"); return; }
     if (session.user?.role !== "admin") { navigate("/client-dashboard"); return; }
-    fetchSubmissions();
-  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const fetchSubmissions = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const data = await getContactSubmissions(token, filter);
-      setSubmissions(data.submissions ?? data);
-    } catch (err) {
-      setError(err.message || "Failed to load submissions");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAction = async (id, newStatus) => {
-    setPatching(id);
-    try {
-      await updateContactSubmission(token, id, newStatus);
-      setSubmissions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s))
-      );
-    } catch {
-      // keep current state on failure
-    } finally {
-      setPatching(null);
-    }
-  };
+    fetchAdminMessageLogs(token)
+      .then(setMessages)
+      .catch((err) => setError(err.message || "Failed to load message logs"))
+      .finally(() => setLoading(false));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="admin-messages-page">
@@ -68,75 +40,54 @@ const AdminMessagesPage = () => {
 
       <div className="admin-messages-container">
         <div className="admin-messages-header">
-          <h1 className="admin-messages-title">Contact Submissions</h1>
-          <select
-            className="admin-status-filter"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </option>
-            ))}
-          </select>
+          <h1 className="admin-messages-title">Message Logs</h1>
+          <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+            Read-only view of all in-app messages.
+          </p>
         </div>
 
         {loading && <p className="admin-loading">Loading…</p>}
         {error && <p className="admin-error">{error}</p>}
-        {!loading && !error && submissions.length === 0 && (
-          <p className="admin-empty">No submissions found.</p>
+        {!loading && !error && messages.length === 0 && (
+          <p className="admin-empty">No messages sent yet.</p>
         )}
 
-        {!loading && !error && submissions.length > 0 && (
+        {!loading && !error && messages.length > 0 && (
           <div className="admin-table-wrap">
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Name</th>
-                  <th>Email</th>
+                  <th>ID</th>
+                  <th>Sender</th>
+                  <th>Receiver</th>
+                  <th>Service</th>
                   <th>Message</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th>Sent At</th>
+                  <th>Conv #</th>
                 </tr>
               </thead>
               <tbody>
-                {submissions.map((s) => (
-                  <tr key={s.id} className={`admin-row admin-row--${s.status}`}>
-                    <td className="admin-cell-date">{formatDate(s.created_at)}</td>
-                    <td>{s.name}</td>
-                    <td>{s.email}</td>
-                    <td className="admin-cell-message">
-                      {s.message.length > 80
-                        ? s.message.slice(0, 80) + "…"
-                        : s.message}
+                {messages.map((m) => (
+                  <tr key={m.messageId} className="admin-row">
+                    <td className="admin-cell-date">{m.messageId}</td>
+                    <td>
+                      <span style={{ fontWeight: 600 }}>{m.senderName}</span>
+                      <br />
+                      <span style={{ fontSize: 11, color: "#94a3b8" }}>{m.senderEmail}</span>
                     </td>
                     <td>
-                      <span className={`admin-status-badge admin-status-badge--${s.status}`}>
-                        {s.status}
-                      </span>
+                      <span style={{ fontWeight: 600 }}>{m.receiverName}</span>
+                      <br />
+                      <span style={{ fontSize: 11, color: "#94a3b8" }}>{m.receiverEmail}</span>
                     </td>
-                    <td className="admin-cell-actions">
-                      {s.status !== "read" && s.status !== "archived" && (
-                        <button
-                          className="admin-action-btn"
-                          disabled={patching === s.id}
-                          onClick={() => handleAction(s.id, "read")}
-                        >
-                          Mark as read
-                        </button>
-                      )}
-                      {s.status !== "archived" && (
-                        <button
-                          className="admin-action-btn admin-action-btn--archive"
-                          disabled={patching === s.id}
-                          onClick={() => handleAction(s.id, "archived")}
-                        >
-                          Archive
-                        </button>
-                      )}
+                    <td>{m.serviceTitle ?? "—"}</td>
+                    <td className="admin-cell-message">
+                      {m.messageBody.length > 100
+                        ? m.messageBody.slice(0, 100) + "…"
+                        : m.messageBody}
                     </td>
+                    <td className="admin-cell-date">{formatDate(m.sentAt)}</td>
+                    <td style={{ color: "#64748b", fontSize: 12 }}>#{m.conversationId}</td>
                   </tr>
                 ))}
               </tbody>

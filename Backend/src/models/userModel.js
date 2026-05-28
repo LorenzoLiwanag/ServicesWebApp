@@ -2,8 +2,8 @@ import database from "../config/Database.js";
 
 export const createUser = async ({ firstName, lastName, email, phoneNumber, passwordHash }) => {
   const [result] = await database.execute(
-    `INSERT INTO users (first_name, last_name, email, phone_number, password_hash)
-     VALUES (?, ?, ?, ?, ?)`,
+    `INSERT INTO users (first_name, last_name, email, phone_number, password_hash, approval_status)
+     VALUES (?, ?, ?, ?, ?, 'pending')`,
     [firstName, lastName, email, phoneNumber, passwordHash]
   );
   return result;
@@ -70,6 +70,29 @@ export const updateUserPasswordById = async (userId, passwordHash) => {
   const [result] = await database.execute(
     `UPDATE users SET password_hash = ? WHERE id = ?`,
     [passwordHash, userId]
+  );
+  return result;
+};
+
+export const findAllAdminIds = async () => {
+  const [rows] = await database.execute(
+    `SELECT id FROM users WHERE role = 'admin' AND approval_status = 'approved'`
+  );
+  return rows.map((r) => r.id);
+};
+
+export const findPendingUsers = async () => {
+  const [rows] = await database.execute(
+    `SELECT id, first_name, last_name, email, approval_status, created_at
+     FROM users WHERE approval_status = 'pending' ORDER BY created_at ASC`
+  );
+  return rows;
+};
+
+export const approveUserById = async (userId, adminId) => {
+  const [result] = await database.execute(
+    `UPDATE users SET approval_status = 'approved', approved_at = NOW(), approved_by = ? WHERE id = ?`,
+    [adminId, userId]
   );
   return result;
 };

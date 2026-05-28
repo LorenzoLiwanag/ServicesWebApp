@@ -8,6 +8,8 @@ import ClientDashboard from './pages/ClientDashboardPage.jsx';
 import ProviderDashboard from './pages/ProviderDashboard.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
+import ServiceDetailPage from './pages/ServiceDetailPage.jsx';
+import MyBookingsPage from './pages/MyBookingsPage.jsx';
 import MessagesPage from './pages/MessagesPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import AdminMessagesPage from './pages/AdminMessagesPage.jsx';
@@ -65,6 +67,22 @@ function App() {
           element={
             <RequireAuth>
               <ServicesPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/service/:serviceId"
+          element={
+            <RequireAuth>
+              <ServiceDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/my-bookings"
+          element={
+            <RequireAuth>
+              <MyBookingsPage />
             </RequireAuth>
           }
         />

@@ -186,3 +186,9 @@
     line-height: 1.2;
   }
 }
+
+.dash-nav-actions {
+  display: flex;
+  align-items: center;
+  color: #fff;
+}

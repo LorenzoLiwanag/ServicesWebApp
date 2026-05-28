@@ -7,6 +7,8 @@ import {
   toggleProviderServiceVisibility,
   deleteProviderServiceForUser,
 } from "../models/providerModel.js";
+import { createNotification } from "../models/notificationModel.js";
+import { findAllAdminIds } from "../models/userModel.js";
 
 const getUserId = (req) => Number(req.userId || req.headers["x-user-id"]);
 
@@ -77,7 +79,17 @@ export const createProviderService = async (req, res) => {
       isVisible,
     });
 
-    res.status(201).json({ message: "Service created successfully", service });
+    const adminIds = await findAllAdminIds();
+    await Promise.all(adminIds.map((adminId) =>
+      createNotification({
+        userId: adminId,
+        type: "service_pending_approval",
+        title: "New service pending approval",
+        message: `A new service "${service.title}" has been submitted and is awaiting your review.`,
+      })
+    ));
+
+    res.status(201).json({ message: "Service submitted successfully. It is now pending admin approval.", service });
   } catch (err) {
     console.error("Error creating provider service:", err);
     res.status(500).json({ message: err.message || "Failed to create service" });
@@ -94,7 +106,18 @@ export const updateProviderService = async (req, res) => {
     }
 
     const service = await updateProviderServiceForUser(userId, providerServiceId, req.body);
-    res.status(200).json({ message: "Service updated successfully", service });
+
+    const adminIds = await findAllAdminIds();
+    await Promise.all(adminIds.map((adminId) =>
+      createNotification({
+        userId: adminId,
+        type: "service_pending_approval",
+        title: "Updated service pending approval",
+        message: `Service "${service.title}" was updated and is awaiting re-approval.`,
+      })
+    ));
+
+    res.status(200).json({ message: "Service updated successfully. Changes are pending admin approval.", service });
   } catch (err) {
     if (err.message === "Service not found") {
       return res.status(404).json({ message: err.message });

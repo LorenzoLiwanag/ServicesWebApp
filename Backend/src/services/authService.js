@@ -69,6 +69,14 @@ export const loginUserService = async (userData) => {
     throw new Error("Invalid email or password");
   }
 
+  if (user.approval_status === "pending") {
+    throw new Error("Your account is being reviewed for confirmation. Please wait for admin approval before logging in.");
+  }
+
+  if (user.approval_status === "rejected") {
+    throw new Error("Your registration was not approved. Please contact support for more information.");
+  }
+
   return {
     userId: user.id,
     firstName: user.first_name,

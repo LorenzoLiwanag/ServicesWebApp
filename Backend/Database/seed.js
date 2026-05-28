@@ -55,6 +55,14 @@ const run = async () => {
         password: "admin1234",
         role: "admin",
       },
+      {
+        firstName: "Admin",
+        lastName: "Test",
+        email: "admin@test.com",
+        phone: "416-555-9999",
+        password: "Admin123",
+        role: "admin",
+      },
     ];
 
     const userIds = {};
@@ -73,8 +81,8 @@ const run = async () => {
 
       const passwordHash = await hash(u.password);
       const [result] = await database.execute(
-        `INSERT INTO users (first_name, last_name, email, phone_number, password_hash, role)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO users (first_name, last_name, email, phone_number, password_hash, role, approval_status)
+         VALUES (?, ?, ?, ?, ?, ?, 'approved')`,
         [u.firstName, u.lastName, u.email, u.phone, passwordHash, u.role]
       );
 
@@ -245,8 +253,8 @@ const run = async () => {
 
       const [result] = await database.execute(
         `INSERT INTO provider_service
-           (provider_id, category_id, title, description, pricing_type, price_amount, currency, service_location_type, is_visible, is_deleted)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, TRUE, FALSE)`,
+           (provider_id, category_id, title, description, pricing_type, price_amount, currency, service_location_type, is_visible, is_deleted, approval_status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, TRUE, FALSE, 'approved')`,
         [s.providerId, catId, s.title, s.description, s.pricingType, s.priceAmount, s.currency, s.locationType]
       );
 
@@ -460,6 +468,7 @@ const run = async () => {
     console.log("  carol@example.com   / password123  (provider — Carol's Cleaning Co.)");
     console.log("  dan@example.com     / password123  (provider — Dan the Handyman)");
     console.log("  admin@example.com   / admin1234    (admin)");
+    console.log("  admin@test.com      / Admin123     (admin — PRD test account)");
   } catch (err) {
     console.error("Seed failed:", err.message);
     process.exit(1);
