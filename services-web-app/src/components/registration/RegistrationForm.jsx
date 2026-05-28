@@ -7,6 +7,7 @@ const RegistrationForm = () => {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -23,6 +24,67 @@ const RegistrationForm = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setFieldErrors((currentErrors) => ({
+      ...currentErrors,
+      form: "",
+      [e.target.name]: ""
+    }));
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    const trimmedData = Object.fromEntries(
+      Object.entries(formData).map(([key, value]) => [key, value.trim()])
+    );
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneDigits = trimmedData.phoneNumber.replace(/\D/g, "");
+    const phoneRegex = /^[0-9+\-\s()]+$/;
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+
+    if (Object.values(trimmedData).some((value) => !value)) {
+      errors.form = "Make sure all fields are filled out before registering";
+    }
+
+    if (!trimmedData.firstName) {
+      errors.firstName = "First name is required";
+    }
+
+    if (!trimmedData.lastName) {
+      errors.lastName = "Last name is required";
+    }
+
+    if (trimmedData.email && !emailRegex.test(trimmedData.email)) {
+      errors.email = "Invalid email format";
+    } else if (!trimmedData.email) {
+      errors.email = "Email is required";
+    }
+
+    if (
+      trimmedData.phoneNumber &&
+      (!phoneRegex.test(trimmedData.phoneNumber) || phoneDigits.length < 7 || phoneDigits.length > 15)
+    ) {
+      errors.phoneNumber = "Invalid phone number";
+    } else if (!trimmedData.phoneNumber) {
+      errors.phoneNumber = "Phone number is required";
+    }
+
+    if (trimmedData.password && !passwordRegex.test(trimmedData.password)) {
+      errors.password = "Password must be at least 8 characters and include at least one letter and one number";
+    } else if (!trimmedData.password) {
+      errors.password = "Password is required";
+    }
+
+    if (
+      trimmedData.password &&
+      trimmedData.confirmPassword &&
+      trimmedData.password !== trimmedData.confirmPassword
+    ) {
+      errors.confirmPassword = "Passwords do not match";
+    } else if (!trimmedData.confirmPassword) {
+      errors.confirmPassword = "Confirm password is required";
+    }
+
+    return errors;
   };
 
   const handleSubmit = async (e) => {
@@ -30,9 +92,11 @@ const RegistrationForm = () => {
 
     setMessage("");
     setError("");
+    setFieldErrors({});
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
       return;
     }
 
@@ -52,17 +116,16 @@ const RegistrationForm = () => {
       if (!response.ok) {
         setError(data.message);
       } else {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
-
-        const role = data.user?.role;
-        if (role === "admin") {
-          navigate("/admin");
-        } else if (role === "provider") {
-          navigate("/provider-mode");
-        } else {
-          navigate("/client-dashboard");
-        }
+        setMessage("Registered successfully");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          password: "",
+          confirmPassword: ""
+        });
+        setTimeout(() => navigate("/login"), 1500);
       }
 
     } catch (err) {
@@ -74,6 +137,14 @@ const RegistrationForm = () => {
 
   return (
     <div className="registration-page">
+      <Link to="/" className="auth-home-link" aria-label="Go to landing page">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9 21v-7h6v7" />
+        </svg>
+      </Link>
+
       <div className="registration-card">
         <div className="registration-left">
           <h1>Create your account</h1>
@@ -84,7 +155,9 @@ const RegistrationForm = () => {
         </div>
 
         <div className="registration-right">
-          <form className="registrationForm" onSubmit={handleSubmit}>
+          <form className="registrationForm" onSubmit={handleSubmit} noValidate>
+            {fieldErrors.form && <p className="field-error">{fieldErrors.form}</p>}
+
             <div className="form-group">
               <label>First Name</label>
               <input
@@ -93,8 +166,8 @@ const RegistrationForm = () => {
                 placeholder="Enter your first name"
                 value={formData.firstName}
                 onChange={handleChange}
-                required
               />
+              {fieldErrors.firstName && <p className="field-error">{fieldErrors.firstName}</p>}
             </div>
 
             <div className="form-group">
@@ -105,8 +178,8 @@ const RegistrationForm = () => {
                 placeholder="Enter your last name"
                 value={formData.lastName}
                 onChange={handleChange}
-                required
               />
+              {fieldErrors.lastName && <p className="field-error">{fieldErrors.lastName}</p>}
             </div>
 
             <div className="form-group">
@@ -117,8 +190,8 @@ const RegistrationForm = () => {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                required
               />
+              {fieldErrors.email && <p className="field-error">{fieldErrors.email}</p>}
             </div>
 
             <div className="form-group">
@@ -130,6 +203,7 @@ const RegistrationForm = () => {
                 value={formData.phoneNumber}
                 onChange={handleChange}
               />
+              {fieldErrors.phoneNumber && <p className="field-error">{fieldErrors.phoneNumber}</p>}
             </div>
 
             <div className="form-group">
@@ -140,8 +214,8 @@ const RegistrationForm = () => {
                 placeholder="Create a password"
                 value={formData.password}
                 onChange={handleChange}
-                required
               />
+              {fieldErrors.password && <p className="field-error">{fieldErrors.password}</p>}
             </div>
 
             <div className="form-group">
@@ -152,8 +226,8 @@ const RegistrationForm = () => {
                 placeholder="Confirm your password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                required
               />
+              {fieldErrors.confirmPassword && <p className="field-error">{fieldErrors.confirmPassword}</p>}
             </div>
 
             {message && <p style={{ color: "green" }}>{message}</p>}

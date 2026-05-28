@@ -3,12 +3,18 @@ import { createUser, findUserByEmail } from "../models/userModel.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+const PHONE_REGEX = /^[0-9+\-\s()]+$/;
 
 export const registerUserService = async (userData) => {
-  const { firstName, lastName, email, phoneNumber, password, confirmPassword } = userData;
+  const firstName = userData.firstName?.trim();
+  const lastName = userData.lastName?.trim();
+  const email = userData.email?.trim();
+  const phoneNumber = userData.phoneNumber?.trim();
+  const password = userData.password?.trim();
+  const confirmPassword = userData.confirmPassword?.trim();
 
-  if (!firstName || !lastName || !email || !password) {
-    throw new Error("First name, last name, email, and password are required");
+  if (!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword) {
+    throw new Error("Make sure all fields are filled out before registering");
   }
 
   if (!EMAIL_REGEX.test(email)) {
@@ -19,7 +25,12 @@ export const registerUserService = async (userData) => {
     throw new Error("Password must be at least 8 characters and include at least one letter and one number");
   }
 
-  if (confirmPassword !== undefined && password !== confirmPassword) {
+  const phoneDigits = phoneNumber.replace(/\D/g, "");
+  if (!PHONE_REGEX.test(phoneNumber) || phoneDigits.length < 7 || phoneDigits.length > 15) {
+    throw new Error("Invalid phone number");
+  }
+
+  if (password !== confirmPassword) {
     throw new Error("Passwords do not match");
   }
 
@@ -29,7 +40,7 @@ export const registerUserService = async (userData) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const result = await createUser({ firstName, lastName, email, phoneNumber: phoneNumber || null, passwordHash });
+  const result = await createUser({ firstName, lastName, email, phoneNumber, passwordHash });
 
   return {
     userId: result.insertId,

@@ -1,8 +1,9 @@
 .welcome-heading {
-  margin: 24px 0 0 24px;
+  margin: 32px auto 0;
   font-size: 28px;
   font-weight: 700;
   color: #223d68;
+  text-align: center;
 }
 
 .dashboard-content-wrapper {
@@ -40,7 +41,7 @@
 /* Smaller tablets */
 @media (max-width: 768px) {
   .welcome-heading {
-    margin: 16px 0 0 16px;
+    margin-top: 24px;
     font-size: 24px;
   }
 
@@ -53,7 +54,7 @@
 /* Mobile devices */
 @media (max-width: 480px) {
   .welcome-heading {
-    margin: 16px 0 0 16px;
+    margin-top: 20px;
     font-size: 20px;
   }
 

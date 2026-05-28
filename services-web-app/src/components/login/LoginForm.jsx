@@ -42,14 +42,7 @@ const LoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("token", data.token);
 
-        const role = data.user?.role;
-        if (role === "admin") {
-          navigate("/admin");
-        } else if (role === "provider") {
-          navigate("/provider-mode");
-        } else {
-          navigate("/client-dashboard");
-        }
+        navigate("/client-dashboard");
       }
 
     } catch (err) {
@@ -61,6 +54,14 @@ const LoginForm = () => {
 
   return (
     <div className="login-page">
+      <Link to="/" className="auth-home-link" aria-label="Go to landing page">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9 21v-7h6v7" />
+        </svg>
+      </Link>
+
       <div className="login-card">
 
         <div className="login-left">
