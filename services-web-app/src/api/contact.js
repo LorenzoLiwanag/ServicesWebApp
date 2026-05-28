@@ -8,11 +8,11 @@ const parseJSON = async (res) => {
   }
 };
 
-export const submitContact = async ({ name, email, message }) => {
+export const submitContact = async ({ name, email, subject, message }) => {
   const res = await fetch(`${API}/api/contact`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, message }),
+    body: JSON.stringify({ name, email, subject, message }),
   });
   const data = await parseJSON(res);
   if (!res.ok) throw new Error(data.message || "Failed to send message");
