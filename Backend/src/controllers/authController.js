@@ -121,6 +121,8 @@ export const updateCurrentUserProfile = async (req, res) => {
         lastName: updated.last_name,
         email: updated.email,
         phoneNumber: updated.phone_number,
+        profilePhotoUrl: updated.profile_photo_url,
+        role: updated.role,
       },
     });
   } catch (err) {
