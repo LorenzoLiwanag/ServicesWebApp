@@ -51,6 +51,7 @@ const DashboardNavbar = () => {
                   className={`dash-nav-menu ${open ? "open" : ""}`}
                 >
                   <li><Link to="/" onClick={closeMenu}>Home</Link></li>
+                  <li><Link to="/services" onClick={closeMenu}>Browse Services</Link></li>
                   <li><button onClick={handleSwitchToProvider} className="dash-nav-link-btn">Switch to Provider Mode</button></li>
                   <li><button onClick={handleProfileClick} className="dash-nav-link-btn">Profile</button></li>
                   <li><button onClick={handleLogout} className="dash-nav-link-btn">Logout</button></li>
