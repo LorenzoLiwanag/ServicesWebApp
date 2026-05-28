@@ -1,65 +1,54 @@
 import bcrypt from "bcrypt";
-import { createUser, findUserByUsername } from "../models/userModel.js";
+import { createUser, findUserByEmail } from "../models/userModel.js";
 
 export const registerUserService = async (userData) => {
-  const { fullName, userName, phoneNumber, address, password } = userData;
+  const { firstName, lastName, email, phoneNumber, password } = userData;
 
-  if (!fullName || !userName || !phoneNumber || !address || !password) {
+  if (!firstName || !lastName || !email || !phoneNumber || !password) {
     throw new Error("All fields are required");
   }
 
-   const existingUser = await findUserByUsername(userName);
-
+  const existingUser = await findUserByEmail(email);
   if (existingUser) {
-    throw new Error("Username already taken");
+    throw new Error("Email already registered");
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-
-  const result = await createUser({
-    fullName,
-    userName,
-    phoneNumber,
-    address,
-    passwordHash
-  });
+  const result = await createUser({ firstName, lastName, email, phoneNumber, passwordHash });
 
   return {
     userId: result.insertId,
-    fullName,
-    userName,
+    firstName,
+    lastName,
+    email,
     phoneNumber,
-    address
+    role: "client",
   };
 };
 
 export const loginUserService = async (userData) => {
-  const { userName, password } = userData;
+  const { email, password } = userData;
 
-  if (!userName || !password) {
-    throw new Error("Username and password are required");
+  if (!email || !password) {
+    throw new Error("Email and password are required");
   }
 
-  const user = await findUserByUsername(userName);
-
+  const user = await findUserByEmail(email);
   if (!user) {
-    throw new Error("Invalid username or password");
+    throw new Error("Invalid email or password");
   }
-
 
   const isMatch = await bcrypt.compare(password, user.password_hash);
-
   if (!isMatch) {
-    throw new Error("Invalid username or password");
+    throw new Error("Invalid email or password");
   }
-
 
   return {
     userId: user.id,
-    fullName: user.full_name,
-    userName: user.user_name,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    email: user.email,
     phoneNumber: user.phone_number,
-    address: user.address_text,
     role: user.role ?? "client",
   };
 };

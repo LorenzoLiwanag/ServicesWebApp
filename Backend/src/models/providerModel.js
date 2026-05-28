@@ -1,225 +1,214 @@
 import db from "../config/Database.js";
 
-export const getProviderServicesByUserId = async (userId) => {
-  const query = `
-    SELECT
-      ps.provider_service_id AS providerServiceId,
-      s.name AS serviceName,
-      s.description AS description,
-      sc.name AS categoryName,
-      ps.pricing_type AS pricingType,
-      ps.rate_amount AS rateAmount,
-      ps.is_service_visible AS isServiceVisible,
-      ps.provider_notes AS providerNotes
-    FROM provider_service ps
-    JOIN service s
-      ON ps.service_id = s.service_id
-    JOIN service_category sc
-      ON s.category_id = sc.category_id
-    WHERE ps.provider_id = ?
-    ORDER BY ps.provider_service_id DESC
-  `;
+const SERVICE_SELECT = `
+  SELECT
+    ps.id AS providerServiceId,
+    ps.title,
+    ps.description,
+    ps.pricing_type AS pricingType,
+    ps.price_amount AS priceAmount,
+    ps.currency,
+    ps.service_location_type AS serviceLocationType,
+    ps.is_visible AS isVisible,
+    ps.is_deleted AS isDeleted,
+    sc.id AS categoryId,
+    sc.name AS categoryName
+  FROM provider_service ps
+  LEFT JOIN service_category sc ON ps.category_id = sc.id
+`;
 
-  const [rows] = await db.execute(query, [userId]);
-  return rows;
-};
+const mapService = (row) => ({
+  ...row,
+  priceAmount: row.priceAmount !== null ? Number(row.priceAmount) : null,
+  isVisible: Boolean(row.isVisible),
+  isDeleted: Boolean(row.isDeleted),
+});
 
-export const createProviderServiceForUser = async (userId, data) => {
-  const {
-    categoryId,
-    serviceName,
-    description,
-    pricingType,
-    rateAmount,
-    isVisible,
-    providerNotes,
-  } = data;
-
-  const [providerRows] = await db.execute(
+const ensureProviderProfile = async (userId) => {
+  const [rows] = await db.execute(
     `SELECT provider_id FROM provider_profile WHERE provider_id = ?`,
     [userId]
   );
 
-  if (providerRows.length === 0) {
-    await db.execute(
-      `
-      INSERT INTO provider_profile (
-        provider_id,
-        is_provider_active,
-        display_name,
-        bio
-      )
-      VALUES (?, TRUE, ?, ?)
-      `,
-      [userId, `Provider ${userId}`, "New provider"]
-    );
-  }
+  if (rows.length > 0) return;
 
-  const [serviceRows] = await db.execute(
-    `
-    SELECT service_id
-    FROM service
-    WHERE name = ? AND category_id = ?
-    LIMIT 1
-    `,
-    [serviceName, categoryId]
+  const [userRows] = await db.execute(
+    `SELECT first_name, last_name FROM users WHERE id = ?`,
+    [userId]
   );
 
-  let serviceId;
+  const displayName =
+    userRows.length > 0
+      ? `${userRows[0].first_name} ${userRows[0].last_name}`
+      : `Provider ${userId}`;
 
-  if (serviceRows.length > 0) {
-    serviceId = serviceRows[0].service_id;
-  } else {
-    const [insertServiceResult] = await db.execute(
-      `
-      INSERT INTO service (
-        category_id,
-        name,
-        description,
-        is_active
-      )
-      VALUES (?, ?, ?, TRUE)
-      `,
-      [categoryId, serviceName, description || null]
+  await db.execute(
+    `INSERT INTO provider_profile (provider_id, display_name) VALUES (?, ?)`,
+    [userId, displayName]
+  );
+};
+
+export const getProviderProfile = async (userId) => {
+  const [rows] = await db.execute(
+    `SELECT provider_id AS providerId, display_name AS displayName, bio,
+            profile_photo_url AS profilePhotoUrl, is_provider_active AS isProviderActive,
+            verification_status AS verificationStatus, average_rating AS averageRating,
+            total_reviews AS totalReviews
+     FROM provider_profile WHERE provider_id = ?`,
+    [userId]
+  );
+  return rows[0] || null;
+};
+
+export const upsertProviderProfile = async (userId, { displayName, bio, isProviderActive }) => {
+  const [existing] = await db.execute(
+    `SELECT provider_id FROM provider_profile WHERE provider_id = ?`,
+    [userId]
+  );
+
+  if (existing.length > 0) {
+    await db.execute(
+      `UPDATE provider_profile
+       SET display_name = ?, bio = ?, is_provider_active = ?
+       WHERE provider_id = ?`,
+      [displayName, bio || null, isProviderActive !== false ? 1 : 0, userId]
     );
-
-    serviceId = insertServiceResult.insertId;
+  } else {
+    await db.execute(
+      `INSERT INTO provider_profile (provider_id, display_name, bio, is_provider_active)
+       VALUES (?, ?, ?, ?)`,
+      [userId, displayName, bio || null, isProviderActive !== false ? 1 : 0]
+    );
   }
 
-  const [insertProviderServiceResult] = await db.execute(
-    `
-    INSERT INTO provider_service (
-      provider_id,
-      service_id,
-      pricing_type,
-      rate_amount,
-      rate_currency,
-      is_service_visible,
-      provider_notes,
-      approval_status
-    )
-    VALUES (?, ?, ?, ?, 'PHP', ?, ?, 'approved')
-    `,
+  return getProviderProfile(userId);
+};
+
+export const getProviderServicesByUserId = async (userId) => {
+  const [rows] = await db.execute(
+    `${SERVICE_SELECT} WHERE ps.provider_id = ? AND ps.is_deleted = FALSE ORDER BY ps.id DESC`,
+    [userId]
+  );
+  return rows.map(mapService);
+};
+
+export const createProviderServiceForUser = async (userId, data) => {
+  await ensureProviderProfile(userId);
+
+  const {
+    categoryId,
+    title,
+    description,
+    pricingType,
+    priceAmount,
+    currency,
+    serviceLocationType,
+    isVisible,
+  } = data;
+
+  const [result] = await db.execute(
+    `INSERT INTO provider_service
+       (provider_id, category_id, title, description, pricing_type, price_amount,
+        currency, service_location_type, is_visible)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       userId,
-      serviceId,
-      pricingType,
-      pricingType === "quote" ? null : rateAmount,
-      isVisible ? 1 : 0,
-      providerNotes || null,
+      categoryId || null,
+      title,
+      description || null,
+      pricingType || "quote",
+      pricingType === "quote" ? null : priceAmount || null,
+      currency || "CAD",
+      serviceLocationType || "client_home",
+      isVisible !== false ? 1 : 0,
     ]
   );
 
-  const providerServiceId = insertProviderServiceResult.insertId;
-
   const [rows] = await db.execute(
-    `
-    SELECT
-      ps.provider_service_id AS providerServiceId,
-      s.name AS serviceName,
-      s.description AS description,
-      sc.name AS categoryName,
-      ps.pricing_type AS pricingType,
-      ps.rate_amount AS rateAmount,
-      ps.is_service_visible AS isServiceVisible,
-      ps.provider_notes AS providerNotes
-    FROM provider_service ps
-    JOIN service s
-      ON ps.service_id = s.service_id
-    JOIN service_category sc
-      ON s.category_id = sc.category_id
-    WHERE ps.provider_service_id = ?
-    `,
-    [providerServiceId]
+    `${SERVICE_SELECT} WHERE ps.id = ?`,
+    [result.insertId]
   );
 
-  return rows[0];
+  return mapService(rows[0]);
 };
 
-export const updateProviderServiceForUser = async (
-  userId,
-  providerServiceId,
-  data
-) => {
-  const {
-    serviceName,
-    pricingType,
-    rateAmount,
-    isVisible,
-    providerNotes,
-  } = data;
-
-  const [existingRows] = await db.execute(
-    `
-    SELECT ps.service_id
-    FROM provider_service ps
-    WHERE ps.provider_service_id = ? AND ps.provider_id = ?
-    `,
+export const updateProviderServiceForUser = async (userId, providerServiceId, data) => {
+  const [existing] = await db.execute(
+    `SELECT id FROM provider_service WHERE id = ? AND provider_id = ? AND is_deleted = FALSE`,
     [providerServiceId, userId]
   );
 
-  if (existingRows.length === 0) {
+  if (existing.length === 0) {
     throw new Error("Service not found");
   }
 
-  const serviceId = existingRows[0].service_id;
-
-  if (serviceName) {
-    await db.execute(
-      `UPDATE service SET name = ? WHERE service_id = ?`,
-      [serviceName, serviceId]
-    );
-  }
+  const {
+    categoryId,
+    title,
+    description,
+    pricingType,
+    priceAmount,
+    currency,
+    serviceLocationType,
+    isVisible,
+  } = data;
 
   await db.execute(
-    `
-    UPDATE provider_service
-    SET pricing_type = ?,
-        rate_amount = ?,
-        is_service_visible = ?,
-        provider_notes = ?
-    WHERE provider_service_id = ? AND provider_id = ?
-    `,
+    `UPDATE provider_service
+     SET category_id = ?, title = ?, description = ?, pricing_type = ?,
+         price_amount = ?, currency = ?, service_location_type = ?, is_visible = ?
+     WHERE id = ? AND provider_id = ?`,
     [
-      pricingType,
-      pricingType === "quote" ? null : rateAmount,
-      isVisible ? 1 : 0,
-      providerNotes || null,
+      categoryId || null,
+      title,
+      description || null,
+      pricingType || "quote",
+      pricingType === "quote" ? null : priceAmount || null,
+      currency || "CAD",
+      serviceLocationType || "client_home",
+      isVisible !== false ? 1 : 0,
       providerServiceId,
       userId,
     ]
   );
 
   const [rows] = await db.execute(
-    `
-    SELECT
-      ps.provider_service_id AS providerServiceId,
-      s.name AS serviceName,
-      s.description AS description,
-      sc.name AS categoryName,
-      ps.pricing_type AS pricingType,
-      ps.rate_amount AS rateAmount,
-      ps.is_service_visible AS isServiceVisible,
-      ps.provider_notes AS providerNotes
-    FROM provider_service ps
-    JOIN service s
-      ON ps.service_id = s.service_id
-    JOIN service_category sc
-      ON s.category_id = sc.category_id
-    WHERE ps.provider_service_id = ?
-    `,
+    `${SERVICE_SELECT} WHERE ps.id = ?`,
     [providerServiceId]
   );
 
-  return rows[0];
+  return mapService(rows[0]);
+};
+
+export const toggleProviderServiceVisibility = async (userId, providerServiceId, isVisible) => {
+  const [existing] = await db.execute(
+    `SELECT id FROM provider_service WHERE id = ? AND provider_id = ? AND is_deleted = FALSE`,
+    [providerServiceId, userId]
+  );
+
+  if (existing.length === 0) {
+    throw new Error("Service not found");
+  }
+
+  await db.execute(
+    `UPDATE provider_service SET is_visible = ? WHERE id = ? AND provider_id = ?`,
+    [isVisible ? 1 : 0, providerServiceId, userId]
+  );
 };
 
 export const deleteProviderServiceForUser = async (userId, providerServiceId) => {
+  const [existing] = await db.execute(
+    `SELECT id FROM provider_service WHERE id = ? AND provider_id = ?`,
+    [providerServiceId, userId]
+  );
+
+  if (existing.length === 0) {
+    throw new Error("Service not found");
+  }
+
+  // Soft delete so past bookings retain the reference
   await db.execute(
-    `
-    DELETE FROM provider_service
-    WHERE provider_service_id = ? AND provider_id = ?
-    `,
+    `UPDATE provider_service SET is_deleted = TRUE, is_visible = FALSE WHERE id = ? AND provider_id = ?`,
     [providerServiceId, userId]
   );
 };

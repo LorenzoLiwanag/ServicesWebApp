@@ -1,40 +1,7 @@
--- ============================================================
--- Services Web App – Full Schema Reset
--- Run this to create a clean database from scratch.
--- WARNING: drops all existing tables in this database.
--- ============================================================
+-- Migration 001: Initial PRD schema
+-- Creates all core tables for the Services Web App marketplace.
 
-CREATE DATABASE IF NOT EXISTS Services_Web_App;
-USE Services_Web_App;
-
--- Drop in reverse dependency order
-DROP TABLE IF EXISTS notification;
-DROP TABLE IF EXISTS booking_request;
-DROP TABLE IF EXISTS provider_service;
-DROP TABLE IF EXISTS provider_profile;
-DROP TABLE IF EXISTS service_category;
-DROP TABLE IF EXISTS contact_inquiry;
-DROP TABLE IF EXISTS users;
-
--- Legacy tables from old schema
-DROP TABLE IF EXISTS review;
-DROP TABLE IF EXISTS payment_event;
-DROP TABLE IF EXISTS payment;
-DROP TABLE IF EXISTS payment_method;
-DROP TABLE IF EXISTS booking;
-DROP TABLE IF EXISTS message;
-DROP TABLE IF EXISTS message_thread;
-DROP TABLE IF EXISTS contact_submission;
-DROP TABLE IF EXISTS service;
-DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS user_role;
-DROP TABLE IF EXISTS role;
-DROP TABLE IF EXISTS user;
-
--- ============================================================
--- users
--- ============================================================
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
@@ -48,10 +15,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- ============================================================
--- provider_profile
--- ============================================================
-CREATE TABLE provider_profile (
+CREATE TABLE IF NOT EXISTS provider_profile (
     provider_id INT PRIMARY KEY,
     display_name VARCHAR(150) NOT NULL,
     bio TEXT,
@@ -67,10 +31,7 @@ CREATE TABLE provider_profile (
         ON DELETE CASCADE
 );
 
--- ============================================================
--- service_category
--- ============================================================
-CREATE TABLE service_category (
+CREATE TABLE IF NOT EXISTS service_category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     parent_category_id INT NULL,
     name VARCHAR(150) NOT NULL,
@@ -84,10 +45,7 @@ CREATE TABLE service_category (
         ON DELETE SET NULL
 );
 
--- ============================================================
--- provider_service
--- ============================================================
-CREATE TABLE provider_service (
+CREATE TABLE IF NOT EXISTS provider_service (
     id INT AUTO_INCREMENT PRIMARY KEY,
     provider_id INT NOT NULL,
     category_id INT,
@@ -109,10 +67,7 @@ CREATE TABLE provider_service (
         ON DELETE SET NULL
 );
 
--- ============================================================
--- booking_request
--- ============================================================
-CREATE TABLE booking_request (
+CREATE TABLE IF NOT EXISTS booking_request (
     id INT AUTO_INCREMENT PRIMARY KEY,
     client_id INT NOT NULL,
     provider_id INT NOT NULL,
@@ -137,10 +92,7 @@ CREATE TABLE booking_request (
         ON DELETE RESTRICT
 );
 
--- ============================================================
--- notification
--- ============================================================
-CREATE TABLE notification (
+CREATE TABLE IF NOT EXISTS notification (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     booking_request_id INT NULL,
@@ -166,10 +118,7 @@ CREATE TABLE notification (
         ON DELETE SET NULL
 );
 
--- ============================================================
--- contact_inquiry
--- ============================================================
-CREATE TABLE contact_inquiry (
+CREATE TABLE IF NOT EXISTS contact_inquiry (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -179,21 +128,3 @@ CREATE TABLE contact_inquiry (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
--- ============================================================
--- Indexes
--- ============================================================
-CREATE INDEX idx_users_email ON users(email);
-
-CREATE INDEX idx_provider_service_provider_id ON provider_service(provider_id);
-CREATE INDEX idx_provider_service_category_id ON provider_service(category_id);
-CREATE INDEX idx_provider_service_visible_deleted ON provider_service(is_visible, is_deleted);
-CREATE INDEX idx_provider_service_title ON provider_service(title);
-
-CREATE INDEX idx_booking_client_id ON booking_request(client_id);
-CREATE INDEX idx_booking_provider_id ON booking_request(provider_id);
-CREATE INDEX idx_booking_status ON booking_request(status);
-CREATE INDEX idx_booking_provider_service_id ON booking_request(provider_service_id);
-
-CREATE INDEX idx_notification_user_id ON notification(user_id);
-CREATE INDEX idx_notification_is_read ON notification(is_read);
