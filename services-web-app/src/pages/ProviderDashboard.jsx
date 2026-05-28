@@ -5,7 +5,6 @@ import ProviderModeHeader from "../components/provider-mode/ProviderModeHeader";
 import ProviderRequestsWidget from "../components/provider-mode/ProviderRequestsWidget";
 import ProviderUpcomingJobsWidget from "../components/provider-mode/ProviderUpcomingJobsWidget";
 import ProviderServicesWidget from "../components/provider-mode/ProviderServicesWidget";
-import ProviderQuickStats from "../components/provider-mode/ProviderQuickStats";
 import "../styles/provider-mode/providerDashboard.css";
 
 const ProviderDashboard = () => {
@@ -64,7 +63,6 @@ const ProviderDashboard = () => {
           </div>
 
           <div className="provider-column-right">
-            <ProviderQuickStats />
             <ProviderServicesWidget />
           </div>
         </div>
