@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import { fetchPendingUsers, approveUser, fetchPendingServices, approveProviderService } from "../api/admin.js";
+import { getContactSubmissions, updateContactSubmission } from "../api/contact.js";
 
 const th = { padding: "11px 14px", fontWeight: 700, fontSize: 12, color: "#374151", textTransform: "uppercase", letterSpacing: "0.4px" };
 const td = { padding: "11px 14px", fontSize: 13, color: "#374151" };
@@ -25,6 +26,21 @@ const AdminPage = () => {
   const [servicesSuccess, setServicesSuccess] = useState("");
   const [approvingServiceId, setApprovingServiceId] = useState(null);
 
+  const [inquiries, setInquiries] = useState([]);
+  const [inquiriesLoading, setInquiriesLoading] = useState(true);
+  const [inquiriesError, setInquiriesError] = useState("");
+  const [updatingInquiryId, setUpdatingInquiryId] = useState(null);
+  const [inquiryFilter, setInquiryFilter] = useState("all");
+
+  const loadInquiries = (status) => {
+    setInquiriesLoading(true);
+    const token = localStorage.getItem("token");
+    getContactSubmissions(token, status)
+      .then((data) => setInquiries(data.submissions))
+      .catch((e) => setInquiriesError(e.message))
+      .finally(() => setInquiriesLoading(false));
+  };
+
   useEffect(() => {
     fetchPendingUsers()
       .then(setPendingUsers)
@@ -35,6 +51,8 @@ const AdminPage = () => {
       .then(setPendingServices)
       .catch((e) => setServicesError(e.message))
       .finally(() => setServicesLoading(false));
+
+    loadInquiries("all");
   }, []);
 
   const handleApproveUser = async (userId) => {
@@ -65,6 +83,35 @@ const AdminPage = () => {
     } finally {
       setApprovingServiceId(null);
     }
+  };
+
+  const handleUpdateInquiryStatus = async (id, status) => {
+    setUpdatingInquiryId(id);
+    const token = localStorage.getItem("token");
+    try {
+      await updateContactSubmission(token, id, status);
+      setInquiries((prev) => prev.map((i) => i.id === id ? { ...i, status } : i));
+    } catch (e) {
+      setInquiriesError(e.message);
+    } finally {
+      setUpdatingInquiryId(null);
+    }
+  };
+
+  const handleFilterChange = (status) => {
+    setInquiryFilter(status);
+    loadInquiries(status);
+  };
+
+  const inquiryStatusBadge = (status) => {
+    const map = {
+      new:      { bg: "#dbeafe", color: "#1e40af" },
+      read:     { bg: "#e0e7ff", color: "#3730a3" },
+      resolved: { bg: "#dcfce7", color: "#166534" },
+      archived: { bg: "#f1f5f9", color: "#475569" },
+    };
+    const s = map[status] || map.new;
+    return <StatusBadge label={status} bg={s.bg} color={s.color} />;
   };
 
   const formatPrice = (svc) => {
@@ -209,6 +256,92 @@ const AdminPage = () => {
                       >
                         {approvingServiceId === svc.serviceId ? "Approving..." : "Approve"}
                       </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+
+        {/* ── Contact Inquiries ── */}
+        <section style={{ marginTop: 48 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1e3a5f", marginBottom: 14 }}>
+            Contact Inquiries
+          </h2>
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+            {["all", "new", "read", "resolved", "archived"].map((f) => (
+              <button
+                key={f}
+                onClick={() => handleFilterChange(f)}
+                style={{
+                  padding: "5px 14px",
+                  borderRadius: 20,
+                  border: "1px solid #cbd5e1",
+                  background: inquiryFilter === f ? "#1e3a5f" : "#fff",
+                  color: inquiryFilter === f ? "#fff" : "#374151",
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: "pointer",
+                  textTransform: "capitalize",
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {inquiriesError && (
+            <p style={{ color: "#dc2626", background: "#fef2f2", padding: "10px 14px", borderRadius: 8, marginBottom: 14, fontSize: 14 }}>
+              {inquiriesError}
+            </p>
+          )}
+
+          {inquiriesLoading && <p style={{ color: "#64748b", fontSize: 14 }}>Loading...</p>}
+          {!inquiriesLoading && inquiries.length === 0 && (
+            <p style={{ color: "#64748b", fontStyle: "italic", fontSize: 14 }}>No inquiries found.</p>
+          )}
+          {!inquiriesLoading && inquiries.length > 0 && (
+            <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+              <thead>
+                <tr style={{ background: "#e2e8f0" }}>
+                  <th style={th}>ID</th>
+                  <th style={th}>Name</th>
+                  <th style={th}>Email</th>
+                  <th style={th}>Subject</th>
+                  <th style={th}>Message</th>
+                  <th style={th}>Date</th>
+                  <th style={th}>Status</th>
+                  <th style={th}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inquiries.map((inq) => (
+                  <tr key={inq.id} style={{ borderBottom: "1px solid #e2e8f0", verticalAlign: "top" }}>
+                    <td style={td}>{inq.id}</td>
+                    <td style={td}>{inq.name}</td>
+                    <td style={td}>{inq.email}</td>
+                    <td style={td}>{inq.subject}</td>
+                    <td style={{ ...td, maxWidth: 240 }}>
+                      <span style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {inq.message}
+                      </span>
+                    </td>
+                    <td style={td}>{new Date(inq.created_at).toLocaleDateString()}</td>
+                    <td style={td}>{inquiryStatusBadge(inq.status)}</td>
+                    <td style={{ ...td, whiteSpace: "nowrap" }}>
+                      <select
+                        value={inq.status}
+                        disabled={updatingInquiryId === inq.id}
+                        onChange={(e) => handleUpdateInquiryStatus(inq.id, e.target.value)}
+                        style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", fontSize: 13, cursor: "pointer" }}
+                      >
+                        <option value="new">new</option>
+                        <option value="read">read</option>
+                        <option value="resolved">resolved</option>
+                        <option value="archived">archived</option>
+                      </select>
                     </td>
                   </tr>
                 ))}
