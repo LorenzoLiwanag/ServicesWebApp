@@ -1,224 +1,199 @@
+-- ============================================================
+-- Services Web App – Full Schema Reset
+-- Run this to create a clean database from scratch.
+-- WARNING: drops all existing tables in this database.
+-- ============================================================
+
 CREATE DATABASE IF NOT EXISTS Services_Web_App;
 USE Services_Web_App;
 
-CREATE TABLE user (
-  user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  first_name VARCHAR(100) NOT NULL,
-  last_name VARCHAR(100) NOT NULL,
-  username VARCHAR(100) NOT NULL UNIQUE,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  phone_number VARCHAR(30) NOT NULL,
-  address_text VARCHAR(500) NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  status VARCHAR(30) NOT NULL DEFAULT 'active',
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  last_login_at DATETIME NULL
+-- Drop in reverse dependency order
+DROP TABLE IF EXISTS notification;
+DROP TABLE IF EXISTS booking_request;
+DROP TABLE IF EXISTS provider_service;
+DROP TABLE IF EXISTS provider_profile;
+DROP TABLE IF EXISTS service_category;
+DROP TABLE IF EXISTS contact_inquiry;
+DROP TABLE IF EXISTS users;
+
+-- Legacy tables from old schema
+DROP TABLE IF EXISTS review;
+DROP TABLE IF EXISTS payment_event;
+DROP TABLE IF EXISTS payment;
+DROP TABLE IF EXISTS payment_method;
+DROP TABLE IF EXISTS booking;
+DROP TABLE IF EXISTS message;
+DROP TABLE IF EXISTS message_thread;
+DROP TABLE IF EXISTS contact_submission;
+DROP TABLE IF EXISTS service;
+DROP TABLE IF EXISTS address;
+DROP TABLE IF EXISTS user_role;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS user;
+
+-- ============================================================
+-- users
+-- ============================================================
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(30),
+    profile_photo_url VARCHAR(500),
+    role ENUM('client', 'admin') DEFAULT 'client',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE role (
-  role_id INT PRIMARY KEY AUTO_INCREMENT,
-  code VARCHAR(50) NOT NULL UNIQUE,
-  name VARCHAR(100) NOT NULL,
-  description VARCHAR(255) NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE
-);
-
-CREATE TABLE user_role (
-  user_id BIGINT NOT NULL,
-  role_id INT NOT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (user_id, role_id),
-  CONSTRAINT fk_user_role_user
-    FOREIGN KEY (user_id) REFERENCES user (user_id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_user_role_role
-    FOREIGN KEY (role_id) REFERENCES role (role_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-);
-
+-- ============================================================
+-- provider_profile
+-- ============================================================
 CREATE TABLE provider_profile (
-  provider_id BIGINT PRIMARY KEY,
-  is_provider_active BOOLEAN NOT NULL DEFAULT TRUE,
-  display_name VARCHAR(150) NOT NULL,
-  bio TEXT NULL,
-  profile_photo_url VARCHAR(500) NULL,
-  verification_status VARCHAR(50) NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_provider_profile_user
-    FOREIGN KEY (provider_id) REFERENCES user (user_id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+    provider_id INT PRIMARY KEY,
+    display_name VARCHAR(150) NOT NULL,
+    bio TEXT,
+    profile_photo_url VARCHAR(500),
+    is_provider_active BOOLEAN DEFAULT TRUE,
+    verification_status ENUM('unverified', 'pending', 'verified', 'rejected') DEFAULT 'unverified',
+    average_rating DECIMAL(3,2) DEFAULT 0.00,
+    total_reviews INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_provider_profile_user
+        FOREIGN KEY (provider_id) REFERENCES users(id)
+        ON DELETE CASCADE
 );
 
-CREATE TABLE address (
-  address_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  user_id BIGINT NULL,
-  label VARCHAR(50) NOT NULL,
-  line1 VARCHAR(255) NOT NULL,
-  line2 VARCHAR(255) NULL,
-  barangay VARCHAR(150) NULL,
-  city VARCHAR(150) NOT NULL,
-  province_region VARCHAR(150) NULL,
-  postal_code VARCHAR(20) NULL,
-  latitude DECIMAL(10, 8) NULL,
-  longitude DECIMAL(11, 8) NULL,
-  is_default BOOLEAN NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_address_user
-    FOREIGN KEY (user_id) REFERENCES user (user_id)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE
-);
-
+-- ============================================================
+-- service_category
+-- ============================================================
 CREATE TABLE service_category (
-  category_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  parent_category_id BIGINT NULL,
-  name VARCHAR(150) NOT NULL,
-  description TEXT NULL,
-  sort_order INT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_service_category_parent
-    FOREIGN KEY (parent_category_id) REFERENCES service_category (category_id)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    parent_category_id INT NULL,
+    name VARCHAR(150) NOT NULL,
+    description TEXT,
+    sort_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_service_category_parent
+        FOREIGN KEY (parent_category_id) REFERENCES service_category(id)
+        ON DELETE SET NULL
 );
 
-CREATE TABLE service (
-  service_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  category_id BIGINT NOT NULL,
-  name VARCHAR(150) NOT NULL,
-  description TEXT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_service_category
-    FOREIGN KEY (category_id) REFERENCES service_category (category_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-);
-
+-- ============================================================
+-- provider_service
+-- ============================================================
 CREATE TABLE provider_service (
-  provider_service_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  provider_id BIGINT NOT NULL,
-  service_id BIGINT NOT NULL,
-  pricing_type VARCHAR(20) NOT NULL,
-  rate_amount DECIMAL(10, 2) NULL,
-  rate_currency VARCHAR(3) NOT NULL DEFAULT 'PHP',
-  is_service_visible BOOLEAN NOT NULL DEFAULT TRUE,
-  provider_notes TEXT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_provider_service_provider
-    FOREIGN KEY (provider_id) REFERENCES provider_profile (provider_id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_provider_service_service
-    FOREIGN KEY (service_id) REFERENCES service (service_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    provider_id INT NOT NULL,
+    category_id INT,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    pricing_type ENUM('fixed', 'hourly', 'quote') DEFAULT 'quote',
+    price_amount DECIMAL(10,2),
+    currency VARCHAR(10) DEFAULT 'CAD',
+    service_location_type ENUM('client_home', 'provider_location', 'remote', 'flexible') DEFAULT 'client_home',
+    is_visible BOOLEAN DEFAULT TRUE,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_provider_service_provider
+        FOREIGN KEY (provider_id) REFERENCES users(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_provider_service_category
+        FOREIGN KEY (category_id) REFERENCES service_category(id)
+        ON DELETE SET NULL
 );
 
-CREATE TABLE booking (
-  booking_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  client_user_id BIGINT NOT NULL,
-  provider_service_id BIGINT NOT NULL,
-  service_address_id BIGINT NOT NULL,
-  scheduled_start_at DATETIME NOT NULL,
-  scheduled_end_at DATETIME NULL,
-  status VARCHAR(30) NOT NULL DEFAULT 'requested',
-  client_notes TEXT NULL,
-  provider_notes TEXT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_booking_client_user
-    FOREIGN KEY (client_user_id) REFERENCES user (user_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_booking_provider_service
-    FOREIGN KEY (provider_service_id) REFERENCES provider_service (provider_service_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_booking_service_address
-    FOREIGN KEY (service_address_id) REFERENCES address (address_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
+-- ============================================================
+-- booking_request
+-- ============================================================
+CREATE TABLE booking_request (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    provider_id INT NOT NULL,
+    provider_service_id INT NOT NULL,
+    requested_date DATE,
+    requested_time TIME,
+    scheduled_start DATETIME,
+    scheduled_end DATETIME,
+    client_message TEXT,
+    provider_response_message TEXT,
+    status ENUM('pending', 'accepted', 'declined', 'cancelled', 'completed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_booking_client
+        FOREIGN KEY (client_id) REFERENCES users(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_booking_provider
+        FOREIGN KEY (provider_id) REFERENCES users(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_booking_provider_service
+        FOREIGN KEY (provider_service_id) REFERENCES provider_service(id)
+        ON DELETE RESTRICT
 );
 
-CREATE TABLE payment_method (
-  payment_method_id INT PRIMARY KEY AUTO_INCREMENT,
-  code VARCHAR(50) NOT NULL UNIQUE,
-  display_name VARCHAR(100) NOT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE
+-- ============================================================
+-- notification
+-- ============================================================
+CREATE TABLE notification (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    booking_request_id INT NULL,
+    type ENUM(
+        'booking_created',
+        'booking_accepted',
+        'booking_declined',
+        'booking_cancelled',
+        'booking_completed',
+        'provider_job_pending',
+        'provider_job_upcoming',
+        'system_message'
+    ) NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notification_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_notification_booking
+        FOREIGN KEY (booking_request_id) REFERENCES booking_request(id)
+        ON DELETE SET NULL
 );
 
-CREATE TABLE payment (
-  payment_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  booking_id BIGINT NOT NULL,
-  payer_user_id BIGINT NOT NULL,
-  payment_method_id INT NOT NULL,
-  amount DECIMAL(10, 2) NOT NULL,
-  currency VARCHAR(3) NOT NULL DEFAULT 'PHP',
-  status VARCHAR(30) NOT NULL DEFAULT 'created',
-  gateway_provider VARCHAR(100) NULL,
-  gateway_reference VARCHAR(255) NULL,
-  checkout_url VARCHAR(500) NULL,
-  paid_at DATETIME NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_payment_booking
-    FOREIGN KEY (booking_id) REFERENCES booking (booking_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_payment_payer_user
-    FOREIGN KEY (payer_user_id) REFERENCES user (user_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_payment_method
-    FOREIGN KEY (payment_method_id) REFERENCES payment_method (payment_method_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
+-- ============================================================
+-- contact_inquiry
+-- ============================================================
+CREATE TABLE contact_inquiry (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    subject VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('new', 'read', 'resolved', 'archived') DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE payment_event (
-  payment_event_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  payment_id BIGINT NOT NULL,
-  event_type VARCHAR(100) NOT NULL,
-  new_status VARCHAR(30) NULL,
-  raw_payload TEXT NULL,
-  received_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_payment_event_payment
-    FOREIGN KEY (payment_id) REFERENCES payment (payment_id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-);
+-- ============================================================
+-- Indexes
+-- ============================================================
+CREATE INDEX idx_users_email ON users(email);
 
-CREATE TABLE review (
-  review_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  booking_id BIGINT NOT NULL,
-  reviewer_user_id BIGINT NOT NULL,
-  provider_user_id BIGINT NOT NULL,
-  rating TINYINT NOT NULL,
-  comment TEXT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_review_booking
-    FOREIGN KEY (booking_id) REFERENCES booking (booking_id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_review_reviewer_user
-    FOREIGN KEY (reviewer_user_id) REFERENCES user (user_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT fk_review_provider_user
-    FOREIGN KEY (provider_user_id) REFERENCES user (user_id)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT uq_review_booking UNIQUE (booking_id),
-  CONSTRAINT chk_review_rating CHECK (rating BETWEEN 1 AND 5)
-);
+CREATE INDEX idx_provider_service_provider_id ON provider_service(provider_id);
+CREATE INDEX idx_provider_service_category_id ON provider_service(category_id);
+CREATE INDEX idx_provider_service_visible_deleted ON provider_service(is_visible, is_deleted);
+CREATE INDEX idx_provider_service_title ON provider_service(title);
+
+CREATE INDEX idx_booking_client_id ON booking_request(client_id);
+CREATE INDEX idx_booking_provider_id ON booking_request(provider_id);
+CREATE INDEX idx_booking_status ON booking_request(status);
+CREATE INDEX idx_booking_provider_service_id ON booking_request(provider_service_id);
+
+CREATE INDEX idx_notification_user_id ON notification(user_id);
+CREATE INDEX idx_notification_is_read ON notification(is_read);

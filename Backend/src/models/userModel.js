@@ -1,43 +1,24 @@
 import database from "../config/Database.js";
 
-export const createUser = async ({
-  fullName,
-  userName,
-  phoneNumber,
-  address,
-  passwordHash
-}) => {
-  const sql = `
-    INSERT INTO users (full_name, user_name, phone_number, address_text, password_hash)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    fullName,
-    userName,
-    phoneNumber,
-    address,
-    passwordHash
-  ];
-
-  const [result] = await database.execute(sql, values);
+export const createUser = async ({ firstName, lastName, email, phoneNumber, passwordHash }) => {
+  const [result] = await database.execute(
+    `INSERT INTO users (first_name, last_name, email, phone_number, password_hash, approval_status)
+     VALUES (?, ?, ?, ?, ?, 'pending')`,
+    [firstName, lastName, email, phoneNumber, passwordHash]
+  );
   return result;
 };
 
-export const findUserByUsername = async (userName) => {
-  const sql = `SELECT * FROM users WHERE user_name = ?`;
-  const [rows] = await database.execute(sql, [userName]);
+export const findUserByEmail = async (email) => {
+  const [rows] = await database.execute(`SELECT * FROM users WHERE email = ?`, [email]);
   return rows[0];
 };
 
-export const findOtherUserByUsername = async (userName, userId) => {
-  const sql = `
-    SELECT *
-    FROM users
-    WHERE user_name = ? AND id <> ?
-  `;
-
-  const [rows] = await database.execute(sql, [userName, userId]);
+export const findUserByEmailExcluding = async (email, userId) => {
+  const [rows] = await database.execute(
+    `SELECT * FROM users WHERE email = ? AND id <> ?`,
+    [email, userId]
+  );
   return rows[0];
 };
 
@@ -45,79 +26,81 @@ export const findUserProfileById = async (userId) => {
   const sql = `
     SELECT
       u.id,
-      u.full_name,
-      u.user_name,
+      u.first_name,
+      u.last_name,
+      u.email,
       u.phone_number,
-      u.address_text,
+      u.profile_photo_url,
+      u.role,
+      u.is_active,
       u.created_at,
       pp.provider_id,
       pp.is_provider_active,
       pp.display_name,
       pp.bio,
-      pp.profile_photo_url,
+      pp.profile_photo_url AS provider_photo_url,
       pp.verification_status,
-      COUNT(ps.provider_service_id) AS services_count
+      pp.average_rating,
+      pp.total_reviews,
+      COUNT(ps.id) AS services_count
     FROM users u
-    LEFT JOIN provider_profile pp
-      ON pp.provider_id = u.id
+    LEFT JOIN provider_profile pp ON pp.provider_id = u.id
     LEFT JOIN provider_service ps
-      ON ps.provider_id = pp.provider_id
+      ON ps.provider_id = u.id AND ps.is_deleted = FALSE
     WHERE u.id = ?
     GROUP BY
-      u.id,
-      u.full_name,
-      u.user_name,
-      u.phone_number,
-      u.address_text,
-      u.created_at,
-      pp.provider_id,
-      pp.is_provider_active,
-      pp.display_name,
-      pp.bio,
-      pp.profile_photo_url,
-      pp.verification_status
+      u.id, u.first_name, u.last_name, u.email, u.phone_number,
+      u.profile_photo_url, u.role, u.is_active, u.created_at,
+      pp.provider_id, pp.is_provider_active, pp.display_name, pp.bio,
+      pp.profile_photo_url, pp.verification_status, pp.average_rating, pp.total_reviews
   `;
-
   const [rows] = await database.execute(sql, [userId]);
   return rows[0];
 };
 
 export const findUserPasswordById = async (userId) => {
-  const sql = `
-    SELECT id, password_hash
-    FROM users
-    WHERE id = ?
-  `;
-
-  const [rows] = await database.execute(sql, [userId]);
+  const [rows] = await database.execute(
+    `SELECT id, password_hash FROM users WHERE id = ?`,
+    [userId]
+  );
   return rows[0];
 };
 
 export const updateUserPasswordById = async (userId, passwordHash) => {
-  const sql = `
-    UPDATE users
-    SET password_hash = ?
-    WHERE id = ?
-  `;
-
-  const [result] = await database.execute(sql, [passwordHash, userId]);
+  const [result] = await database.execute(
+    `UPDATE users SET password_hash = ? WHERE id = ?`,
+    [passwordHash, userId]
+  );
   return result;
 };
 
-export const updateUserProfileById = async (
-  userId,
-  { fullName, userName, phoneNumber, address }
-) => {
-  const sql = `
-    UPDATE users
-    SET full_name = ?,
-        user_name = ?,
-        phone_number = ?,
-        address_text = ?
-    WHERE id = ?
-  `;
+export const findAllAdminIds = async () => {
+  const [rows] = await database.execute(
+    `SELECT id FROM users WHERE role = 'admin' AND approval_status = 'approved'`
+  );
+  return rows.map((r) => r.id);
+};
 
-  const values = [fullName, userName, phoneNumber, address, userId];
-  const [result] = await database.execute(sql, values);
+export const findPendingUsers = async () => {
+  const [rows] = await database.execute(
+    `SELECT id, first_name, last_name, email, approval_status, created_at
+     FROM users WHERE approval_status = 'pending' ORDER BY created_at ASC`
+  );
+  return rows;
+};
+
+export const approveUserById = async (userId, adminId) => {
+  const [result] = await database.execute(
+    `UPDATE users SET approval_status = 'approved', approved_at = NOW(), approved_by = ? WHERE id = ?`,
+    [adminId, userId]
+  );
+  return result;
+};
+
+export const updateUserProfileById = async (userId, { firstName, lastName, phoneNumber }) => {
+  const [result] = await database.execute(
+    `UPDATE users SET first_name = ?, last_name = ?, phone_number = ? WHERE id = ?`,
+    [firstName, lastName, phoneNumber, userId]
+  );
   return result;
 };

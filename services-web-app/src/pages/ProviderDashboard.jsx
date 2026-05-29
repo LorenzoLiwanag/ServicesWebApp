@@ -5,12 +5,14 @@ import ProviderModeHeader from "../components/provider-mode/ProviderModeHeader";
 import ProviderRequestsWidget from "../components/provider-mode/ProviderRequestsWidget";
 import ProviderUpcomingJobsWidget from "../components/provider-mode/ProviderUpcomingJobsWidget";
 import ProviderServicesWidget from "../components/provider-mode/ProviderServicesWidget";
-import ProviderQuickStats from "../components/provider-mode/ProviderQuickStats";
 import "../styles/provider-mode/providerDashboard.css";
 
 const ProviderDashboard = () => {
   const [providerProfile, setProviderProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [jobsRefreshKey, setJobsRefreshKey] = useState(0);
+
+  const handleBookingResponded = () => setJobsRefreshKey((k) => k + 1);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -59,12 +61,11 @@ const ProviderDashboard = () => {
 
         <div className="provider-content-wrapper">
           <div className="provider-column-left">
-            <ProviderRequestsWidget />
-            <ProviderUpcomingJobsWidget />
+            <ProviderRequestsWidget onResponded={handleBookingResponded} />
+            <ProviderUpcomingJobsWidget refreshKey={jobsRefreshKey} />
           </div>
 
           <div className="provider-column-right">
-            <ProviderQuickStats />
             <ProviderServicesWidget />
           </div>
         </div>
