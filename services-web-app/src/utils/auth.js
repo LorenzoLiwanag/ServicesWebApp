@@ -18,3 +18,19 @@ export const getStoredAuthSession = () => {
     return null;
   }
 };
+
+export const validateStoredSession = async () => {
+  const session = getStoredAuthSession();
+  if (!session) return;
+
+  try {
+    const res = await fetch("http://localhost:3000/api/auth/me", {
+      headers: { Authorization: `Bearer ${session.token}` }
+    });
+    if (!res.ok) {
+      clearAuthSession();
+    }
+  } catch {
+    // Network error — keep session, user may be temporarily offline
+  }
+};

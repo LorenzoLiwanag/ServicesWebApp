@@ -1,117 +1,87 @@
 import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import { registerUserService, loginUserService } from "../services/authService.js";
 import {
-  findOtherUserByUsername,
+  findUserByEmailExcluding,
   findUserPasswordById,
   findUserProfileById,
   updateUserPasswordById,
   updateUserProfileById,
 } from "../models/userModel.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 const formatUser = (user) => ({
-  id: user.userId,                 // 🔥 FIX
-  fullName: user.fullName,
-  userName: user.userName,
+  id: user.userId,
+  firstName: user.firstName,
+  lastName: user.lastName,
+  email: user.email,
   phoneNumber: user.phoneNumber,
-  address: user.address
+  role: user.role ?? "client",
 });
 
-const getAuthenticatedUserId = (req) => {
+const getUserIdFromRequest = (req) => {
   const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : null;
-
-  if (!token) {
-    return null;
-  }
-
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) return null;
   const decoded = jwt.verify(token, JWT_SECRET);
-  const tokenUserId = Number(decoded.userId);
-  const headerUserId = Number(req.headers["x-user-id"]);
-
-  return tokenUserId || headerUserId || null;
+  return Number(decoded.userId);
 };
 
 export const registerUser = async (req, res) => {
   try {
-    const user = await registerUserService(req.body);
-
-    const token = jwt.sign(
-      { userId: user.userId, fullName: user.fullName },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.status(201).json({
-      message: "User registered successfully",
-      user: formatUser(user),      // 🔥 FIX
-      token
-    });
+    await registerUserService(req.body);
+    res.status(201).json({ message: "Registration successful. Please wait for admin approval before logging in." });
   } catch (err) {
-    res.status(400).json({
-      message: err.message
-    });
+    res.status(400).json({ message: err.message });
   }
 };
 
 export const loginUser = async (req, res) => {
   try {
     const user = await loginUserService(req.body);
-
     const token = jwt.sign(
-      { userId: user.userId, fullName: user.fullName },
+      { userId: user.userId, firstName: user.firstName, role: user.role },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: "24h" }
     );
-
-    res.status(200).json({
-      message: "Login successful",
-      user: formatUser(user),      // 🔥 FIX
-      token
-    });
+    res.status(200).json({ message: "Login successful", user: formatUser(user), token });
   } catch (err) {
-    res.status(400).json({
-      message: err.message
-    });
+    res.status(400).json({ message: err.message });
   }
 };
 
 export const getCurrentUserProfile = async (req, res) => {
   try {
-    const userId = getAuthenticatedUserId(req);
+    const userId = getUserIdFromRequest(req);
+    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
 
-    if (!userId) {
-      return res.status(401).json({ message: "Missing authorization token" });
-    }
-
-    const userProfile = await findUserProfileById(userId);
-
-    if (!userProfile) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const profile = await findUserProfileById(userId);
+    if (!profile) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json({
       user: {
-        id: userProfile.id,
-        fullName: userProfile.full_name,
-        userName: userProfile.user_name,
-        phoneNumber: userProfile.phone_number,
-        address: userProfile.address_text,
-        createdAt: userProfile.created_at,
+        id: profile.id,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        email: profile.email,
+        phoneNumber: profile.phone_number,
+        profilePhotoUrl: profile.profile_photo_url,
+        role: profile.role,
+        isActive: Boolean(profile.is_active),
+        createdAt: profile.created_at,
       },
-      providerProfile: userProfile.provider_id
+      providerProfile: profile.provider_id
         ? {
-            providerId: userProfile.provider_id,
-            isProviderActive: Boolean(userProfile.is_provider_active),
-            displayName: userProfile.display_name,
-            bio: userProfile.bio,
-            profilePhotoUrl: userProfile.profile_photo_url,
-            verificationStatus: userProfile.verification_status,
-            servicesCount: Number(userProfile.services_count || 0),
+            providerId: profile.provider_id,
+            isProviderActive: Boolean(profile.is_provider_active),
+            displayName: profile.display_name,
+            bio: profile.bio,
+            profilePhotoUrl: profile.provider_photo_url,
+            verificationStatus: profile.verification_status,
+            averageRating: profile.average_rating !== null ? Number(profile.average_rating) : 0,
+            totalReviews: Number(profile.total_reviews || 0),
+            servicesCount: Number(profile.services_count || 0),
           }
         : null,
     });
@@ -119,106 +89,92 @@ export const getCurrentUserProfile = async (req, res) => {
     if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
-
     res.status(500).json({ message: "Failed to load profile" });
   }
 };
 
 export const updateCurrentUserProfile = async (req, res) => {
   try {
-    const userId = getAuthenticatedUserId(req);
+    const userId = getUserIdFromRequest(req);
+    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
 
-    if (!userId) {
-      return res.status(401).json({ message: "Missing authorization token" });
+    const { firstName, lastName, phoneNumber } = req.body;
+
+    if (!firstName || !lastName || !phoneNumber) {
+      return res.status(400).json({ message: "First name, last name, and phone number are required" });
     }
 
-    const { fullName, userName, phoneNumber, address } = req.body;
+    await updateUserProfileById(userId, { firstName, lastName, phoneNumber });
 
-    if (!fullName || !userName || !phoneNumber || !address) {
-      return res.status(400).json({ message: "All profile fields are required" });
-    }
-
-    const existingUser = await findOtherUserByUsername(userName, userId);
-
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already taken" });
-    }
-
-    await updateUserProfileById(userId, {
-      fullName,
-      userName,
-      phoneNumber,
-      address,
-    });
-
-    const updatedUser = await findUserProfileById(userId);
+    const updated = await findUserProfileById(userId);
 
     res.status(200).json({
       message: "Profile updated successfully",
       user: {
-        id: updatedUser.id,
-        fullName: updatedUser.full_name,
-        userName: updatedUser.user_name,
-        phoneNumber: updatedUser.phone_number,
-        address: updatedUser.address_text,
-        createdAt: updatedUser.created_at,
+        id: updated.id,
+        firstName: updated.first_name,
+        lastName: updated.last_name,
+        email: updated.email,
+        phoneNumber: updated.phone_number,
+        profilePhotoUrl: updated.profile_photo_url,
+        role: updated.role,
       },
     });
   } catch (err) {
     if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
-
     res.status(500).json({ message: "Failed to update profile" });
   }
 };
 
 export const verifyCurrentUserPassword = async (req, res) => {
   try {
-    const userId = getAuthenticatedUserId(req);
-
-    if (!userId) {
-      return res.status(401).json({ message: "Missing authorization token" });
-    }
+    const userId = getUserIdFromRequest(req);
+    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
 
     const { currentPassword } = req.body;
-
-    if (!currentPassword) {
-      return res.status(400).json({ message: "Current password is required" });
-    }
+    if (!currentPassword) return res.status(400).json({ message: "Current password is required" });
 
     const user = await findUserPasswordById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const isCurrentPasswordValid = await bcrypt.compare(
-      currentPassword,
-      user.password_hash
-    );
-
-    if (!isCurrentPasswordValid) {
-      return res.status(400).json({ message: "Incorrect password" });
-    }
+    const isValid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isValid) return res.status(400).json({ message: "Incorrect password" });
 
     res.status(200).json({ message: "Password verified" });
   } catch (err) {
     if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
-
     res.status(500).json({ message: "Failed to verify password" });
+  }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const profile = await findUserProfileById(req.userId);
+    if (!profile) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({
+      user: {
+        id: profile.id,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        email: profile.email,
+        phoneNumber: profile.phone_number,
+        role: profile.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load user" });
   }
 };
 
 export const changeCurrentUserPassword = async (req, res) => {
   try {
-    const userId = getAuthenticatedUserId(req);
-
-    if (!userId) {
-      return res.status(401).json({ message: "Missing authorization token" });
-    }
+    const userId = getUserIdFromRequest(req);
+    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
 
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
@@ -231,29 +187,19 @@ export const changeCurrentUserPassword = async (req, res) => {
     }
 
     const user = await findUserPasswordById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const isValid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isValid) return res.status(400).json({ message: "Current password is incorrect" });
 
-    const isCurrentPasswordValid = await bcrypt.compare(
-      currentPassword,
-      user.password_hash
-    );
-
-    if (!isCurrentPasswordValid) {
-      return res.status(400).json({ message: "Current password is incorrect" });
-    }
-
-    const newPasswordHash = await bcrypt.hash(newPassword, 10);
-    await updateUserPasswordById(user.id, newPasswordHash);
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await updateUserPasswordById(userId, newHash);
 
     res.status(200).json({ message: "Password updated successfully" });
   } catch (err) {
     if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
-
     res.status(500).json({ message: "Failed to update password" });
   }
 };

@@ -1,63 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/provider-mode/providerNavbar.css";
 import { clearAuthSession } from "../../utils/auth.js";
+import NotificationBell from "../shared/NotificationBell.jsx";
 
 const ProviderNavbar = ({ isProviderMode = true }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggle = () => setOpen((prev) => !prev);
-
-  const handleProviderHome = () => {
-    navigate("/provider-dashboard");
-    setOpen(false);
-  };
-
-  const handleJobsScroll = () => {
-    // Scroll to jobs section
-    const element = document.querySelector(".provider-column-left");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-    setOpen(false);
-  };
-
-  const handleServicesScroll = () => {
-    // Scroll to services widget
-    const element = document.querySelector(".provider-column-right");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-    setOpen(false);
-  };
+  const closeMenu = () => setOpen(false);
 
   const handleProfile = () => {
     navigate("/profile");
-    setOpen(false);
+    closeMenu();
   };
 
   const handleSwitchToClient = () => {
     navigate("/client-dashboard");
-    setOpen(false);
+    closeMenu();
+  };
+
+  const handleMessages = () => {
+    navigate("/messages");
+    closeMenu();
   };
 
   const handleLogout = () => {
     clearAuthSession();
     navigate("/login", { replace: true });
-    setOpen(false);
+    closeMenu();
   };
 
   useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth > 768 && open) setOpen(false);
+      if (window.innerWidth > 1050) setOpen(false);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [open]);
+  }, []);
 
   if (!isProviderMode) {
-    // Return regular navbar
     return null;
   }
 
@@ -66,79 +49,30 @@ const ProviderNavbar = ({ isProviderMode = true }) => {
       <div className="provider-navbar-area">
         <div className="provider-navbar-container">
           <nav className="provider-site-navbar" aria-label="Provider navigation">
-            <a href="/provider-dashboard" className="provider-site-logo">
+            <Link to="/" className="provider-site-logo" onClick={closeMenu}>
               Subic Bay Home Services
-            </a>
+            </Link>
 
             <ul
               id="provider-main-navigation"
               className={`provider-nav-menu ${open ? "open" : ""}`}
             >
-              <li>
-                <button onClick={handleProviderHome} className="nav-link">
-                  Provider Home
-                </button>
-              </li>
-              <li>
-                <button onClick={handleJobsScroll} className="nav-link">
-                  Jobs
-                </button>
-              </li>
-              <li>
-                <button onClick={handleServicesScroll} className="nav-link">
-                  My Services
-                </button>
-              </li>
-
-              {/* Mobile-only actions inside dropdown */}
-              <li className="provider-nav-actions provider-nav-actions-mobile">
-                <button 
-                  className="provider-nav-btn provider-nav-btn-secondary" 
-                  onClick={handleProfile}
-                >
-                  Profile
-                </button>
-                <button 
-                  className="provider-nav-btn provider-nav-btn-secondary" 
-                  onClick={handleSwitchToClient}
-                >
-                  Client Mode
-                </button>
-                <button 
-                  className="provider-nav-btn provider-nav-btn-danger" 
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
-              </li>
+              <li><Link to="/" onClick={closeMenu}>Home</Link></li>
+              <li><button onClick={handleMessages} className="provider-nav-link-btn">Messages</button></li>
+              <li><button onClick={handleSwitchToClient} className="provider-nav-link-btn">Switch to Client Mode</button></li>
+              <li><button onClick={handleProfile} className="provider-nav-link-btn">Profile</button></li>
+              <li><button onClick={handleLogout} className="provider-nav-link-btn">Logout</button></li>
             </ul>
 
-            {/* Desktop buttons on the right */}
-            <div className="provider-nav-actions provider-nav-actions-desktop">
-              <button 
-                className="provider-nav-btn provider-nav-btn-secondary" 
-                onClick={handleProfile}
-              >
-                Profile
-              </button>
-              <button 
-                className="provider-nav-btn provider-nav-btn-secondary" 
-                onClick={handleSwitchToClient}
-              >
-                Switch to Client Mode
-              </button>
-              <button 
-                className="provider-nav-btn provider-nav-btn-danger" 
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
+            <div className="provider-nav-actions">
+              <NotificationBell />
             </div>
 
             <button
               className={`provider-nav-toggler ${open ? "toggler-open" : ""}`}
               aria-expanded={open}
               aria-controls="provider-main-navigation"
+              aria-label="Toggle navigation menu"
               onClick={toggle}
             >
               <span aria-hidden="true"></span>

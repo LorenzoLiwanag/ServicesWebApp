@@ -7,11 +7,12 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    userName: "",
+    email: "",
     password: ""
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,6 +24,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
@@ -38,22 +40,32 @@ const LoginForm = () => {
       if (!response.ok) {
         setError(data.message);
       } else {
-
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("token", data.token);
 
-        // ✅ redirect to dashboard
-        navigate("/client-dashboard");
+        if (data.user?.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/client-dashboard");
+        }
       }
 
     } catch (err) {
       setError("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-page">
-      <AuthHomeButton />
+      <Link to="/" className="auth-home-link" aria-label="Go to landing page">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9 21v-7h6v7" />
+        </svg>
+      </Link>
 
       <div className="login-card">
 
@@ -69,12 +81,12 @@ const LoginForm = () => {
           <form className="loginForm" onSubmit={handleSubmit}>
 
             <div className="form-group">
-              <label>Username</label>
+              <label>Email</label>
               <input
-                type="text"
-                name="userName"
-                placeholder="Enter your username"
-                value={formData.userName}
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
@@ -94,8 +106,8 @@ const LoginForm = () => {
 
             {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <button type="submit" className="login-btn">
-              Login
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
             </button>
 
             <div className="login-links">
