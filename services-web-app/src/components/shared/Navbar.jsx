@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/shared/navbar.css";
+import { getDashboardPath, getStoredAuthSession } from "../../utils/auth.js";
 
 const NAV_BREAKPOINT = 1050;
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const authSession = getStoredAuthSession();
+  const dashboardPath = authSession ? getDashboardPath(authSession.user) : null;
 
   const toggle = () => setOpen((prev) => !prev);
   const closeMenu = () => setOpen(false);
@@ -40,16 +43,26 @@ const Navbar = () => {
               <li><a href="#contact" onClick={closeMenu}>Contact</a></li>
 
               <li className="nav-actions nav-actions-mobile">
-                <Link className="nav-btn nav-btn-primary" to="/register" onClick={closeMenu}>Get Started</Link>
-                <Link className="nav-btn nav-btn-ghost" to="/login" onClick={closeMenu}>Login</Link>
-                <Link className="nav-btn nav-btn-ghost" to="/client-dashboard" onClick={closeMenu}>Dashboard</Link>
+                {authSession ? (
+                  <Link className="nav-btn nav-btn-ghost" to={dashboardPath} onClick={closeMenu}>Dashboard</Link>
+                ) : (
+                  <>
+                    <Link className="nav-btn nav-btn-primary" to="/register" onClick={closeMenu}>Get Started</Link>
+                    <Link className="nav-btn nav-btn-ghost" to="/login" onClick={closeMenu}>Login</Link>
+                  </>
+                )}
               </li>
             </ul>
 
             <div className="nav-actions nav-actions-desktop">
-              <Link className="nav-btn nav-btn-primary" to="/register">Get Started</Link>
-              <Link className="nav-btn nav-btn-ghost" to="/login">Login</Link>
-              <Link className="nav-btn nav-btn-ghost" to="/client-dashboard">Dashboard</Link>
+              {authSession ? (
+                <Link className="nav-btn nav-btn-ghost" to={dashboardPath}>Dashboard</Link>
+              ) : (
+                <>
+                  <Link className="nav-btn nav-btn-primary" to="/register">Get Started</Link>
+                  <Link className="nav-btn nav-btn-ghost" to="/login">Login</Link>
+                </>
+              )}
             </div>
 
             <button

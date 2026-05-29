@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthHomeButton from "../shared/AuthHomeButton.jsx";
+import { getDashboardPath } from "../../utils/auth.js";
 import "../../styles/login/login.css";
 
 const LoginForm = () => {
@@ -43,11 +43,7 @@ const LoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("token", data.token);
 
-        if (data.user?.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/client-dashboard");
-        }
+        navigate(getDashboardPath(data.user));
       }
 
     } catch (err) {

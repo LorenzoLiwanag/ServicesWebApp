@@ -19,6 +19,10 @@ export const getStoredAuthSession = () => {
   }
 };
 
+export const getDashboardPath = (user) => {
+  return user?.role === "admin" ? "/admin" : "/client-dashboard";
+};
+
 export const validateStoredSession = async () => {
   const session = getStoredAuthSession();
   if (!session) return;
