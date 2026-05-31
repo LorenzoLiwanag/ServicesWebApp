@@ -1,22 +1,60 @@
-.services-section {
+.dashboard-featured-section {
     width: 100%;
 }
 
-.services-heading{
+.dashboard-featured-section .services-heading{
     margin-bottom:25px;
     font-size: 20px;
     font-weight: 700;
     color: #223d68;
+    text-align: center;
 }
 
-.services-grid {
+.dashboard-featured-section .featured-carousel {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-featured-section .services-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    auto-rows: max-content;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 28px;
+    align-items: center;
+    max-width: 1120px;
+    margin: 0 auto 32px;
 }
 
-.service-card {
+.dashboard-featured-section .featured-scroll-button {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    background: #fff;
+    color: #223d68;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+
+.dashboard-featured-section .featured-scroll-button:hover {
+    transform: translateY(-50%) translateY(-1px);
+}
+
+.dashboard-featured-section .featured-scroll-button-left {
+    left: calc(50% - 260px);
+}
+
+.dashboard-featured-section .featured-scroll-button-right {
+    right: calc(50% - 260px);
+}
+
+.dashboard-featured-section .service-card {
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -27,77 +65,131 @@
     min-height: 300px;
 }
 
+.dashboard-featured-section .featured-card-primary {
+    min-height: 360px;
+    transform: scale(1.06);
+    opacity: 1;
+    z-index: 1;
+}
+
+.dashboard-featured-section .featured-card-primary:hover {
+    transform: translateY(-4px) scale(1.06);
+}
+
+.dashboard-featured-section .featured-card-side {
+    opacity: 0.55;
+}
+
+.dashboard-featured-section .featured-card-side:hover {
+    opacity: 0.72;
+}
+
+.dashboard-featured-section .featured-service-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
 /* Tablet - 2 columns */
 @media (max-width: 1200px) {
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .dashboard-featured-section .services-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
     }
 
-    .service-card {
+    .dashboard-featured-section .service-card {
         min-height: 280px;
         padding: 18px;
+    }
+
+    .dashboard-featured-section .featured-card-primary {
+        min-height: 320px;
+    }
+
+    .dashboard-featured-section .featured-scroll-button-left {
+        left: 8px;
+    }
+
+    .dashboard-featured-section .featured-scroll-button-right {
+        right: 8px;
     }
 }
 
 /* Smaller tablets - 1 column */
 @media (max-width: 768px) {
-    .services-grid {
+    .dashboard-featured-section .services-grid {
         grid-template-columns: 1fr;
         gap: 12px;
     }
 
-    .service-card {
-        min-height: auto;
-        padding: 16px;
+    .dashboard-featured-section .featured-card-side {
+        display: none;
     }
 
-    .services-heading {
+    .dashboard-featured-section .service-card,
+    .dashboard-featured-section .featured-card-primary {
+        min-height: auto;
+        padding: 16px;
+        transform: none;
+    }
+
+    .dashboard-featured-section .featured-card-primary:hover {
+        transform: translateY(-4px);
+    }
+
+    .dashboard-featured-section .services-heading {
         font-size: 18px;
         margin-bottom: 16px;
+    }
+
+    .dashboard-featured-section .featured-scroll-button {
+        width: 38px;
+        height: 38px;
     }
 }
 
 /* Mobile devices */
 @media (max-width: 480px) {
-    .services-grid {
+    .dashboard-featured-section .services-grid {
         grid-template-columns: 1fr;
         gap: 10px;
     }
 
-    .service-card {
+    .dashboard-featured-section .service-card {
         min-height: auto;
         padding: 14px;
     }
 
-    .services-heading {
+    .dashboard-featured-section .services-heading {
         font-size: 16px;
         margin-bottom: 12px;
     }
 
-    .service-title {
+    .dashboard-featured-section .service-title {
         font-size: 15px;
     }
 
-    .service-desc {
+    .dashboard-featured-section .service-desc {
         font-size: 13px;
     }
 
-    .btn-contact,
-    .btn-book-now {
+    .dashboard-featured-section .btn-contact,
+    .dashboard-featured-section .btn-book-now {
         padding: 8px 12px;
         font-size: 13px;
     }
 }
 
-.service-buttons {
+.dashboard-featured-section .service-buttons {
     display: flex;
     gap: 8px;
     margin-top: auto;
 }
 
-.btn-contact,
-.btn-book-now {
+.dashboard-featured-section .btn-contact,
+.dashboard-featured-section .btn-book-now {
     flex: 1;
     padding: 10px 16px;
     border: none;
@@ -108,24 +200,24 @@
     transition: all 0.3s ease;
 }
 
-.btn-contact {
+.dashboard-featured-section .btn-contact {
     background-color: #f0f0f0;
     color: #333;
     border: 1px solid #ddd;
 }
 
-.btn-contact:hover {
+.dashboard-featured-section .btn-contact:hover {
     background-color: #e0e0e0;
     border-color: #bbb;
 }
 
-.btn-book-now {
+.dashboard-featured-section .btn-book-now {
     background: linear-gradient(135deg, #0d6efd, #60a5fa);
     color: white;
     border: none;
 }
 
-.btn-book-now:hover {
+.dashboard-featured-section .btn-book-now:hover {
     transform: translateY(-1px);
     box-shadow: 0 12px 28px rgba(13, 110, 253, 0.25);
 }

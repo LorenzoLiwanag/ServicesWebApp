@@ -27,7 +27,6 @@
 /* ---- Section container: stops the “too wide” look ---- */
 .bookings-area {
   width: 100%;
-
 }
 
 /* ---- Header row ---- */
@@ -49,9 +48,35 @@
 
 /* ---- Two widgets layout ---- */
 .bookings-containers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(360px, 500px));
+  gap: var(--gap);
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.bookings-panel {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
+}
+
+.bookings-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.bookings-section-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
 }
 
 /* ---- Widget card ---- */
@@ -61,9 +86,10 @@
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--shadow);
-  min-height: 220px;
+  height: 360px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* ---- Widget header (title + count badge) ---- */
@@ -271,6 +297,7 @@
 @media (max-width: 920px) {
   .bookings-containers {
     grid-template-columns: 1fr;
+    max-width: 420px;
   }
 }
 
@@ -282,7 +309,7 @@
 
   .bookings-widget {
     padding: 18px;
-    min-height: auto;
+    height: 320px;
   }
 
   .bookings-containers {
@@ -303,7 +330,8 @@
 
   .bookings-widget {
     padding: 14px;
-    min-height: auto;
+    height: auto;
+    min-height: 260px;
   }
 
   .bookings-containers {

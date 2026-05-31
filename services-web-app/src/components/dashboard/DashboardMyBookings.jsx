@@ -50,101 +50,105 @@ const DashboardMyBookings = () => {
   return (
     <>
       <div className="bookings-area">
-        <div className="bookings-header">
-          <h2>My Bookings</h2>
-        </div>
-
         <div className="bookings-containers">
 
           {/* UPCOMING WIDGET */}
-          <div className="bookings-widget upcoming-widget">
-            <div className="widget-header">
-              <h3 className="widget-heading">Active Bookings</h3>
-              <span className="widget-badge">{upcoming.length}</span>
+          <div className="bookings-panel">
+            <div className="bookings-section-heading">
+              <h2>My Bookings</h2>
             </div>
 
-            {upcoming.length === 0 ? (
-              <p style={{ fontSize: 14, color: "rgba(17,17,17,0.5)", margin: "8px 0" }}>No active bookings.</p>
-            ) : (
-              upcoming.map((b) => (
-                <div key={b.bookingId} className="booking-row">
-                  <div className="booking-info">
-                    <p className="widget-date">
-                      {formatDate(b.requestedDate)}{b.requestedTime ? ` at ${formatTime(b.requestedTime)}` : ""}
-                    </p>
-                    <p className="widget-service">{b.serviceTitle}</p>
-                    <p className="widget-provider">{b.providerName}</p>
-                  </div>
+            <div className="bookings-widget upcoming-widget">
+              <div className="widget-header">
+                <h3 className="widget-heading">Active Bookings</h3>
+                <span className="widget-badge">{upcoming.length}</span>
+              </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-end" }}>
-                    <BookingStatusBadge status={b.status} />
-                    <button
-                      className="btn-contact"
-                      style={{ fontSize: "12px", padding: "4px 10px" }}
-                      onClick={() => setContactModal({ serviceId: b.serviceId })}
-                    >
-                      Contact
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
+              {upcoming.length === 0 ? (
+                <p style={{ fontSize: 14, color: "rgba(17,17,17,0.5)", margin: "8px 0" }}>No active bookings.</p>
+              ) : (
+                upcoming.map((b) => (
+                  <div key={b.bookingId} className="booking-row">
+                    <div className="booking-info">
+                      <p className="widget-date">
+                        {formatDate(b.requestedDate)}{b.requestedTime ? ` at ${formatTime(b.requestedTime)}` : ""}
+                      </p>
+                      <p className="widget-service">{b.serviceTitle}</p>
+                      <p className="widget-provider">{b.providerName}</p>
+                    </div>
 
-            <button className="view-all-button" onClick={() => navigate("/my-bookings")}>
-              View all bookings
-            </button>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-end" }}>
+                      <BookingStatusBadge status={b.status} />
+                      <button
+                        className="btn-contact"
+                        style={{ fontSize: "12px", padding: "4px 10px" }}
+                        onClick={() => setContactModal({ serviceId: b.serviceId })}
+                      >
+                        Contact
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+
+              <button className="view-all-button" onClick={() => navigate("/my-bookings")}>
+                View all bookings
+              </button>
+            </div>
           </div>
 
           {/* HISTORY WIDGET */}
-          <div className="bookings-widget history-widget">
-            <div className="widget-header">
-              <h3 className="widget-heading">Recent Services</h3>
+          <div className="bookings-panel">
+            <div className="bookings-section-heading">
+              <h2>Recent Services</h2>
               <span className="widget-badge">{history.length}</span>
             </div>
 
-            {history.length === 0 ? (
-              <p style={{ fontSize: 14, color: "rgba(17,17,17,0.5)", margin: "8px 0" }}>No completed services yet.</p>
-            ) : (
-              history.map((b) => (
-                <div key={b.bookingId} className="history-card">
-                  <div className="booking-info">
-                    <p className="widget-date">{formatDate(b.requestedDate)}</p>
-                    <p className="widget-service">{b.serviceTitle}</p>
-                    <p className="widget-provider">{b.providerName}</p>
+            <div className="bookings-widget history-widget">
+              {history.length === 0 ? (
+                <p style={{ fontSize: 14, color: "rgba(17,17,17,0.5)", margin: "8px 0" }}>No completed services yet.</p>
+              ) : (
+                history.map((b) => (
+                  <div key={b.bookingId} className="history-card">
+                    <div className="booking-info">
+                      <p className="widget-date">{formatDate(b.requestedDate)}</p>
+                      <p className="widget-service">{b.serviceTitle}</p>
+                      <p className="widget-provider">{b.providerName}</p>
+                    </div>
+
+                    <div className="history-actions">
+                      <button
+                        className="re-book-button"
+                        onClick={() =>
+                          setBookModal({
+                            providerServiceId: b.serviceId,
+                            providerId: b.providerId,
+                            serviceName: b.serviceTitle,
+                            providerName: b.providerName,
+                            pricingType: b.pricingType,
+                            rateAmount: b.priceAmount,
+                          })
+                        }
+                      >
+                        Book Again
+                      </button>
+
+                      <button className="review-button" disabled>
+                        Leave Review
+                      </button>
+
+                      <button
+                        className="btn-contact"
+                        style={{ fontSize: "12px", padding: "4px 10px" }}
+                        onClick={() => setContactModal({ serviceId: b.serviceId })}
+                      >
+                        Contact
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="history-actions">
-                    <button
-                      className="re-book-button"
-                      onClick={() =>
-                        setBookModal({
-                          providerServiceId: b.serviceId,
-                          providerId: b.providerId,
-                          serviceName: b.serviceTitle,
-                          providerName: b.providerName,
-                          pricingType: b.pricingType,
-                          rateAmount: b.priceAmount,
-                        })
-                      }
-                    >
-                      Book Again
-                    </button>
-
-                    <button className="review-button" disabled>
-                      Leave Review
-                    </button>
-
-                    <button
-                      className="btn-contact"
-                      style={{ fontSize: "12px", padding: "4px 10px" }}
-                      onClick={() => setContactModal({ serviceId: b.serviceId })}
-                    >
-                      Contact
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </div>
 
         </div>

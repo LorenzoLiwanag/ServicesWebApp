@@ -7,34 +7,30 @@
 }
 
 .dashboard-content-wrapper {
-  display: flex;
-  gap: 20px;
-  padding: 20px 24px;
-  max-width: 1600px;
+  display: block;
+  padding: 20px 24px 42px;
+  max-width: 1120px;
   margin: 0 auto;
 }
 
-.dashboard-services-column {
-  flex: 2.5;
-  min-width: 0;
+.dashboard-featured-wrapper {
+  padding: 36px 24px 0;
+  max-width: 1120px;
+  margin: 0 auto;
 }
 
 .dashboard-bookings-column {
-  flex: 1.5;
-  min-width: 0;
+  width: 100%;
 }
 
 /* Tablet - Stack layout */
 @media (max-width: 1200px) {
   .dashboard-content-wrapper {
-    flex-direction: column;
-    gap: 24px;
-    padding: 20px 20px;
+    padding: 20px 20px 42px;
   }
 
-  .dashboard-services-column,
-  .dashboard-bookings-column {
-    flex: 1;
+  .dashboard-featured-wrapper {
+    padding: 36px 20px 0;
   }
 }
 
@@ -46,8 +42,11 @@
   }
 
   .dashboard-content-wrapper {
-    padding: 16px 16px;
-    gap: 16px;
+    padding: 16px 16px 32px;
+  }
+
+  .dashboard-featured-wrapper {
+    padding: 30px 16px 0;
   }
 }
 
@@ -59,7 +58,14 @@
   }
 
   .dashboard-content-wrapper {
-    padding: 12px;
-    gap: 12px;
+    padding: 14px 12px 28px;
   }
+
+  .dashboard-featured-wrapper {
+    padding: 26px 12px 0;
+  }
+}
+
+.client-dashboard-page .search-container {
+  margin-bottom: 34px;
 }

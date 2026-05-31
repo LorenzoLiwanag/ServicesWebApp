@@ -17,19 +17,19 @@ const ClientDashboard = () => {
   const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ");
 
   return (
-    <div>
+    <div className="client-dashboard-page">
       <DashboardNavbar />
       <h1 className="welcome-heading">
         {fullName ? `Welcome back, ${fullName}` : "Welcome back"}
       </h1>
       <DashboardSearch />
       <div className="dashboard-content-wrapper">
-        <div className="dashboard-services-column">
-          <DashboardServiceSection />
-        </div>
         <div className="dashboard-bookings-column">
           <DashboardMyBookings />
         </div>
+      </div>
+      <div className="dashboard-featured-wrapper">
+        <DashboardServiceSection />
       </div>
     </div>
   );
