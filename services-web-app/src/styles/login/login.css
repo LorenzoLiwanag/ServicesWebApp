@@ -65,6 +65,12 @@
 .auth-bubble-4 { top: 18%; right: max(6%, calc(50% - 650px)); width: 34px; height: 34px; opacity: 0.7; }
 .auth-bubble-5 { bottom: 24%; right: max(7%, calc(50% - 640px)); background: rgba(96, 165, 250, 0.45); }
 .auth-bubble-6 { top: 36%; right: max(10%, calc(50% - 730px)); width: 26px; height: 26px; opacity: 0.75; }
+.auth-bubble-7 { top: 10%; left: max(14%, calc(50% - 540px)); background: rgba(13, 110, 253, 0.22); }
+.auth-bubble-8 { bottom: 10%; left: max(17%, calc(50% - 500px)); width: 24px; height: 24px; opacity: 0.7; }
+.auth-bubble-9 { top: 48%; left: max(4%, calc(50% - 760px)); background: rgba(96, 165, 250, 0.28); }
+.auth-bubble-10 { top: 10%; right: max(14%, calc(50% - 540px)); width: 28px; height: 28px; opacity: 0.8; }
+.auth-bubble-11 { bottom: 12%; right: max(16%, calc(50% - 510px)); background: rgba(13, 110, 253, 0.30); }
+.auth-bubble-12 { top: 50%; right: max(4%, calc(50% - 760px)); width: 30px; height: 30px; opacity: 0.72; }
 
 .auth-home-button {
   width: 52px;

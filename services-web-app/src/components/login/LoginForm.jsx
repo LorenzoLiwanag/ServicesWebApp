@@ -61,6 +61,12 @@ const LoginForm = () => {
       <span className="auth-bubble auth-bubble-ring auth-bubble-4" />
       <span className="auth-bubble auth-bubble-dot auth-bubble-5" />
       <span className="auth-bubble auth-bubble-ring auth-bubble-6" />
+      <span className="auth-bubble auth-bubble-dot auth-bubble-7" />
+      <span className="auth-bubble auth-bubble-ring auth-bubble-8" />
+      <span className="auth-bubble auth-bubble-dot auth-bubble-9" />
+      <span className="auth-bubble auth-bubble-ring auth-bubble-10" />
+      <span className="auth-bubble auth-bubble-dot auth-bubble-11" />
+      <span className="auth-bubble auth-bubble-ring auth-bubble-12" />
 
       <Link to="/" className="auth-home-link" aria-label="Go to landing page">
         <svg viewBox="0 0 24 24" aria-hidden="true">
