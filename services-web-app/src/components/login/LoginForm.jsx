@@ -55,6 +55,13 @@ const LoginForm = () => {
 
   return (
     <div className="login-page">
+      <span className="auth-bubble auth-bubble-dot auth-bubble-1" />
+      <span className="auth-bubble auth-bubble-ring auth-bubble-2" />
+      <span className="auth-bubble auth-bubble-dot auth-bubble-3" />
+      <span className="auth-bubble auth-bubble-ring auth-bubble-4" />
+      <span className="auth-bubble auth-bubble-dot auth-bubble-5" />
+      <span className="auth-bubble auth-bubble-ring auth-bubble-6" />
+
       <Link to="/" className="auth-home-link" aria-label="Go to landing page">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 10.5 12 3l9 7.5" />
