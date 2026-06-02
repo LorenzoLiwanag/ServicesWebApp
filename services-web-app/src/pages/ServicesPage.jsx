@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import ServicesSearchBar from "../components/services/ServicesSearchBar";
-import ServicesSortBar from "../components/services/ServicesSortBar";
 import ContactModal from "../components/messaging/ContactModal";
 import BookModal from "../components/booking/BookModal";
 import { fetchBrowseServices } from "../api/services.js";
@@ -19,14 +18,14 @@ const ServicesPage = () => {
   const [contactModal, setContactModal] = useState(null);
   const [bookModal, setBookModal] = useState(null);
   const [successToast, setSuccessToast] = useState(false);
-  const [sortBy, setSortBy] = useState("recommended");
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [filters, setFilters] = useState({
     searchText: "",
     category: "all",
-    priceRange: "all",
-    includeQuote: false,
-    availability: "all"
+    paymentType: "all",
+    priceMode: "all",
+    minPrice: "",
+    maxPrice: ""
   });
 
   useEffect(() => {
@@ -56,27 +55,20 @@ const ServicesPage = () => {
         return false;
       }
 
-      if (filters.priceRange !== "all") {
-        if (service.pricingType === "quote" && !filters.includeQuote) {
+      if (filters.paymentType !== "all" && service.pricingType !== filters.paymentType) {
+        return false;
+      }
+
+      if (filters.priceMode === "custom") {
+        if (service.pricingType === "quote" || service.rateAmount === null) {
           return false;
         }
 
-        if (service.pricingType !== "quote") {
-          const [min, max] = filters.priceRange.split("-").map(Number);
-          if (max && service.rateAmount > max) return false;
-          if (service.rateAmount < min) return false;
-        }
-      }
+        const minPrice = filters.minPrice === "" ? null : Number(filters.minPrice);
+        const maxPrice = filters.maxPrice === "" ? null : Number(filters.maxPrice);
 
-      if (service.pricingType === "quote" && !filters.includeQuote) {
-        return false;
-      }
-
-      if (
-        filters.availability === "active" &&
-        (!service.isProviderActive || !service.isServiceVisible)
-      ) {
-        return false;
+        if (minPrice !== null && service.rateAmount < minPrice) return false;
+        if (maxPrice !== null && service.rateAmount > maxPrice) return false;
       }
 
       return true;
@@ -86,7 +78,7 @@ const ServicesPage = () => {
   const sortedServices = useMemo(() => {
     const sorted = [...filteredServices];
 
-    switch (sortBy) {
+    switch (filters.priceMode) {
       case "price-low":
         return sorted.sort((a, b) => {
           if (a.pricingType === "quote") return 1;
@@ -103,7 +95,7 @@ const ServicesPage = () => {
       default:
         return sorted.sort((a, b) => a.serviceName.localeCompare(b.serviceName));
     }
-  }, [filteredServices, sortBy]);
+  }, [filteredServices, filters.priceMode]);
 
   const categorySections = useMemo(() => {
     const groups = sortedServices.reduce((acc, service) => {
@@ -261,12 +253,6 @@ const ServicesPage = () => {
           categories={categories}
         />
 
-        <ServicesSortBar
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          resultCount={sortedServices.length}
-        />
-
         {sortedServices.length > 0 ? (
           <div className="services-results">
             {categorySections.map(([categoryName, services]) => {
@@ -363,9 +349,10 @@ const ServicesPage = () => {
                 handleFiltersChange({
                   searchText: "",
                   category: "all",
-                  priceRange: "all",
-                  includeQuote: false,
-                  availability: "all"
+                  paymentType: "all",
+                  priceMode: "all",
+                  minPrice: "",
+                  maxPrice: ""
                 })
               }
             >

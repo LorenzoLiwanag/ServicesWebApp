@@ -5,6 +5,20 @@ const authHeaders = (token) => ({
   "Content-Type": "application/json",
 });
 
+const parseResponse = async (res) => {
+  try {
+    return await res.json();
+  } catch {
+    return {};
+  }
+};
+
+const requireOk = async (res, fallbackMessage) => {
+  const data = await parseResponse(res);
+  if (!res.ok) throw new Error(data.message || fallbackMessage);
+  return data;
+};
+
 export const startConversation = async (token, providerServiceId, message) => {
   const res = await fetch(`${API}/api/conversations`, {
     method: "POST",
@@ -46,10 +60,11 @@ export const sendReply = async (token, conversationId, message) => {
 };
 
 export const markConversationRead = async (token, conversationId) => {
-  await fetch(`${API}/api/conversations/${conversationId}/read`, {
+  const res = await fetch(`${API}/api/conversations/${conversationId}/read`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}` },
   });
+  await requireOk(res, "Failed to mark conversation read");
 };
 
 export const fetchNotifications = async (token) => {
@@ -58,6 +73,15 @@ export const fetchNotifications = async (token) => {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to load notifications");
+  return data.notifications ?? [];
+};
+
+export const fetchDeletedNotifications = async (token) => {
+  const res = await fetch(`${API}/api/notifications/deleted`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to load deleted notifications");
   return data.notifications ?? [];
 };
 
@@ -71,17 +95,51 @@ export const fetchUnreadCount = async (token) => {
 };
 
 export const markNotificationRead = async (token, notificationId) => {
-  await fetch(`${API}/api/notifications/${notificationId}/read`, {
+  const res = await fetch(`${API}/api/notifications/${notificationId}/read`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}` },
   });
+  await requireOk(res, "Failed to mark notification read");
 };
 
 export const markAllNotificationsRead = async (token) => {
-  await fetch(`${API}/api/notifications/read-all`, {
+  const res = await fetch(`${API}/api/notifications/read-all`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}` },
   });
+  await requireOk(res, "Failed to mark notifications read");
+};
+
+export const deleteNotification = async (token, notificationId) => {
+  const res = await fetch(`${API}/api/notifications/${notificationId}/delete`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  await requireOk(res, "Failed to delete notification");
+};
+
+export const deleteAllNotifications = async (token) => {
+  const res = await fetch(`${API}/api/notifications/delete-all`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  await requireOk(res, "Failed to delete notifications");
+};
+
+export const permanentlyDeleteNotification = async (token, notificationId) => {
+  const res = await fetch(`${API}/api/notifications/${notificationId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  await requireOk(res, "Failed to permanently delete notification");
+};
+
+export const permanentlyDeleteAllNotifications = async (token) => {
+  const res = await fetch(`${API}/api/notifications/deleted`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  await requireOk(res, "Failed to permanently delete notifications");
 };
 
 export const fetchAdminMessageLogs = async (token) => {
