@@ -6,7 +6,7 @@
     margin-bottom:25px;
     font-size: 20px;
     font-weight: 700;
-    color: #223d68;
+    color: var(--app-heading);
     text-align: center;
 }
 
@@ -31,10 +31,10 @@
     z-index: 2;
     width: 42px;
     height: 42px;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius-sm);
     background: #fff;
-    color: #223d68;
+    color: var(--app-heading);
     font-size: 22px;
     font-weight: 700;
     cursor: pointer;
@@ -59,8 +59,9 @@
     flex-direction: column;
     padding: 20px;
     background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius);
+    box-shadow: var(--app-shadow);
     transition: all 0.3s ease;
     min-height: 300px;
 }
@@ -88,7 +89,7 @@
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: var(--app-radius-sm);
     margin-bottom: 4px;
 }
 
@@ -193,7 +194,7 @@
     flex: 1;
     padding: 10px 16px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--app-radius);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -201,18 +202,18 @@
 }
 
 .dashboard-featured-section .btn-contact {
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ddd;
+    background-color: #fff;
+    color: var(--app-heading);
+    border: 1px solid var(--app-border-strong);
 }
 
 .dashboard-featured-section .btn-contact:hover {
-    background-color: #e0e0e0;
-    border-color: #bbb;
+    background-color: #fff;
+    border-color: rgba(13, 110, 253, 0.35);
 }
 
 .dashboard-featured-section .btn-book-now {
-    background: linear-gradient(135deg, #0d6efd, #60a5fa);
+    background: var(--app-primary-gradient);
     color: white;
     border: none;
 }

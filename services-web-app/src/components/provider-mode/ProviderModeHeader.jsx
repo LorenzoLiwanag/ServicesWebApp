@@ -23,10 +23,7 @@ const ProviderModeHeader = ({ providerProfile, onAvailabilityChange }) => {
   return (
     <div className="provider-header">
       <div className="provider-header-left">
-        <h1 className="provider-title">
-          Provider Mode
-          {providerProfile?.display_name ? ` — ${providerProfile.display_name}` : ""}
-        </h1>
+        <h1 className="provider-title">Provider Dashboard</h1>
         <p className="provider-subtitle">
           {providerProfile?.bio || "Manage your services and bookings"}
         </p>
@@ -44,8 +41,8 @@ const ProviderModeHeader = ({ providerProfile, onAvailabilityChange }) => {
           </button>
           <p className="availability-hint">
             {isAvailable
-              ? "✓ Your services are visible to clients"
-              : "✗ Your services are hidden from search"}
+              ? "Your services are visible to clients"
+              : "Your services are hidden from search"}
           </p>
         </div>
       </div>

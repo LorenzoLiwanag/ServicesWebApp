@@ -1,9 +1,9 @@
 .requests-widget {
-  background: #fff;
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--app-shadow);
 }
 
 .widget-header {
@@ -17,7 +17,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
 }
 
 .request-badge {
@@ -26,7 +26,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  background: var(--app-primary-gradient);
   color: #fff;
   border-radius: 50%;
   font-size: 12px;
@@ -44,9 +44,9 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 16px;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  background: #fafbfc;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface-soft);
   transition: all 0.2s ease;
   gap: 16px;
 }
@@ -65,27 +65,27 @@
   margin: 0 0 4px;
   font-size: 15px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
 }
 
 .request-client {
   margin: 0 0 4px;
   font-size: 13px;
-  color: #666;
+  color: var(--app-muted);
   font-weight: 500;
 }
 
 .request-datetime {
   margin: 0 0 4px;
   font-size: 13px;
-  color: #999;
+  color: var(--app-muted);
 }
 
 .request-budget {
   margin: 0;
   font-size: 14px;
   font-weight: 700;
-  color: #0d6efd;
+  color: var(--app-primary);
 }
 
 .request-actions {
@@ -98,7 +98,7 @@
 .btn-decline {
   padding: 8px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -107,7 +107,7 @@
 }
 
 .btn-accept {
-  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  background: var(--app-primary-gradient);
   color: #fff;
   box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
 }
@@ -118,9 +118,9 @@
 }
 
 .btn-decline {
-  background: #f5f5f5;
-  color: #666;
-  border: 1px solid #ddd;
+  background: #fff;
+  color: var(--app-heading);
+  border: 1px solid var(--app-border-strong);
 }
 
 .btn-decline:hover {
@@ -131,7 +131,7 @@
 .empty-state {
   text-align: center;
   padding: 32px 16px;
-  color: #999;
+  color: var(--app-muted);
   font-size: 14px;
 }
 

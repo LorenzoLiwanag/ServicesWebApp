@@ -4,6 +4,7 @@ import DashboardSearch from "../components/dashboard/DashboardSearch";
 import DashboardServiceSection from "../components/dashboard/DashboardServiceSection";
 import DashboardMyBookings from "../components/dashboard/DashboardMyBookings";
 import { useEffect, useState } from "react";
+import { getUserFullName } from "../utils/auth.js";
 import "../styles/dashboard/clientDashboard.css";
 
 const ClientDashboard = () => {
@@ -14,7 +15,7 @@ const ClientDashboard = () => {
     setUser(storedUser ? JSON.parse(storedUser) : null);
   }, []);
 
-  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ");
+  const fullName = getUserFullName(user);
 
   return (
     <div className="client-dashboard-page">

@@ -15,9 +15,9 @@
   gap: 8px;
   padding: 10px 20px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--app-radius);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
@@ -46,21 +46,21 @@
 
 /* Add Service Button */
 .add-service-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-primary-gradient);
   color: white;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 12px 28px rgba(13, 110, 253, 0.25);
 }
 
 .add-service-btn:hover {
-  background: linear-gradient(135deg, #5568d3 0%, #663a91 100%);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: var(--app-primary-gradient);
+  box-shadow: var(--app-shadow-strong);
 }
 
 /* Set Availability Button */
 .set-availability-btn {
-  background: #f8f9fa;
-  color: #223d68;
-  border: 2px solid #e9ecef;
+  background: #fff;
+  color: var(--app-heading);
+  border: 1px solid var(--app-border-strong);
 }
 
 .set-availability-btn:hover {
@@ -72,14 +72,15 @@
 /* View Calendar Button */
 .view-calendar-btn {
   background: #fff;
-  color: #223d68;
-  border: 2px solid #223d68;
+  color: var(--app-heading);
+  border: 1px solid var(--app-border-strong);
 }
 
 .view-calendar-btn:hover {
-  background: #223d68;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(34, 61, 104, 0.3);
+  background: #fff;
+  color: var(--app-primary);
+  border-color: rgba(13, 110, 253, 0.35);
+  box-shadow: var(--app-shadow);
 }
 
 /* Responsive - Tablet */

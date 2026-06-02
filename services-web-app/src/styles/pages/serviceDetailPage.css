@@ -1,6 +1,6 @@
 .sdp-page {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: var(--app-bg);
   padding-bottom: 48px;
 }
 
@@ -15,20 +15,20 @@
 .sdp-error {
   text-align: center;
   padding: 60px 0;
-  color: rgba(17, 17, 17, 0.6);
+  color: var(--app-muted);
 }
 
 .sdp-not-found h2 {
   margin: 0 0 8px;
   font-size: 22px;
   font-weight: 800;
-  color: #111;
+  color: var(--app-navy);
 }
 
 .sdp-btn-back {
   background: none;
   border: none;
-  color: #0d6efd;
+  color: var(--app-primary);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -46,7 +46,7 @@
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  background: var(--app-primary-gradient);
   color: #fff;
   padding: 12px 24px;
   border-radius: 12px;
@@ -89,7 +89,7 @@
   margin: 0;
   font-size: 26px;
   font-weight: 800;
-  color: #111;
+  color: var(--app-navy);
   letter-spacing: -0.4px;
   line-height: 1.2;
 }
@@ -126,7 +126,7 @@
   margin: 0 0 10px;
   font-size: 15px;
   font-weight: 800;
-  color: rgba(17, 17, 17, 0.55);
+  color: var(--app-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -135,7 +135,7 @@
   margin: 0;
   font-size: 15px;
   line-height: 1.65;
-  color: #111;
+  color: var(--app-text);
 }
 
 .sdp-pricing {
@@ -148,19 +148,19 @@
 .sdp-price-amount {
   font-size: 28px;
   font-weight: 800;
-  color: #111;
+  color: var(--app-navy);
 }
 
 .sdp-price-unit {
   font-size: 16px;
   font-weight: 500;
-  color: rgba(17, 17, 17, 0.5);
+  color: var(--app-muted);
 }
 
 .sdp-price-quote {
   font-size: 18px;
   font-weight: 700;
-  color: #0d6efd;
+  color: var(--app-primary);
 }
 
 .sdp-location-type {
@@ -184,14 +184,14 @@
   margin: 0 0 6px;
   font-size: 17px;
   font-weight: 800;
-  color: #111;
+  color: var(--app-navy);
 }
 
 .sdp-provider-bio {
   margin: 0 0 12px;
   font-size: 14px;
   line-height: 1.5;
-  color: rgba(17, 17, 17, 0.65);
+  color: var(--app-muted);
 }
 
 .sdp-rating {
@@ -204,7 +204,7 @@
 .sdp-stars {
   font-size: 14px;
   font-weight: 700;
-  color: #111;
+  color: var(--app-navy);
 }
 
 .sdp-review-count {
@@ -222,7 +222,7 @@
   padding: 14px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  background: var(--app-primary-gradient);
   color: #fff;
   font-size: 15px;
   font-weight: 700;
@@ -243,7 +243,7 @@
   border: 1px solid rgba(17, 17, 17, 0.18);
   border-radius: 12px;
   background: transparent;
-  color: #111;
+  color: var(--app-heading);
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;

@@ -5,6 +5,7 @@ import ProviderModeHeader from "../components/provider-mode/ProviderModeHeader";
 import ProviderRequestsWidget from "../components/provider-mode/ProviderRequestsWidget";
 import ProviderUpcomingJobsWidget from "../components/provider-mode/ProviderUpcomingJobsWidget";
 import ProviderServicesWidget from "../components/provider-mode/ProviderServicesWidget";
+import { getUserFullName } from "../utils/auth.js";
 import "../styles/provider-mode/providerDashboard.css";
 
 const ProviderDashboard = () => {
@@ -18,9 +19,11 @@ const ProviderDashboard = () => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
 
     if (storedUser) {
+      const fullName = getUserFullName(storedUser);
+
       setProviderProfile({
         provider_id: storedUser.id,
-        display_name: storedUser.fullName || "Provider",
+        display_name: fullName,
         bio: "Manage your services and bookings",
         is_provider_active: true,
       });

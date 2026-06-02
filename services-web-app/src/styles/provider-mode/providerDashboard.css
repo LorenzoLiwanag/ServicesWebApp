@@ -1,7 +1,7 @@
 .provider-dashboard {
   width: 100%;
   min-height: 100vh;
-  background: #fff;
+  background: var(--app-bg);
   padding-bottom: 40px;
 }
 

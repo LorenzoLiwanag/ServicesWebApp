@@ -23,6 +23,13 @@ export const getDashboardPath = (user) => {
   return user?.role === "admin" ? "/admin" : "/client-dashboard";
 };
 
+export const getUserFullName = (user) => {
+  return (
+    user?.fullName ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ")
+  ).trim();
+};
+
 export const validateStoredSession = async () => {
   const session = getStoredAuthSession();
   if (!session) return;

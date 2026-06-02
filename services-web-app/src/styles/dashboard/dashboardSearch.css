@@ -22,10 +22,10 @@
   padding: 0 1rem;
   padding-left: 2.5rem;
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   outline: none;
-  background-color: #f3f3f4;
-  color: #0d0c22;
+  background-color: var(--app-surface-soft);
+  color: var(--app-navy);
   transition: .3s ease;
   font-size: 15px;
 }
@@ -55,9 +55,9 @@
   width: 48px;
   padding: 8px;
   border: 2px solid transparent;
-  border-radius: 8px;
-  background-color: #f3f3f4;
-  color: #0d0c22;
+  border-radius: var(--app-radius-sm);
+  background-color: var(--app-surface-soft);
+  color: var(--app-navy);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -83,10 +83,10 @@
   max-width: 500px;
   margin: 12px auto 0;
   padding: 16px;
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 16px;
@@ -101,7 +101,7 @@
 .filter-group label {
   font-weight: 600;
   font-size: 13px;
-  color: #0d0c22;
+  color: var(--app-navy);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -119,10 +119,10 @@
 
 .filter-group select:hover,
 .filter-group select:focus {
-  border-color: rgba(234,76,137,0.4);
+  border-color: rgba(13, 110, 253, 0.4);
   background-color: #fff;
   outline: none;
-  box-shadow: 0 0 0 2px rgb(234 76 137 / 10%);
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.10);
 }
 
 @media (max-width: 600px) {

@@ -15,7 +15,7 @@
 .result-count {
   margin: 0;
   font-size: 14px;
-  color: #666;
+  color: var(--app-muted);
   font-weight: 500;
 }
 
@@ -29,7 +29,7 @@
 .sort-label {
   font-size: 13px;
   font-weight: 600;
-  color: #333;
+  color: var(--app-navy);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -49,8 +49,8 @@
 
 .sort-select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
 }
 
 .sort-select:hover {

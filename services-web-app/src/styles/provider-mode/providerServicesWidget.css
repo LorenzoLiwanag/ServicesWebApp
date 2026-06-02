@@ -1,17 +1,17 @@
 .services-widget {
-  background: #fff;
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--app-shadow);
 }
 
 .btn-add-service {
   padding: 8px 16px;
-  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  background: var(--app-primary-gradient);
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -33,10 +33,10 @@
   grid-template-columns: 1.5fr 0.8fr 1fr 0.6fr;
   gap: 12px;
   padding: 12px 8px;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid rgba(15, 42, 68, 0.10);
   font-weight: 700;
   font-size: 12px;
-  color: #999;
+  color: var(--app-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -52,9 +52,9 @@
   grid-template-columns: 1.5fr 0.8fr 1fr 0.6fr;
   gap: 12px;
   padding: 12px 8px;
-  border-radius: 6px;
-  background: #fafbfc;
-  border: 1px solid #e9ecef;
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface-soft);
+  border: 1px solid var(--app-border);
   transition: all 0.2s ease;
   align-items: center;
 }
@@ -71,7 +71,7 @@
 .service-name {
   font-size: 14px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
   display: block;
   white-space: nowrap;
   overflow: hidden;
@@ -85,7 +85,7 @@
 .service-price {
   font-size: 14px;
   font-weight: 700;
-  color: #0d6efd;
+  color: var(--app-primary);
 }
 
 .col-visibility {
@@ -100,9 +100,9 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  background: #fff;
+  border: 1px solid var(--app-border-strong);
+  border-radius: var(--app-radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 0;
@@ -110,8 +110,8 @@
 }
 
 .visibility-toggle:hover {
-  background: #e8e8e8;
-  border-color: #bbb;
+  background: #fff;
+  border-color: rgba(13, 110, 253, 0.35);
 }
 
 .visibility-toggle.visible {
@@ -127,7 +127,7 @@
 
 .visibility-text {
   font-size: 12px;
-  color: #666;
+  color: var(--app-muted);
   font-weight: 600;
 }
 
@@ -137,10 +137,10 @@
 
 .btn-edit {
   padding: 6px 12px;
-  background: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: #fff;
+  color: var(--app-heading);
+  border: 1px solid var(--app-border-strong);
+  border-radius: var(--app-radius-sm);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -148,15 +148,15 @@
 }
 
 .btn-edit:hover {
-  background: #e0e0e0;
-  border-color: #bbb;
-  color: #0d6efd;
+  background: #fff;
+  border-color: rgba(13, 110, 253, 0.35);
+  color: var(--app-primary);
 }
 
 .empty-state {
   text-align: center;
   padding: 32px 16px;
-  color: #999;
+  color: var(--app-muted);
   font-size: 14px;
 }
 
@@ -250,7 +250,7 @@
 .provider-modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--app-heading);
 }
 
 .provider-modal-close {
@@ -258,12 +258,12 @@
   border: none;
   font-size: 22px;
   cursor: pointer;
-  color: #64748b;
+  color: var(--app-muted);
   transition: 0.2s;
 }
 
 .provider-modal-close:hover {
-  color: #0f172a;
+  color: var(--app-navy);
 }
 
 /* ===== FORM ===== */
@@ -283,7 +283,7 @@
 .provider-form-group label {
   font-size: 13px;
   font-weight: 500;
-  color: #475569;
+  color: var(--app-muted);
 }
 
 .provider-form-group input,
@@ -300,7 +300,7 @@
 .provider-form-group select:focus,
 .provider-form-group textarea:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--app-primary);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
@@ -343,7 +343,7 @@
   padding: 10px 16px;
   border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  background: var(--app-primary-gradient);
   color: white;
   font-size: 14px;
   cursor: pointer;

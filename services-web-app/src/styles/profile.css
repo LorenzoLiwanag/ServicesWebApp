@@ -2,7 +2,7 @@
 .profile-page {
   width: 100%;
   min-height: 100vh;
-  background: #f5f7fa;
+  background: var(--app-bg);
   padding-bottom: 40px;
 }
 
@@ -43,7 +43,7 @@
 .profile-title {
   font-size: 28px;
   font-weight: 800;
-  color: #223d68;
+  color: var(--app-heading);
   margin: 32px auto 0;
   text-align: center;
 }
@@ -107,7 +107,7 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #667eea;
+  border: 3px solid var(--app-primary);
 }
 
 .profile-photo-placeholder {
@@ -117,9 +117,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #667eea;
+  border: 3px solid var(--app-primary);
   background: linear-gradient(135deg, #eef4ff, #ffffff);
-  color: #223d68;
+  color: var(--app-heading);
   font-size: 42px;
   font-weight: 800;
 }
@@ -128,7 +128,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
 }
 
 .user-badge {
@@ -142,13 +142,13 @@
 }
 
 .provider-badge {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: rgba(13, 110, 253, 0.09);
+  color: var(--app-primary);
 }
 
 .client-badge {
-  background: #f3e5f5;
-  color: #7b1fa2;
+  background: rgba(13, 110, 253, 0.09);
+  color: var(--app-primary);
 }
 
 .provider-stats {
@@ -176,7 +176,7 @@
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
 }
 
 /* Profile Content */
@@ -205,7 +205,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
 }
 
 /* Form Grid */
@@ -228,7 +228,7 @@
 .form-label {
   font-size: 13px;
   font-weight: 600;
-  color: #333;
+  color: var(--app-navy);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -245,8 +245,8 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
 }
 
 .form-input:disabled {
@@ -261,7 +261,7 @@
   border: 1px solid #d3d9e3;
   border-radius: 8px;
   background: white;
-  color: #223d68;
+  color: var(--app-heading);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -270,8 +270,8 @@
 }
 
 .change-password-btn:hover:not(:disabled) {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: var(--app-primary);
+  color: var(--app-primary);
   background: #f8f9fa;
 }
 
@@ -310,7 +310,7 @@
 
 .password-modal-title {
   margin: 0;
-  color: #223d68;
+  color: var(--app-heading);
   font-size: 20px;
   font-weight: 800;
 }
@@ -444,14 +444,14 @@
 }
 
 .btn-save {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-primary-gradient);
   color: white;
   flex: 1;
 }
 
 .btn-save:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--app-shadow-strong);
 }
 
 .btn-cancel {

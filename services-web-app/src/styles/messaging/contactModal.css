@@ -10,7 +10,7 @@
 
 .modal-box {
   background: #fff;
-  border-radius: 10px;
+  border-radius: var(--app-radius);
   padding: 28px 32px;
   width: 100%;
   max-width: 460px;
@@ -29,7 +29,7 @@
 .modal-title {
   font-size: 18px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
   margin: 0;
 }
 
@@ -52,7 +52,7 @@
   min-height: 120px;
   padding: 12px;
   border: 1px solid #dde3ec;
-  border-radius: 6px;
+  border-radius: var(--app-radius-sm);
   font-size: 14px;
   resize: vertical;
   outline: none;
@@ -74,7 +74,7 @@
 .modal-btn-cancel {
   padding: 9px 20px;
   border: 1px solid #dde3ec;
-  border-radius: 6px;
+  border-radius: var(--app-radius);
   background: #f8f9fa;
   font-size: 14px;
   font-weight: 600;
@@ -89,8 +89,8 @@
 .modal-btn-send {
   padding: 9px 20px;
   border: none;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  border-radius: var(--app-radius);
+  background: var(--app-primary-gradient);
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -129,7 +129,7 @@
 
 .modal-toast-link {
   font-weight: 600;
-  color: #0d6efd;
+  color: var(--app-primary);
   text-decoration: none;
   cursor: pointer;
   background: none;

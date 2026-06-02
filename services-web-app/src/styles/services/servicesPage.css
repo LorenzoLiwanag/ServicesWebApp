@@ -2,15 +2,18 @@
 .services-page {
   width: 100%;
   min-height: 100vh;
-  background: #f5f7fa;
+  background: var(--app-bg);
   padding-bottom: 40px;
 }
 
 /* Page Header */
 .services-page-header {
-  background: #f5f7fa;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(13, 110, 253, 0.10), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(96, 165, 250, 0.12), transparent 50%),
+    var(--app-bg);
   padding: 48px 24px;
-  color: #223d68;
+  color: var(--app-heading);
   text-align: center;
   margin-bottom: 40px;
 }
@@ -93,15 +96,15 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
   flex: 1;
 }
 
 .card-category {
   display: inline-block;
   padding: 4px 10px;
-  background: #e3f2fd;
-  color: #1976d2;
+  background: rgba(13, 110, 253, 0.09);
+  color: var(--app-primary);
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
@@ -115,13 +118,13 @@
   margin: 0;
   font-size: 13px;
   font-weight: 600;
-  color: #666;
+  color: var(--app-muted);
 }
 
 .card-description {
   margin: 0;
   font-size: 12px;
-  color: #888;
+  color: var(--app-muted);
   line-height: 1.5;
   flex: 1;
 }
@@ -143,7 +146,7 @@
 .stat-value {
   font-size: 14px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
 }
 
 .stat-label {
@@ -160,7 +163,7 @@
 .price-amount {
   font-size: 16px;
   font-weight: 700;
-  color: #667eea;
+  color: var(--app-primary);
 }
 
 .price-quote {
@@ -194,24 +197,24 @@
 }
 
 .btn-book-now {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-primary-gradient);
   color: white;
 }
 
 .btn-book-now:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--app-shadow-strong);
 }
 
 .btn-contact {
   background: white;
-  color: #667eea;
-  border: 1px solid #667eea;
+  color: var(--app-heading);
+  border: 1px solid var(--app-border-strong);
 }
 
 .btn-contact:hover {
-  background: #f8f9fa;
-  border-color: #667eea;
+  background: #fff;
+  border-color: rgba(13, 110, 253, 0.35);
 }
 
 .card-badge {
@@ -240,8 +243,8 @@
 .btn-load-more {
   padding: 12px 32px;
   background: white;
-  border: 2px solid #667eea;
-  color: #667eea;
+  border: 2px solid var(--app-primary);
+  color: var(--app-primary);
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
@@ -251,9 +254,9 @@
 }
 
 .btn-load-more:hover {
-  background: #667eea;
+  background: var(--app-primary-gradient);
   color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--app-shadow-strong);
 }
 
 /* Empty State */
@@ -275,19 +278,19 @@
   margin: 0 0 12px 0;
   font-size: 24px;
   font-weight: 700;
-  color: #223d68;
+  color: var(--app-heading);
 }
 
 .empty-state-message {
   margin: 0 0 24px 0;
   font-size: 14px;
-  color: #666;
+  color: var(--app-muted);
   line-height: 1.6;
 }
 
 .btn-reset-filters {
   padding: 10px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-primary-gradient);
   color: white;
   border: none;
   border-radius: 8px;
@@ -300,7 +303,7 @@
 
 .btn-reset-filters:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--app-shadow-strong);
 }
 
 /* Responsive - Tablet */
