@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import ServicesSearchBar from "../components/services/ServicesSearchBar";
@@ -10,15 +10,17 @@ import "../styles/services/servicesPage.css";
 
 const ServicesPage = () => {
   const navigate = useNavigate();
+  const categoryRowRefs = useRef({});
 
   const [providerServices, setProviderServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [contactModal, setContactModal] = useState(null); // { recipientId, serviceId }
-  const [bookModal, setBookModal] = useState(null); // service object
+  const [contactModal, setContactModal] = useState(null);
+  const [bookModal, setBookModal] = useState(null);
   const [successToast, setSuccessToast] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
+  const [expandedCategory, setExpandedCategory] = useState(null);
   const [filters, setFilters] = useState({
     searchText: "",
     category: "all",
@@ -27,7 +29,6 @@ const ServicesPage = () => {
     includeQuote: false,
     availability: "all"
   });
-  const [itemsToShow, setItemsToShow] = useState(12);
 
   useEffect(() => {
     fetchBrowseServices()
@@ -37,7 +38,7 @@ const ServicesPage = () => {
   }, []);
 
   const categories = Array.from(
-    new Set(providerServices.map((s) => s.categoryName))
+    new Set(providerServices.map((s) => s.categoryName).filter(Boolean))
   ).sort();
 
   const filteredServices = useMemo(() => {
@@ -118,21 +119,113 @@ const ServicesPage = () => {
     }
   }, [filteredServices, sortBy]);
 
-  const displayedServices = sortedServices.slice(0, itemsToShow);
+  const categorySections = useMemo(() => {
+    const groups = sortedServices.reduce((acc, service) => {
+      const categoryName = service.categoryName || "Other Services";
+      if (!acc[categoryName]) acc[categoryName] = [];
+      acc[categoryName].push(service);
+      return acc;
+    }, {});
 
-  const handleLoadMore = () => {
-    setItemsToShow((prev) => prev + 6);
-  };
+    return Object.entries(groups).sort(([categoryA], [categoryB]) =>
+      categoryA.localeCompare(categoryB)
+    );
+  }, [sortedServices]);
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
-    setItemsToShow(12);
+    setExpandedCategory(null);
+  };
+
+  const scrollCategoryRow = (categoryName, direction) => {
+    const row = categoryRowRefs.current[categoryName];
+    if (!row) return;
+
+    row.scrollBy({
+      left: direction * row.clientWidth,
+      behavior: "smooth",
+    });
   };
 
   const handleBookSuccess = () => {
     setSuccessToast(true);
     setTimeout(() => setSuccessToast(false), 4000);
   };
+
+  const toggleExpandedCategory = (categoryName) => {
+    setExpandedCategory((currentCategory) =>
+      currentCategory === categoryName ? null : categoryName
+    );
+  };
+
+  const renderServiceCard = (service) => (
+    <div
+      key={service.providerServiceId}
+      className="service-card"
+      onClick={() => navigate(`/service/${service.providerServiceId}`)}
+    >
+      <div className="card-header">
+        <h3 className="card-title">{service.serviceName}</h3>
+        <span className="card-category">{service.categoryName}</span>
+      </div>
+
+      <p className="card-provider">{service.providerName}</p>
+      <p className="card-description">{service.description}</p>
+
+      <div className="card-stats">
+        <div className="stat">
+          <span className="stat-value">
+            {"\u2605"} {service.reviewCount > 0 ? service.avgRating.toFixed(1) : "New"}
+          </span>
+          <span className="stat-label">
+            {service.reviewCount > 0
+              ? `(${service.reviewCount} reviews)`
+              : "(No reviews yet)"}
+          </span>
+        </div>
+      </div>
+
+      <div className="card-pricing">
+        {service.pricingType === "quote" ? (
+          <span className="price-quote">Get Quote</span>
+        ) : service.pricingType === "hourly" ? (
+          <span className="price-amount">
+            {"\u20b1"}{service.rateAmount}/hour
+          </span>
+        ) : (
+          <span className="price-amount">
+            {"\u20b1"}{service.rateAmount}
+          </span>
+        )}
+        <span className="pricing-type">({service.pricingType})</span>
+      </div>
+
+      <div className="card-actions">
+        <button
+          className="btn-book-now"
+          onClick={(e) => {
+            e.stopPropagation();
+            setBookModal(service);
+          }}
+        >
+          Book Now
+        </button>
+        <button
+          className="btn-contact"
+          onClick={(e) => {
+            e.stopPropagation();
+            setContactModal({ serviceId: service.providerServiceId });
+          }}
+        >
+          Contact
+        </button>
+      </div>
+
+      {!service.isProviderActive && (
+        <div className="card-badge unavailable">Unavailable</div>
+      )}
+    </div>
+  );
 
   if (loading) {
     return (
@@ -161,12 +254,24 @@ const ServicesPage = () => {
       <DashboardNavbar />
 
       {successToast && (
-        <div style={{
-          position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
-          background: "linear-gradient(135deg, #0d6efd, #60a5fa)", color: "#fff",
-          padding: "12px 24px", borderRadius: 12, fontWeight: 700, fontSize: 14,
-          zIndex: 2000, boxShadow: "0 8px 24px rgba(13,110,253,0.3)", whiteSpace: "nowrap"
-        }} role="status">
+        <div
+          style={{
+            position: "fixed",
+            top: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "linear-gradient(135deg, #0d6efd, #60a5fa)",
+            color: "#fff",
+            padding: "12px 24px",
+            borderRadius: 12,
+            fontWeight: 700,
+            fontSize: 14,
+            zIndex: 2000,
+            boxShadow: "0 8px 24px rgba(13,110,253,0.3)",
+            whiteSpace: "nowrap"
+          }}
+          role="status"
+        >
           Booking request sent! The provider will respond shortly.
         </div>
       )}
@@ -190,92 +295,92 @@ const ServicesPage = () => {
           resultCount={sortedServices.length}
         />
 
-        {displayedServices.length > 0 ? (
+        {sortedServices.length > 0 ? (
           <div className="services-results">
-            <div className="services-grid">
-              {displayedServices.map((service) => (
-                <div
-                  key={service.providerServiceId}
-                  className="service-card"
-                  onClick={() => navigate(`/service/${service.providerServiceId}`)}
-                >
-                  <div className="card-header">
-                    <h3 className="card-title">{service.serviceName}</h3>
-                    <span className="card-category">{service.categoryName}</span>
-                  </div>
+            {categorySections.map(([categoryName, services]) => {
+              if (expandedCategory && expandedCategory !== categoryName) {
+                return null;
+              }
 
-                  <p className="card-provider">{service.providerName}</p>
-                  <p className="card-description">{service.description}</p>
+              const isExpanded = expandedCategory === categoryName;
 
-                  <div className="card-stats">
-                    <div className="stat">
-                      <span className="stat-value">
-                        ⭐ {service.reviewCount > 0 ? service.avgRating.toFixed(1) : "New"}
-                      </span>
-                      <span className="stat-label">
-                        {service.reviewCount > 0
-                          ? `(${service.reviewCount} reviews)`
-                          : "(No reviews yet)"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="card-pricing">
-                    {service.pricingType === "quote" ? (
-                      <span className="price-quote">Get Quote</span>
-                    ) : service.pricingType === "hourly" ? (
-                      <span className="price-amount">
-                        ₱{service.rateAmount}/hour
-                      </span>
-                    ) : (
-                      <span className="price-amount">
-                        ₱{service.rateAmount}
-                      </span>
-                    )}
-                    <span className="pricing-type">
-                      ({service.pricingType})
-                    </span>
-                  </div>
-
-                  <div className="card-actions">
+              return (
+              <section className="service-category-section" key={categoryName}>
+                <div className="service-category-header">
+                  <div>
+                    <h2 className="service-category-title">{categoryName}</h2>
                     <button
-                      className="btn-book-now"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setBookModal(service);
-                      }}
+                      className="service-category-view-all"
+                      type="button"
+                      onClick={() => toggleExpandedCategory(categoryName)}
                     >
-                      Book Now
-                    </button>
-                    <button
-                      className="btn-contact"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setContactModal({ serviceId: service.providerServiceId });
-                      }}
-                    >
-                      Contact
+                      {isExpanded ? "Back to all categories" : "View all"}
                     </button>
                   </div>
 
-                  {!service.isProviderActive && (
-                    <div className="card-badge unavailable">Unavailable</div>
+                  {!isExpanded && (
+                    <div className="service-category-controls">
+                    <button
+                      className="service-row-arrow"
+                      type="button"
+                      aria-label={`Scroll ${categoryName} services left`}
+                      onClick={() => scrollCategoryRow(categoryName, -1)}
+                    >
+                      {"<"}
+                    </button>
+                    <button
+                      className="service-row-arrow"
+                      type="button"
+                      aria-label={`Scroll ${categoryName} services right`}
+                      onClick={() => scrollCategoryRow(categoryName, 1)}
+                    >
+                      {">"}
+                    </button>
+                  </div>
                   )}
                 </div>
-              ))}
-            </div>
 
-            {itemsToShow < sortedServices.length && (
-              <div className="load-more-container">
-                <button className="btn-load-more" onClick={handleLoadMore}>
-                  Load More Services
-                </button>
-              </div>
-            )}
+                {isExpanded ? (
+                  <div className="services-grid services-grid-expanded">
+                    {services.map(renderServiceCard)}
+                  </div>
+                ) : (
+                  <div className="service-category-carousel">
+                  <button
+                    className="service-row-arrow service-row-arrow-side service-row-arrow-left"
+                    type="button"
+                    aria-label={`Scroll ${categoryName} services left`}
+                    onClick={() => scrollCategoryRow(categoryName, -1)}
+                  >
+                    {"<"}
+                  </button>
+
+                  <div
+                    className="services-row"
+                    ref={(node) => {
+                      categoryRowRefs.current[categoryName] = node;
+                    }}
+                  >
+                    {services.map(renderServiceCard)}
+                  </div>
+
+                  <button
+                    className="service-row-arrow service-row-arrow-side service-row-arrow-right"
+                    type="button"
+                    aria-label={`Scroll ${categoryName} services right`}
+                    onClick={() => scrollCategoryRow(categoryName, 1)}
+                  >
+                    {">"}
+                  </button>
+                </div>
+                )}
+              </section>
+              );
+            })}
           </div>
         ) : (
           <div className="empty-state">
-            <div className="empty-state-icon">🔍</div>
+            <div className="empty-state-icon">Search</div>
             <h2 className="empty-state-title">No services found</h2>
             <p className="empty-state-message">
               Try adjusting your filters to find what you're looking for.

@@ -47,6 +47,9 @@
 /* Services Grid */
 .services-results {
   animation: fadeIn 0.3s ease-in;
+  display: flex;
+  flex-direction: column;
+  gap: 42px;
 }
 
 @keyframes fadeIn {
@@ -63,6 +66,121 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-bottom: 32px;
+}
+
+.service-category-section {
+  min-width: 0;
+}
+
+.service-category-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.service-category-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--app-heading);
+  letter-spacing: 0;
+}
+
+.service-category-view-all {
+  display: inline-flex;
+  margin-top: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--app-primary);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.service-category-view-all:hover {
+  text-decoration: underline;
+  box-shadow: none;
+  transform: none;
+}
+
+.services-grid-expanded {
+  margin-bottom: 0;
+}
+
+.service-category-controls {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.service-category-carousel {
+  position: relative;
+  min-width: 0;
+}
+
+.services-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 72px) / 4);
+  gap: 24px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 2px 2px 14px;
+}
+
+.services-row::-webkit-scrollbar {
+  display: none;
+}
+
+.services-row .service-card {
+  scroll-snap-align: start;
+  width: 100%;
+}
+
+.service-row-arrow {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--app-heading);
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: var(--app-shadow);
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.service-row-arrow:hover {
+  transform: translateY(-1px);
+  border-color: rgba(13, 110, 253, 0.35);
+  color: var(--app-primary);
+}
+
+.service-row-arrow-side {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+}
+
+.service-row-arrow-side:hover {
+  transform: translateY(-50%) translateY(-1px);
+}
+
+.service-row-arrow-left {
+  left: -21px;
+}
+
+.service-row-arrow-right {
+  right: -21px;
 }
 
 /* Service Card */
@@ -329,6 +447,19 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
+
+  .services-row {
+    grid-auto-columns: calc((100% - 40px) / 3);
+    gap: 20px;
+  }
+
+  .service-row-arrow-side {
+    display: none;
+  }
+
+  .service-category-controls {
+    display: flex;
+  }
 }
 
 /* Responsive - Mobile */
@@ -357,6 +488,19 @@
 
   .services-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .services-results {
+    gap: 34px;
+  }
+
+  .service-category-title {
+    font-size: 20px;
+  }
+
+  .services-row {
+    grid-auto-columns: calc((100% - 16px) / 2);
     gap: 16px;
   }
 
@@ -423,6 +567,15 @@
 
   .services-page-container {
     padding: 0 12px;
+  }
+
+  .service-category-header {
+    align-items: flex-start;
+  }
+
+  .services-row {
+    grid-auto-columns: 100%;
+    gap: 12px;
   }
 
   .service-card {

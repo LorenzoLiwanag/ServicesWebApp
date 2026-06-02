@@ -172,67 +172,127 @@ const run = async () => {
     // ── Provider Services ──────────────────────────────────────────────────
     console.log("\nSeeding provider services...");
 
+    const makeService = (categoryName, title, description, pricingType, priceAmount, locationType, providerId) => ({
+      providerId,
+      categoryName,
+      title,
+      description,
+      pricingType,
+      priceAmount,
+      currency: "CAD",
+      locationType,
+    });
+
     const providerServices = [
-      {
-        providerId: carolId,
-        categoryName: "Cleaning",
-        title: "House Cleaning",
-        description: "Full home cleaning including kitchen, bathrooms, bedrooms, and living areas. Supplies included.",
-        pricingType: "fixed",
-        priceAmount: 120.00,
-        currency: "CAD",
-        locationType: "client_home",
-      },
-      {
-        providerId: carolId,
-        categoryName: "Cleaning",
-        title: "Office Cleaning",
-        description: "Professional office cleaning service. After-hours availability. Sanitization and disinfecting included.",
-        pricingType: "hourly",
-        priceAmount: 45.00,
-        currency: "CAD",
-        locationType: "client_home",
-      },
-      {
-        providerId: danId,
-        categoryName: "Landscaping",
-        title: "Lawn Mowing",
-        description: "Residential lawn mowing and edging. Includes cleanup of grass clippings. Up to 5,000 sq ft.",
-        pricingType: "fixed",
-        priceAmount: 60.00,
-        currency: "CAD",
-        locationType: "client_home",
-      },
-      {
-        providerId: danId,
-        categoryName: "Handyman",
-        title: "Furniture Assembly",
-        description: "IKEA and flat-pack furniture assembly. Bring your own instructions or I'll download them. First item included.",
-        pricingType: "fixed",
-        priceAmount: 80.00,
-        currency: "CAD",
-        locationType: "client_home",
-      },
-      {
-        providerId: danId,
-        categoryName: "Moving Help",
-        title: "Moving Help",
-        description: "Loading, unloading, and carrying furniture and boxes. Local moves only. No truck included.",
-        pricingType: "hourly",
-        priceAmount: 50.00,
-        currency: "CAD",
-        locationType: "flexible",
-      },
-      {
-        providerId: danId,
-        categoryName: "Plumbing",
-        title: "Sink Repair",
-        description: "Leaky faucets, clogged drains, and sink fixture repairs. Quote provided after assessment.",
-        pricingType: "quote",
-        priceAmount: null,
-        currency: "CAD",
-        locationType: "client_home",
-      },
+      ...[
+        ["House Cleaning", "Full home cleaning including kitchen, bathrooms, bedrooms, and living areas. Supplies included.", "fixed", 120.00, "client_home", carolId],
+        ["Office Cleaning", "Professional office cleaning service. After-hours availability. Sanitization and disinfecting included.", "hourly", 45.00, "client_home", carolId],
+        ["Deep Cleaning", "Detailed top-to-bottom cleaning for kitchens, bathrooms, floors, trim, and hard-to-reach areas.", "fixed", 180.00, "client_home", carolId],
+        ["Move-Out Cleaning", "Empty-home cleaning for move-outs, rentals, and turnover appointments.", "fixed", 220.00, "client_home", carolId],
+        ["Condo Cleaning", "Efficient condo and apartment cleaning for smaller spaces and recurring clients.", "fixed", 95.00, "client_home", carolId],
+        ["Post-Renovation Cleaning", "Dust removal, surface cleaning, and final polish after renovation work.", "quote", null, "client_home", carolId],
+        ["Window Cleaning", "Interior window, sill, and track cleaning for homes and small offices.", "fixed", 85.00, "client_home", carolId],
+        ["Carpet Spot Cleaning", "Spot treatment and light carpet refresh for common household stains.", "fixed", 75.00, "client_home", carolId],
+        ["Recurring Maid Service", "Weekly or biweekly cleaning with a consistent checklist and schedule.", "hourly", 40.00, "client_home", carolId],
+        ["Airbnb Turnover Cleaning", "Fast guest-ready cleaning with linens, restocking, and photo-ready presentation.", "fixed", 140.00, "client_home", carolId],
+        ["Garage Sweep Out", "Sweep, dust, and tidy garage spaces, shelves, and entry areas.", "fixed", 90.00, "client_home", carolId],
+      ].map(([title, description, pricingType, priceAmount, locationType, providerId]) =>
+        makeService("Cleaning", title, description, pricingType, priceAmount, locationType, providerId)
+      ),
+      ...[
+        ["Furniture Assembly", "IKEA and flat-pack furniture assembly. Bring your own instructions or I'll download them. First item included.", "fixed", 80.00, "client_home", danId],
+        ["Wall Mounting", "TVs, shelves, mirrors, curtain rods, and small fixtures mounted securely.", "fixed", 95.00, "client_home", danId],
+        ["Door Repair", "Minor interior door alignment, hinge repair, and handle replacement.", "fixed", 90.00, "client_home", danId],
+        ["Drywall Patching", "Small drywall holes, dents, sanding, and paint-ready patching.", "fixed", 110.00, "client_home", danId],
+        ["Caulking Refresh", "Bathroom, kitchen, and window caulking removal and replacement.", "fixed", 100.00, "client_home", danId],
+        ["Cabinet Hardware Install", "Install knobs, pulls, hinges, and basic cabinet adjustments.", "fixed", 75.00, "client_home", danId],
+        ["Light Fixture Swap", "Replace simple light fixtures where existing wiring is ready.", "fixed", 85.00, "client_home", danId],
+        ["General Home Repairs", "Small household repairs bundled into one visit. Quote after review.", "quote", null, "client_home", danId],
+        ["Baby Gate Installation", "Install safety gates, anchors, and basic childproofing hardware.", "fixed", 70.00, "client_home", danId],
+        ["Deck Board Repair", "Replace loose boards, tighten hardware, and basic deck touch-ups.", "quote", null, "client_home", danId],
+        ["Picture Hanging", "Hang frames, artwork, and small wall decor with clean alignment.", "fixed", 65.00, "client_home", danId],
+        ["Closet Shelf Repair", "Repair or reinforce closet rods, shelves, and brackets.", "fixed", 85.00, "client_home", danId],
+      ].map(([title, description, pricingType, priceAmount, locationType, providerId]) =>
+        makeService("Handyman", title, description, pricingType, priceAmount, locationType, providerId)
+      ),
+      ...[
+        ["Lawn Mowing", "Residential lawn mowing and edging. Includes cleanup of grass clippings. Up to 5,000 sq ft.", "fixed", 60.00, "client_home", danId],
+        ["Garden Bed Cleanup", "Weeding, trimming, and seasonal cleanup for flower beds and planters.", "fixed", 120.00, "client_home", danId],
+        ["Hedge Trimming", "Shape and trim hedges, shrubs, and small bushes around the property.", "fixed", 95.00, "client_home", danId],
+        ["Leaf Removal", "Raking, bagging, and curbside prep for fall leaves.", "fixed", 110.00, "client_home", danId],
+        ["Mulch Installation", "Mulch delivery support, spreading, edging, and cleanup.", "quote", null, "client_home", danId],
+        ["Seasonal Yard Cleanup", "Spring or fall cleanup for lawns, paths, patios, and beds.", "fixed", 160.00, "client_home", danId],
+        ["Weed Control Visit", "Manual weeding and basic maintenance for walkways and gardens.", "hourly", 45.00, "client_home", danId],
+        ["Planting Help", "Plant flowers, shrubs, and small garden additions with basic soil prep.", "hourly", 50.00, "client_home", danId],
+        ["Patio Pressure Wash", "Pressure washing for patios, walkways, and outdoor surfaces.", "fixed", 130.00, "client_home", danId],
+        ["Snow Shoveling", "Driveway, walkway, and entry snow clearing during winter months.", "fixed", 55.00, "client_home", danId],
+        ["Lawn Fertilizer Visit", "Apply basic lawn fertilizer and provide simple care recommendations.", "fixed", 85.00, "client_home", danId],
+      ].map(([title, description, pricingType, priceAmount, locationType, providerId]) =>
+        makeService("Landscaping", title, description, pricingType, priceAmount, locationType, providerId)
+      ),
+      ...[
+        ["Moving Help", "Loading, unloading, and carrying furniture and boxes. Local moves only. No truck included.", "hourly", 50.00, "flexible", danId],
+        ["Apartment Move Assist", "Help move boxes and furniture for condos and apartments.", "hourly", 55.00, "flexible", danId],
+        ["Packing Service", "Careful packing of kitchenware, books, clothes, and household items.", "hourly", 45.00, "client_home", carolId],
+        ["Furniture Rearranging", "Move heavy items within your home and reset room layouts.", "fixed", 80.00, "client_home", danId],
+        ["Donation Drop-Off Prep", "Sort, box, and carry donation items for pickup or drop-off.", "hourly", 40.00, "client_home", carolId],
+        ["Storage Unit Loading", "Organize and load storage units for better space usage.", "hourly", 55.00, "flexible", danId],
+        ["Small Item Delivery", "Local delivery for small furniture and household items.", "fixed", 75.00, "flexible", danId],
+        ["Move-Out Hauling Help", "Carry items to truck, curb, or building loading area.", "hourly", 55.00, "client_home", danId],
+        ["Unpacking Setup", "Unpack boxes and set up kitchen, bedroom, or living spaces.", "hourly", 45.00, "client_home", carolId],
+        ["Office Move Support", "Small office packing, lifting, and furniture repositioning.", "quote", null, "flexible", danId],
+        ["Box Supply Drop-Off", "Drop off moving boxes, tape, and basic packing materials locally.", "fixed", 65.00, "flexible", danId],
+      ].map(([title, description, pricingType, priceAmount, locationType, providerId]) =>
+        makeService("Moving Help", title, description, pricingType, priceAmount, locationType, providerId)
+      ),
+      ...[
+        ["Sink Repair", "Leaky faucets, clogged drains, and sink fixture repairs. Quote provided after assessment.", "quote", null, "client_home", danId],
+        ["Faucet Replacement", "Install a replacement faucet where existing plumbing is ready.", "fixed", 120.00, "client_home", danId],
+        ["Toilet Repair", "Basic toilet repairs including running water, handles, and flappers.", "fixed", 100.00, "client_home", danId],
+        ["Drain Clearing", "Clear simple sink, tub, and shower clogs.", "fixed", 95.00, "client_home", danId],
+        ["Shower Head Install", "Replace or install standard shower heads and handheld kits.", "fixed", 65.00, "client_home", danId],
+        ["Garbage Disposal Check", "Inspect and troubleshoot common garbage disposal issues.", "quote", null, "client_home", danId],
+        ["Pipe Leak Assessment", "Locate visible leaks and provide repair recommendations.", "quote", null, "client_home", danId],
+        ["Caulk Around Fixtures", "Re-caulk sinks, tubs, and plumbing fixture edges.", "fixed", 85.00, "client_home", danId],
+        ["Bidet Attachment Install", "Install non-electric bidet attachments on compatible toilets.", "fixed", 90.00, "client_home", danId],
+        ["Water Filter Install", "Install basic under-sink or faucet-mounted water filters.", "fixed", 110.00, "client_home", danId],
+        ["Toilet Seat Replacement", "Replace standard toilet seats and tighten existing hardware.", "fixed", 55.00, "client_home", danId],
+        ["Sink Stopper Repair", "Repair or replace simple sink stopper assemblies.", "fixed", 70.00, "client_home", danId],
+        ["Supply Line Replacement", "Replace basic faucet or toilet supply lines where access is clear.", "fixed", 95.00, "client_home", danId],
+      ].map(([title, description, pricingType, priceAmount, locationType, providerId]) =>
+        makeService("Plumbing", title, description, pricingType, priceAmount, locationType, providerId)
+      ),
+      ...[
+        ["Outlet Replacement", "Replace worn outlets and covers where existing wiring is safe.", "fixed", 80.00, "client_home", danId],
+        ["Ceiling Fan Install", "Install a ceiling fan where an approved ceiling box already exists.", "quote", null, "client_home", danId],
+        ["Light Switch Replacement", "Replace standard switches, dimmers, and plates.", "fixed", 75.00, "client_home", danId],
+        ["Smoke Detector Install", "Install or replace battery and hardwired smoke detectors.", "fixed", 65.00, "client_home", danId],
+        ["Smart Doorbell Install", "Install smart doorbells with existing compatible wiring.", "fixed", 100.00, "client_home", danId],
+        ["Under Cabinet Lighting", "Install plug-in or adhesive under-cabinet lighting kits.", "fixed", 120.00, "client_home", danId],
+        ["Outdoor Light Replacement", "Replace porch, patio, or garage light fixtures.", "fixed", 95.00, "client_home", danId],
+        ["Cable Concealment", "Hide TV and desk cables with raceways or simple cable management.", "fixed", 85.00, "client_home", danId],
+        ["GFCI Check", "Inspect and replace basic GFCI outlets where suitable.", "quote", null, "client_home", danId],
+        ["Lamp and Fixture Repair", "Troubleshoot simple lamp or small fixture issues.", "quote", null, "flexible", danId],
+        ["Bulb Replacement Visit", "Replace hard-to-reach bulbs and basic fixture covers.", "fixed", 60.00, "client_home", danId],
+        ["Thermostat Install", "Install compatible smart or standard thermostats with existing wiring.", "fixed", 115.00, "client_home", danId],
+        ["Power Bar Setup", "Set up surge protectors and simple home office power organization.", "fixed", 55.00, "client_home", danId],
+      ].map(([title, description, pricingType, priceAmount, locationType, providerId]) =>
+        makeService("Electrical", title, description, pricingType, priceAmount, locationType, providerId)
+      ),
+      ...[
+        ["Errand Assistance", "Pickup, drop-off, and simple local errands for busy households.", "hourly", 35.00, "flexible", carolId],
+        ["Senior Check-In Visit", "Friendly non-medical check-in, light help, and household support.", "hourly", 40.00, "client_home", carolId],
+        ["Pet Feeding Visit", "Feed pets, refresh water, and complete quick home check-ins.", "fixed", 35.00, "client_home", carolId],
+        ["Tutoring Session", "One-on-one tutoring for basic school subjects and homework support.", "hourly", 45.00, "provider_location", carolId],
+        ["Meal Prep Help", "Simple meal prep, chopping, kitchen reset, and weekly organization.", "hourly", 45.00, "client_home", carolId],
+        ["Closet Organization", "Sort, fold, and organize closets, drawers, and storage areas.", "fixed", 100.00, "client_home", carolId],
+        ["Home Office Setup", "Arrange desk, cables, supplies, and workspace organization.", "fixed", 90.00, "client_home", danId],
+        ["Event Setup Help", "Set up tables, decor, seating, and light cleanup for small events.", "hourly", 45.00, "client_home", carolId],
+        ["Plant Care Visit", "Watering, pruning, and simple care for indoor plants.", "fixed", 35.00, "client_home", carolId],
+        ["Personal Shopping", "Shopping assistance for groceries, supplies, and household items.", "hourly", 38.00, "flexible", carolId],
+      ].map(([title, description, pricingType, priceAmount, locationType, providerId]) =>
+        makeService("Personal Services", title, description, pricingType, priceAmount, locationType, providerId)
+      ),
     ];
 
     const serviceIds = {};
