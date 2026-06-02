@@ -122,7 +122,7 @@ const AdminPage = () => {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f1f5f9" }}>
+    <div style={{ minHeight: "100vh", background: "var(--app-bg)", backgroundAttachment: "fixed" }}>
       <DashboardNavbar />
       <div style={{ maxWidth: 980, margin: "0 auto", padding: "40px 24px" }}>
 

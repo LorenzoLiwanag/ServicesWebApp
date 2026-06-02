@@ -3,6 +3,7 @@
   width: 100%;
   min-height: 100vh;
   background: var(--app-bg);
+  background-attachment: fixed;
   padding-bottom: 40px;
 }
 
