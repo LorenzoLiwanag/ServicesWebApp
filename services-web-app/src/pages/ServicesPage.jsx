@@ -24,7 +24,6 @@ const ServicesPage = () => {
   const [filters, setFilters] = useState({
     searchText: "",
     category: "all",
-    rating: "all",
     priceRange: "all",
     includeQuote: false,
     availability: "all"
@@ -55,11 +54,6 @@ const ServicesPage = () => {
 
       if (filters.category !== "all" && service.categoryName !== filters.category) {
         return false;
-      }
-
-      if (filters.rating !== "all") {
-        const minRating = parseFloat(filters.rating);
-        if (service.avgRating < minRating) return false;
       }
 
       if (filters.priceRange !== "all") {
@@ -93,8 +87,6 @@ const ServicesPage = () => {
     const sorted = [...filteredServices];
 
     switch (sortBy) {
-      case "rating":
-        return sorted.sort((a, b) => b.avgRating - a.avgRating);
       case "price-low":
         return sorted.sort((a, b) => {
           if (a.pricingType === "quote") return 1;
@@ -107,15 +99,9 @@ const ServicesPage = () => {
           if (b.pricingType === "quote") return 1;
           return b.rateAmount - a.rateAmount;
         });
-      case "reviews":
-        return sorted.sort((a, b) => b.reviewCount - a.reviewCount);
       case "recommended":
       default:
-        return sorted.sort((a, b) => {
-          const scoreA = a.avgRating * Math.max(a.reviewCount, 1);
-          const scoreB = b.avgRating * Math.max(b.reviewCount, 1);
-          return scoreB - scoreA;
-        });
+        return sorted.sort((a, b) => a.serviceName.localeCompare(b.serviceName));
     }
   }, [filteredServices, sortBy]);
 
@@ -166,24 +152,10 @@ const ServicesPage = () => {
     >
       <div className="card-header">
         <h3 className="card-title">{service.serviceName}</h3>
-        <span className="card-category">{service.categoryName}</span>
       </div>
 
       <p className="card-provider">{service.providerName}</p>
       <p className="card-description">{service.description}</p>
-
-      <div className="card-stats">
-        <div className="stat">
-          <span className="stat-value">
-            {"\u2605"} {service.reviewCount > 0 ? service.avgRating.toFixed(1) : "New"}
-          </span>
-          <span className="stat-label">
-            {service.reviewCount > 0
-              ? `(${service.reviewCount} reviews)`
-              : "(No reviews yet)"}
-          </span>
-        </div>
-      </div>
 
       <div className="card-pricing">
         {service.pricingType === "quote" ? (
@@ -391,7 +363,6 @@ const ServicesPage = () => {
                 handleFiltersChange({
                   searchText: "",
                   category: "all",
-                  rating: "all",
                   priceRange: "all",
                   includeQuote: false,
                   availability: "all"

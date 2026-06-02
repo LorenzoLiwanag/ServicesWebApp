@@ -7,7 +7,6 @@ const ServicesSearchBar = ({ onFiltersChange, categories }) => {
   const [searchText, setSearchText] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({
     category: "all",
-    rating: "all",
     priceRange: "all",
     includeQuote: false,
     availability: "all"
@@ -32,7 +31,6 @@ const ServicesSearchBar = ({ onFiltersChange, categories }) => {
     setSearchText("");
     setSelectedFilters({
       category: "all",
-      rating: "all",
       priceRange: "all",
       includeQuote: false,
       availability: "all"
@@ -40,7 +38,6 @@ const ServicesSearchBar = ({ onFiltersChange, categories }) => {
     onFiltersChange({
       searchText: "",
       category: "all",
-      rating: "all",
       priceRange: "all",
       includeQuote: false,
       availability: "all"
@@ -97,20 +94,6 @@ const ServicesSearchBar = ({ onFiltersChange, categories }) => {
                     {cat}
                   </option>
                 ))}
-              </select>
-            </div>
-
-            <div className="filter-group">
-              <label className="filter-label">Minimum Rating</label>
-              <select
-                className="filter-select"
-                value={selectedFilters.rating}
-                onChange={(e) => handleFilterChange("rating", e.target.value)}
-              >
-                <option value="all">All Ratings</option>
-                <option value="4.5">4.5+ Stars</option>
-                <option value="4.0">4.0+ Stars</option>
-                <option value="3.5">3.5+ Stars</option>
               </select>
             </div>
 
