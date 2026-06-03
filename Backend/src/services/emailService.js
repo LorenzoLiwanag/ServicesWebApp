@@ -5,18 +5,53 @@ const isDev = process.env.NODE_ENV !== "production";
 const hasSmtpConfig = () =>
   Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 
+// Cached Ethereal transporter — reused across calls so we don't create a new
+// test account for every email during a single server session.
+let etherealTransporter = null;
+
+const getEtherealTransporter = async () => {
+  if (etherealTransporter) return etherealTransporter;
+  const testAccount = await nodemailer.createTestAccount();
+  etherealTransporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: { user: testAccount.user, pass: testAccount.pass },
+  });
+  console.log(
+    `[DEV EMAIL] Ethereal test account ready — inbox: https://ethereal.email/messages`
+  );
+  return etherealTransporter;
+};
+
 const sendEmail = async ({ to, subject, text }) => {
   if (!hasSmtpConfig()) {
-    if (isDev) {
-      console.log(
-        `[DEV EMAIL FALLBACK]\nTo: ${to}\nSubject: ${subject}\n\n${text}\n${"─".repeat(60)}`
+    if (!isDev) {
+      console.error(
+        `[EMAIL ERROR] SMTP credentials not configured. Could not send email to ${to}.`
       );
-    } else {
-      console.error(`[EMAIL ERROR] SMTP credentials not configured. Could not send email to ${to}.`);
+      return;
     }
+
+    // Development: route through Ethereal so you can preview the real email
+    const transporter = await getEtherealTransporter();
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || "Subic Bay Home Services <no-reply@ethereal.email>",
+      to,
+      subject,
+      text,
+    });
+
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    console.log(`\n[DEV EMAIL PREVIEW]`);
+    console.log(`  To:      ${to}`);
+    console.log(`  Subject: ${subject}`);
+    console.log(`  Preview: ${previewUrl}`);
+    console.log(`${"─".repeat(60)}\n`);
     return;
   }
 
+  // Production / configured SMTP
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT) || 587,
