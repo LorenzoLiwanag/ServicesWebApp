@@ -1,5 +1,6 @@
 import { findPendingUsers, approveUserById } from "../models/userModel.js";
 import { createNotification } from "../models/notificationModel.js";
+import { sendAccountApprovedEmail } from "../services/emailService.js";
 import database from "../config/Database.js";
 
 export const getPendingUsers = async (req, res) => {
@@ -17,7 +18,7 @@ export const approveUser = async (req, res) => {
     if (!targetId) return res.status(400).json({ message: "Invalid user ID" });
 
     const [rows] = await database.execute(
-      `SELECT id, approval_status FROM users WHERE id = ?`,
+      `SELECT id, first_name, email, approval_status FROM users WHERE id = ?`,
       [targetId]
     );
     const target = rows[0];
@@ -27,6 +28,19 @@ export const approveUser = async (req, res) => {
     }
 
     await approveUserById(targetId, req.userId);
+
+    createNotification({
+      userId: targetId,
+      type: "account_approved",
+      title: "Account approved",
+      message: "Your account has been approved. You can now log in and use Subic Bay Home Services.",
+    }).catch((err) => {
+      console.error("[NOTIFICATION ERROR] Failed to create account approved notification:", err.message);
+    });
+
+    sendAccountApprovedEmail({ to: target.email, firstName: target.first_name }).catch((err) => {
+      console.error("[EMAIL ERROR] Failed to send account approved email:", err.message);
+    });
 
     res.status(200).json({
       message: "User approved successfully",
