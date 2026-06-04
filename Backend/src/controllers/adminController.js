@@ -1,6 +1,19 @@
 import { findPendingUsers, approveUserById } from "../models/userModel.js";
 import { createNotification } from "../models/notificationModel.js";
+import { sendAccountApprovedEmail } from "../services/emailService.js";
 import database from "../config/Database.js";
+import {
+  listCategoriesWithCounts,
+  getCategoryById,
+  findByName,
+  getServiceCount,
+  insertCategory,
+  updateCategoryById,
+  setActiveStatus,
+  deleteCategoryById,
+  getUncategorizedServices,
+  assignCategoryToService,
+} from "../models/categoryModel.js";
 
 export const getPendingUsers = async (req, res) => {
   try {
@@ -17,7 +30,7 @@ export const approveUser = async (req, res) => {
     if (!targetId) return res.status(400).json({ message: "Invalid user ID" });
 
     const [rows] = await database.execute(
-      `SELECT id, approval_status FROM users WHERE id = ?`,
+      `SELECT id, first_name, email, approval_status FROM users WHERE id = ?`,
       [targetId]
     );
     const target = rows[0];
@@ -27,6 +40,19 @@ export const approveUser = async (req, res) => {
     }
 
     await approveUserById(targetId, req.userId);
+
+    createNotification({
+      userId: targetId,
+      type: "account_approved",
+      title: "Account approved",
+      message: "Your account has been approved. You can now log in and use Subic Bay Home Services.",
+    }).catch((err) => {
+      console.error("[NOTIFICATION ERROR] Failed to create account approved notification:", err.message);
+    });
+
+    sendAccountApprovedEmail({ to: target.email, firstName: target.first_name }).catch((err) => {
+      console.error("[EMAIL ERROR] Failed to send account approved email:", err.message);
+    });
 
     res.status(200).json({
       message: "User approved successfully",
@@ -103,6 +129,133 @@ export const getMessageLogs = async (req, res) => {
     res.status(500).json({ message: "Failed to load message logs" });
   }
 };
+
+// ── Category management ──────────────────────────────────────────────────────
+
+export const getCategories = async (req, res) => {
+  try {
+    const categories = await listCategoriesWithCounts();
+    res.status(200).json({ categories });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load categories" });
+  }
+};
+
+export const createCategoryHandler = async (req, res) => {
+  try {
+    const { name, description, parentCategoryId, sortOrder } = req.body;
+    if (!name || !name.trim()) return res.status(400).json({ message: "Name is required" });
+    if (name.trim().length > 150) return res.status(400).json({ message: "Name must be 150 characters or fewer" });
+
+    const existing = await findByName(name.trim());
+    if (existing) return res.status(409).json({ message: "A category with this name already exists" });
+
+    const newId = await insertCategory({ name: name.trim(), description, parentCategoryId, sortOrder });
+    res.status(201).json({ id: newId, message: "Category created" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create category" });
+  }
+};
+
+export const updateCategoryHandler = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ message: "Invalid category ID" });
+
+    const category = await getCategoryById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    const { name, description, parentCategoryId, sortOrder } = req.body;
+    if (!name || !name.trim()) return res.status(400).json({ message: "Name is required" });
+    if (name.trim().length > 150) return res.status(400).json({ message: "Name must be 150 characters or fewer" });
+
+    const conflict = await findByName(name.trim(), id);
+    if (conflict) return res.status(409).json({ message: "A category with this name already exists" });
+
+    await updateCategoryById(id, { name: name.trim(), description, parentCategoryId, sortOrder });
+    res.status(200).json({ message: "Category updated" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update category" });
+  }
+};
+
+export const deactivateCategoryHandler = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ message: "Invalid category ID" });
+
+    const category = await getCategoryById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    await setActiveStatus(id, false);
+    res.status(200).json({ message: "Category deactivated" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to deactivate category" });
+  }
+};
+
+export const reactivateCategoryHandler = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ message: "Invalid category ID" });
+
+    const category = await getCategoryById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    await setActiveStatus(id, true);
+    res.status(200).json({ message: "Category reactivated" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to reactivate category" });
+  }
+};
+
+export const deleteCategoryHandler = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ message: "Invalid category ID" });
+
+    const category = await getCategoryById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    const count = await getServiceCount(id);
+    if (count > 0) {
+      return res.status(409).json({ message: `Cannot delete — ${count} service${count === 1 ? "" : "s"} reference this category. Deactivate it instead.` });
+    }
+
+    await deleteCategoryById(id);
+    res.status(200).json({ message: "Category deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete category" });
+  }
+};
+
+export const getUncategorizedServicesHandler = async (req, res) => {
+  try {
+    const services = await getUncategorizedServices();
+    res.status(200).json({ services });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load uncategorized services" });
+  }
+};
+
+export const assignServiceCategoryHandler = async (req, res) => {
+  try {
+    const serviceId = Number(req.params.id);
+    const { categoryId } = req.body;
+    if (!serviceId) return res.status(400).json({ message: "Invalid service ID" });
+    if (!categoryId) return res.status(400).json({ message: "categoryId is required" });
+
+    const category = await getCategoryById(Number(categoryId));
+    if (!category) return res.status(404).json({ message: "Category not found" });
+
+    await assignCategoryToService(serviceId, Number(categoryId));
+    res.status(200).json({ message: "Category assigned" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to assign category" });
+  }
+};
+
+// ── Service approval ─────────────────────────────────────────────────────────
 
 export const approveProviderService = async (req, res) => {
   try {

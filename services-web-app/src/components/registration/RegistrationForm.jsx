@@ -116,7 +116,9 @@ const RegistrationForm = () => {
       if (!response.ok) {
         setError(data.message);
       } else {
-        setMessage(data.message);
+        setMessage(
+          "Your account has been created and is pending admin approval. Please check your email for confirmation. You will be notified once your account is approved."
+        );
         setFormData({
           firstName: "",
           lastName: "",

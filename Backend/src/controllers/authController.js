@@ -1,15 +1,28 @@
+import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { registerUserService, loginUserService } from "../services/authService.js";
 import {
+  findUserByEmail,
   findUserByEmailExcluding,
   findUserPasswordById,
   findUserProfileById,
   updateUserPasswordById,
   updateUserProfileById,
 } from "../models/userModel.js";
+import {
+  createPasswordResetToken,
+  findPasswordResetToken,
+  markPasswordResetTokenUsed,
+} from "../models/passwordResetTokenModel.js";
+import {
+  sendSignupConfirmationEmail,
+  sendPasswordResetEmail,
+} from "../services/emailService.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
 
 const formatUser = (user) => ({
   id: user.userId,
@@ -30,8 +43,11 @@ const getUserIdFromRequest = (req) => {
 
 export const registerUser = async (req, res) => {
   try {
-    await registerUserService(req.body);
-    res.status(201).json({ message: "Registration successful. Please wait for admin approval before logging in." });
+    const user = await registerUserService(req.body);
+    res.status(201).json({ message: "Account created successfully. Your account is pending admin approval." });
+    sendSignupConfirmationEmail({ to: user.email, firstName: user.firstName }).catch((err) => {
+      console.error("[EMAIL ERROR] Failed to send signup confirmation:", err.message);
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -201,5 +217,75 @@ export const changeCurrentUserPassword = async (req, res) => {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
     res.status(500).json({ message: "Failed to update password" });
+  }
+};
+
+const processPasswordReset = async (email) => {
+  const user = await findUserByEmail(email);
+  if (!user) return;
+
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+  await createPasswordResetToken({ userId: user.id, tokenHash, expiresAt });
+
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
+  const resetLink = `${frontendUrl}/reset-password?token=${rawToken}`;
+
+  await sendPasswordResetEmail({ to: user.email, firstName: user.first_name, resetLink });
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const email = req.body.email?.trim();
+
+    if (!email) return res.status(400).json({ message: "Email is required" });
+    if (!EMAIL_REGEX.test(email)) return res.status(400).json({ message: "Invalid email format" });
+
+    res.status(200).json({ message: "If an account with that email exists, a password reset link has been sent." });
+
+    processPasswordReset(email).catch((err) => {
+      console.error("[FORGOT PASSWORD ERROR]", err.message);
+    });
+  } catch (err) {
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Something went wrong. Please try again." });
+    }
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword, confirmPassword } = req.body;
+
+    if (!token || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    if (!PASSWORD_REGEX.test(newPassword)) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters and include at least one letter and one number",
+      });
+    }
+
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const record = await findPasswordResetToken(tokenHash);
+
+    if (!record || record.used_at || new Date(record.expires_at) < new Date()) {
+      return res.status(400).json({ message: "Invalid or expired reset link." });
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await updateUserPasswordById(record.user_id, newHash);
+    await markPasswordResetTokenUsed(record.id);
+
+    res.status(200).json({ message: "Password reset successful. You can now log in with your new password." });
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 };

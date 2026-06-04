@@ -9,8 +9,6 @@ const EMPTY_FORM = {
   description: "",
   pricingType: "hourly",
   priceAmount: "",
-  serviceLocationType: "client_home",
-  isVisible: true,
 };
 
 const LOCATION_LABELS = {
@@ -96,7 +94,7 @@ const ServiceFormModal = ({ title: modalTitle, formData, categories, onChange, o
 
           {formData.pricingType !== "quote" && (
             <div className="provider-form-group">
-              <label>Price (CAD)</label>
+              <label>Price (PHP ₱)</label>
               <input
                 type="number"
                 min="1"
@@ -108,26 +106,6 @@ const ServiceFormModal = ({ title: modalTitle, formData, categories, onChange, o
               />
             </div>
           )}
-        </div>
-
-        <div className="provider-form-group">
-          <label>Service Location</label>
-          <select value={formData.serviceLocationType} onChange={(e) => onChange("serviceLocationType", e.target.value)}>
-            <option value="client_home">Client Home</option>
-            <option value="provider_location">My Location</option>
-            <option value="remote">Remote</option>
-            <option value="flexible">Flexible</option>
-          </select>
-        </div>
-
-        <div className="provider-form-checkbox">
-          <input
-            id="svc-visible-check"
-            type="checkbox"
-            checked={formData.isVisible}
-            onChange={(e) => onChange("isVisible", e.target.checked)}
-          />
-          <label htmlFor="svc-visible-check">Make visible to clients once approved</label>
         </div>
 
         <div className="provider-form-actions">
