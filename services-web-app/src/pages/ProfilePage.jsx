@@ -304,6 +304,9 @@ const ProfilePage = () => {
       const updatedUser = getProfileUser({
         ...profileUser,
         ...data.user,
+        firstName,
+        lastName,
+        fullName: profileFormData.fullName.trim(),
       });
 
       setProfileUser(updatedUser);

@@ -3,6 +3,7 @@ import {
   findContactInquiries,
   updateContactInquiryStatus,
 } from "../models/contactModel.js";
+import { sendEmail } from "../services/emailService.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const VALID_STATUSES = new Set(["new", "read", "resolved", "archived"]);
@@ -67,14 +68,7 @@ export const patchContactSubmission = async (req, res) => {
 };
 
 async function notifyAdmin({ id, name, email, subject, message }) {
-  const { createTransport } = await import("nodemailer");
-  const transport = createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-  });
-  await transport.sendMail({
-    from: process.env.SMTP_USER,
+  await sendEmail({
     to: process.env.ADMIN_NOTIFICATION_EMAIL,
     subject: `New contact inquiry #${id} — ${subject}`,
     text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`,

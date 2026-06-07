@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import {
   postContact,
@@ -8,8 +9,16 @@ import {
 
 const router = express.Router();
 
-// Public — no auth
-router.post("/contact", postContact);
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests. Please try again later." },
+});
+
+// Public — no auth, but rate limited
+router.post("/contact", contactLimiter, postContact);
 
 // Admin only
 router.get("/admin/contact-submissions", requireAuth, requireAdmin, getContactSubmissions);

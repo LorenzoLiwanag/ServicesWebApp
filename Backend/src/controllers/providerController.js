@@ -10,7 +10,7 @@ import {
 import { createNotification } from "../models/notificationModel.js";
 import { findAllAdminIds } from "../models/userModel.js";
 
-const getUserId = (req) => Number(req.userId || req.headers["x-user-id"]);
+const getUserId = (req) => Number(req.userId);
 
 export const getMyProviderProfile = async (req, res) => {
   try {

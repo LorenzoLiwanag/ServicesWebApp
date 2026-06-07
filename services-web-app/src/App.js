@@ -13,6 +13,8 @@ import MyBookingsPage from './pages/MyBookingsPage.jsx';
 import MessagesPage from './pages/MessagesPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import AdminMessagesPage from './pages/AdminMessagesPage.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import { getStoredAuthSession, validateStoredSession } from './utils/auth.js';
 
 const RequireAuth = ({ children }) => {
@@ -38,6 +40,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route
           path="/client-dashboard"
           element={

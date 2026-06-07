@@ -9,7 +9,7 @@ import {
   createNotification,
 } from "../models/notificationModel.js";
 
-const getUserId = (req) => Number(req.userId || req.headers["x-user-id"]);
+const getUserId = (req) => Number(req.userId);
 
 const notifyOnStatusChange = async (booking, status) => {
   const base = {

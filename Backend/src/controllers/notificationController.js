@@ -10,7 +10,7 @@ import {
   permanentlyDeleteAllDeletedNotifications,
 } from "../models/notificationModel.js";
 
-const getUserId = (req) => Number(req.userId || req.headers["x-user-id"]);
+const getUserId = (req) => Number(req.userId);
 
 export const getMyNotifications = async (req, res) => {
   try {
