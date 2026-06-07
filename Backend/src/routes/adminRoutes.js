@@ -3,8 +3,10 @@ import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import {
   getPendingUsers,
   approveUser,
+  rejectUser,
   getPendingServices,
   approveProviderService,
+  rejectProviderService,
   getMessageLogs,
   getCategories,
   createCategoryHandler,
@@ -20,9 +22,11 @@ const router = Router();
 
 router.get("/pending-users", requireAuth, requireAdmin, getPendingUsers);
 router.patch("/users/:id/approve", requireAuth, requireAdmin, approveUser);
+router.patch("/users/:id/reject", requireAuth, requireAdmin, rejectUser);
 
 router.get("/pending-services", requireAuth, requireAdmin, getPendingServices);
 router.patch("/services/:id/approve", requireAuth, requireAdmin, approveProviderService);
+router.patch("/services/:id/reject", requireAuth, requireAdmin, rejectProviderService);
 
 router.get("/message-logs", requireAuth, requireAdmin, getMessageLogs);
 

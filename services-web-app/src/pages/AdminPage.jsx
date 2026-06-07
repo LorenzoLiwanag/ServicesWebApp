@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import DashboardNavbar from "../components/dashboard/DashboardNavbar";
+import AdminNavbar from "../components/dashboard/AdminNavbar";
 import {
   fetchPendingUsers,
   approveUser,
+  rejectUser,
   fetchPendingServices,
   approveProviderService,
+  rejectProviderService,
   fetchCategories,
   createCategory,
   updateCategory,
@@ -123,6 +125,48 @@ const ConfirmModal = ({ title, message, confirmLabel, confirmColor, onConfirm, o
   </div>
 );
 
+// ── Reject modal (with optional reason) ─────────────────────────────────────
+
+const RejectModal = ({ title, itemLabel, onConfirm, onClose, loading }) => {
+  const [reason, setReason] = useState("");
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+      <div style={{ background: "#fff", borderRadius: 12, padding: 28, width: 440, boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f2a44", marginBottom: 10 }}>{title}</h3>
+        <p style={{ fontSize: 14, color: "#374151", marginBottom: 16 }}>
+          Reject <strong>{itemLabel}</strong>? The user will be notified. This cannot be undone.
+        </p>
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 4 }}>
+            Reason <span style={{ fontWeight: 400, color: "#94a3b8" }}>(optional)</span>
+          </label>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="e.g. Incomplete profile information."
+            maxLength={500}
+            rows={3}
+            style={{ width: "100%", padding: "8px 10px", borderRadius: 7, border: "1px solid #cbd5e1", fontSize: 13, boxSizing: "border-box", resize: "vertical" }}
+          />
+        </div>
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button onClick={onClose} disabled={loading} style={{ padding: "8px 18px", borderRadius: 7, border: "1px solid #cbd5e1", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(reason.trim() || null)}
+            disabled={loading}
+            style={{ padding: "8px 18px", borderRadius: 7, border: "none", background: loading ? "#94a3b8" : "#dc2626", color: "#fff", fontSize: 13, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}
+          >
+            {loading ? "Rejecting..." : "Reject"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ── Categories tab ───────────────────────────────────────────────────────────
 
 const CategoriesTab = () => {
@@ -236,74 +280,76 @@ const CategoriesTab = () => {
         <p style={{ color: "#64748b", fontStyle: "italic", fontSize: 14 }}>No categories yet.</p>
       )}
       {!loading && categories.length > 0 && (
-        <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
-          <thead>
-            <tr style={{ background: "#e2e8f0" }}>
-              <th style={th}>Name</th>
-              <th style={th}>Description</th>
-              <th style={th}>Status</th>
-              <th style={th}>Sort</th>
-              <th style={th}>Parent</th>
-              <th style={th}>Services</th>
-              <th style={th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((cat) => (
-              <tr
-                key={cat.id}
-                style={{ borderBottom: "1px solid #e2e8f0", opacity: cat.isActive ? 1 : 0.55 }}
-              >
-                <td style={{ ...td, fontWeight: 600 }}>{cat.name}</td>
-                <td style={{ ...td, maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#64748b" }}>
-                  {cat.description || "—"}
-                </td>
-                <td style={td}>
-                  {cat.isActive
-                    ? <StatusBadge label="Active" bg="#dcfce7" color="#166534" />
-                    : <StatusBadge label="Inactive" bg="#f1f5f9" color="#475569" />}
-                </td>
-                <td style={td}>{cat.sortOrder}</td>
-                <td style={td}>{parentName(cat.parentCategoryId)}</td>
-                <td style={td}>
-                  <span style={{ fontWeight: 600 }}>{cat.serviceCount}</span>
-                </td>
-                <td style={{ ...td, whiteSpace: "nowrap" }}>
-                  <button
-                    onClick={() => openEdit(cat)}
-                    style={{ marginRight: 6, padding: "4px 12px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-                  >
-                    Edit
-                  </button>
-                  {cat.isActive ? (
-                    <button
-                      onClick={() => openDeactivate(cat)}
-                      style={{ marginRight: 6, padding: "4px 12px", borderRadius: 6, border: "none", background: "#fef3c7", color: "#92400e", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-                    >
-                      Deactivate
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleReactivate(cat)}
-                      style={{ marginRight: 6, padding: "4px 12px", borderRadius: 6, border: "none", background: "#dcfce7", color: "#166534", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-                    >
-                      Reactivate
-                    </button>
-                  )}
-                  <span title={cat.serviceCount > 0 ? `Cannot delete — ${cat.serviceCount} service${cat.serviceCount === 1 ? "" : "s"} reference this category. Deactivate it instead.` : ""}>
-                    <button
-                      onClick={() => cat.serviceCount === 0 && openDelete(cat)}
-                      disabled={cat.serviceCount > 0}
-                      style={{ padding: "4px 12px", borderRadius: 6, border: "none", background: cat.serviceCount > 0 ? "#e2e8f0" : "#fef2f2", color: cat.serviceCount > 0 ? "#94a3b8" : "#dc2626", fontSize: 12, fontWeight: 600, cursor: cat.serviceCount > 0 ? "not-allowed" : "pointer" }}
-                    >
-                      Delete
-                    </button>
-                  </span>
-                </td>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+            <thead>
+              <tr style={{ background: "#e2e8f0" }}>
+                <th style={th}>Name</th>
+                <th style={th}>Description</th>
+                <th style={th}>Status</th>
+                <th style={th}>Sort</th>
+                <th style={th}>Parent</th>
+                <th style={th}>Services</th>
+                <th style={th}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {categories.map((cat) => (
+                <tr
+                  key={cat.id}
+                  style={{ borderBottom: "1px solid #e2e8f0", opacity: cat.isActive ? 1 : 0.55 }}
+                >
+                  <td style={{ ...td, fontWeight: 600 }}>{cat.name}</td>
+                  <td style={{ ...td, maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#64748b" }}>
+                    {cat.description || "—"}
+                  </td>
+                  <td style={td}>
+                    {cat.isActive
+                      ? <StatusBadge label="Active" bg="#dcfce7" color="#166534" />
+                      : <StatusBadge label="Inactive" bg="#f1f5f9" color="#475569" />}
+                  </td>
+                  <td style={td}>{cat.sortOrder}</td>
+                  <td style={td}>{parentName(cat.parentCategoryId)}</td>
+                  <td style={td}>
+                    <span style={{ fontWeight: 600 }}>{cat.serviceCount}</span>
+                  </td>
+                  <td style={{ ...td, whiteSpace: "nowrap" }}>
+                    <button
+                      onClick={() => openEdit(cat)}
+                      style={{ marginRight: 6, padding: "4px 12px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                    >
+                      Edit
+                    </button>
+                    {cat.isActive ? (
+                      <button
+                        onClick={() => openDeactivate(cat)}
+                        style={{ marginRight: 6, padding: "4px 12px", borderRadius: 6, border: "none", background: "#fef3c7", color: "#92400e", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Deactivate
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleReactivate(cat)}
+                        style={{ marginRight: 6, padding: "4px 12px", borderRadius: 6, border: "none", background: "#dcfce7", color: "#166534", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Reactivate
+                      </button>
+                    )}
+                    <span title={cat.serviceCount > 0 ? `Cannot delete — ${cat.serviceCount} service${cat.serviceCount === 1 ? "" : "s"} reference this category. Deactivate it instead.` : ""}>
+                      <button
+                        onClick={() => cat.serviceCount === 0 && openDelete(cat)}
+                        disabled={cat.serviceCount > 0}
+                        style={{ padding: "4px 12px", borderRadius: 6, border: "none", background: cat.serviceCount > 0 ? "#e2e8f0" : "#fef2f2", color: cat.serviceCount > 0 ? "#94a3b8" : "#dc2626", fontSize: 12, fontWeight: 600, cursor: cat.serviceCount > 0 ? "not-allowed" : "pointer" }}
+                      >
+                        Delete
+                      </button>
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* ── Modals ── */}
@@ -354,12 +400,16 @@ const AdminPage = () => {
   const [usersError, setUsersError] = useState("");
   const [usersSuccess, setUsersSuccess] = useState("");
   const [approvingUserId, setApprovingUserId] = useState(null);
+  const [rejectUserModal, setRejectUserModal] = useState(null);
+  const [rejectingUserId, setRejectingUserId] = useState(null);
 
   const [pendingServices, setPendingServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState("");
   const [servicesSuccess, setServicesSuccess] = useState("");
   const [approvingServiceId, setApprovingServiceId] = useState(null);
+  const [rejectServiceModal, setRejectServiceModal] = useState(null);
+  const [rejectingServiceId, setRejectingServiceId] = useState(null);
 
   const [inquiries, setInquiries] = useState([]);
   const [inquiriesLoading, setInquiriesLoading] = useState(true);
@@ -405,6 +455,24 @@ const AdminPage = () => {
     }
   };
 
+  const handleRejectUser = async (reason) => {
+    const userId = rejectUserModal.id;
+    setRejectingUserId(userId);
+    setUsersError("");
+    setUsersSuccess("");
+    try {
+      await rejectUser(userId, reason);
+      setUsersSuccess(`User #${userId} rejected.`);
+      setPendingUsers((prev) => prev.filter((u) => u.id !== userId));
+      setRejectUserModal(null);
+    } catch (e) {
+      setUsersError(e.message);
+      setRejectUserModal(null);
+    } finally {
+      setRejectingUserId(null);
+    }
+  };
+
   const handleApproveService = async (serviceId) => {
     setApprovingServiceId(serviceId);
     setServicesError("");
@@ -417,6 +485,24 @@ const AdminPage = () => {
       setServicesError(e.message);
     } finally {
       setApprovingServiceId(null);
+    }
+  };
+
+  const handleRejectService = async (reason) => {
+    const serviceId = rejectServiceModal.serviceId;
+    setRejectingServiceId(serviceId);
+    setServicesError("");
+    setServicesSuccess("");
+    try {
+      await rejectProviderService(serviceId, reason);
+      setServicesSuccess(`Service #${serviceId} rejected.`);
+      setPendingServices((prev) => prev.filter((s) => s.serviceId !== serviceId));
+      setRejectServiceModal(null);
+    } catch (e) {
+      setServicesError(e.message);
+      setRejectServiceModal(null);
+    } finally {
+      setRejectingServiceId(null);
     }
   };
 
@@ -467,9 +553,11 @@ const AdminPage = () => {
     cursor: "pointer",
   });
 
+  const actionBtnBase = { padding: "5px 12px", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" };
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--app-bg)", backgroundAttachment: "fixed" }}>
-      <DashboardNavbar />
+      <AdminNavbar />
       <div style={{ maxWidth: 1060, margin: "0 auto", padding: "40px 24px" }}>
 
         <h1 style={{ fontSize: 26, fontWeight: 800, color: "#0f2a44", marginBottom: 8 }}>
@@ -478,7 +566,7 @@ const AdminPage = () => {
         <hr style={{ marginBottom: 24, borderColor: "#e2e8f0" }} />
 
         {/* ── Tab bar ── */}
-        <div style={{ display: "flex", gap: 4, marginBottom: 32, borderBottom: "2px solid #e2e8f0", paddingBottom: 4 }}>
+        <div style={{ display: "flex", gap: 4, marginBottom: 32, borderBottom: "2px solid #e2e8f0", paddingBottom: 4, overflowX: "auto" }}>
           {TABS.map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={tabStyle(tab)}>
               {tab}
@@ -503,35 +591,44 @@ const AdminPage = () => {
               <p style={{ color: "#64748b", fontStyle: "italic", fontSize: 14 }}>No pending registrations.</p>
             )}
             {!usersLoading && pendingUsers.length > 0 && (
-              <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
-                <thead>
-                  <tr style={{ background: "#e2e8f0" }}>
-                    <th style={th}>ID</th><th style={th}>First Name</th><th style={th}>Last Name</th>
-                    <th style={th}>Email</th><th style={th}>Registered</th><th style={th}>Status</th><th style={th}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pendingUsers.map((u) => (
-                    <tr key={u.id} style={{ borderBottom: "1px solid #e2e8f0" }}>
-                      <td style={td}>{u.id}</td>
-                      <td style={td}>{u.first_name}</td>
-                      <td style={td}>{u.last_name}</td>
-                      <td style={td}>{u.email}</td>
-                      <td style={td}>{new Date(u.created_at).toLocaleDateString()}</td>
-                      <td style={td}><StatusBadge label="pending" bg="#fef3c7" color="#92400e" /></td>
-                      <td style={td}>
-                        <button
-                          onClick={() => handleApproveUser(u.id)}
-                          disabled={approvingUserId === u.id}
-                          style={{ padding: "5px 14px", background: approvingUserId === u.id ? "#94a3b8" : "#16a34a", color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: approvingUserId === u.id ? "not-allowed" : "pointer" }}
-                        >
-                          {approvingUserId === u.id ? "Approving..." : "Approve"}
-                        </button>
-                      </td>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+                  <thead>
+                    <tr style={{ background: "#e2e8f0" }}>
+                      <th style={th}>ID</th><th style={th}>First Name</th><th style={th}>Last Name</th>
+                      <th style={th}>Email</th><th style={th}>Registered</th><th style={th}>Status</th><th style={th}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {pendingUsers.map((u) => (
+                      <tr key={u.id} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                        <td style={td}>{u.id}</td>
+                        <td style={td}>{u.first_name}</td>
+                        <td style={td}>{u.last_name}</td>
+                        <td style={td}>{u.email}</td>
+                        <td style={td}>{new Date(u.created_at).toLocaleDateString()}</td>
+                        <td style={td}><StatusBadge label="pending" bg="#fef3c7" color="#92400e" /></td>
+                        <td style={{ ...td, whiteSpace: "nowrap" }}>
+                          <button
+                            onClick={() => handleApproveUser(u.id)}
+                            disabled={approvingUserId === u.id || rejectingUserId === u.id}
+                            style={{ ...actionBtnBase, marginRight: 6, background: approvingUserId === u.id ? "#94a3b8" : "#16a34a", color: "#fff" }}
+                          >
+                            {approvingUserId === u.id ? "Approving..." : "Approve"}
+                          </button>
+                          <button
+                            onClick={() => setRejectUserModal(u)}
+                            disabled={approvingUserId === u.id || rejectingUserId === u.id}
+                            style={{ ...actionBtnBase, background: rejectingUserId === u.id ? "#94a3b8" : "#fef2f2", color: rejectingUserId === u.id ? "#fff" : "#dc2626", border: "1px solid #fca5a5" }}
+                          >
+                            {rejectingUserId === u.id ? "Rejecting..." : "Reject"}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </section>
         )}
@@ -553,48 +650,57 @@ const AdminPage = () => {
               <p style={{ color: "#64748b", fontStyle: "italic", fontSize: 14 }}>No pending service approvals.</p>
             )}
             {!servicesLoading && pendingServices.length > 0 && (
-              <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
-                <thead>
-                  <tr style={{ background: "#e2e8f0" }}>
-                    <th style={th}>ID</th><th style={th}>Provider</th><th style={th}>Title</th>
-                    <th style={th}>Category</th><th style={th}>Pricing</th><th style={th}>Location</th>
-                    <th style={th}>Submitted</th><th style={th}>Status</th><th style={th}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pendingServices.map((svc) => (
-                    <tr key={svc.serviceId} style={{ borderBottom: "1px solid #e2e8f0" }}>
-                      <td style={td}>{svc.serviceId}</td>
-                      <td style={td}>
-                        <span style={{ fontWeight: 600 }}>{svc.providerFirstName} {svc.providerLastName}</span>
-                        <br /><span style={{ fontSize: 11, color: "#94a3b8" }}>{svc.providerEmail}</span>
-                      </td>
-                      <td style={td}>
-                        <span style={{ fontWeight: 600 }}>{svc.title}</span>
-                        {svc.description && (
-                          <span style={{ display: "block", fontSize: 11, color: "#64748b", marginTop: 2, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {svc.description}
-                          </span>
-                        )}
-                      </td>
-                      <td style={td}>{svc.categoryName || "—"}</td>
-                      <td style={td}>{formatPrice(svc)}</td>
-                      <td style={td}>{svc.serviceLocationType?.replace("_", " ") || "—"}</td>
-                      <td style={td}>{new Date(svc.updatedAt).toLocaleDateString()}</td>
-                      <td style={td}><StatusBadge label="pending" bg="#fef3c7" color="#92400e" /></td>
-                      <td style={td}>
-                        <button
-                          onClick={() => handleApproveService(svc.serviceId)}
-                          disabled={approvingServiceId === svc.serviceId}
-                          style={{ padding: "5px 14px", background: approvingServiceId === svc.serviceId ? "#94a3b8" : "#16a34a", color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: approvingServiceId === svc.serviceId ? "not-allowed" : "pointer" }}
-                        >
-                          {approvingServiceId === svc.serviceId ? "Approving..." : "Approve"}
-                        </button>
-                      </td>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+                  <thead>
+                    <tr style={{ background: "#e2e8f0" }}>
+                      <th style={th}>ID</th><th style={th}>Provider</th><th style={th}>Title</th>
+                      <th style={th}>Category</th><th style={th}>Pricing</th><th style={th}>Location</th>
+                      <th style={th}>Submitted</th><th style={th}>Status</th><th style={th}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {pendingServices.map((svc) => (
+                      <tr key={svc.serviceId} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                        <td style={td}>{svc.serviceId}</td>
+                        <td style={td}>
+                          <span style={{ fontWeight: 600 }}>{svc.providerFirstName} {svc.providerLastName}</span>
+                          <br /><span style={{ fontSize: 11, color: "#94a3b8" }}>{svc.providerEmail}</span>
+                        </td>
+                        <td style={td}>
+                          <span style={{ fontWeight: 600 }}>{svc.title}</span>
+                          {svc.description && (
+                            <span style={{ display: "block", fontSize: 11, color: "#64748b", marginTop: 2, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {svc.description}
+                            </span>
+                          )}
+                        </td>
+                        <td style={td}>{svc.categoryName || "—"}</td>
+                        <td style={td}>{formatPrice(svc)}</td>
+                        <td style={td}>{svc.serviceLocationType?.replace("_", " ") || "—"}</td>
+                        <td style={td}>{new Date(svc.updatedAt).toLocaleDateString()}</td>
+                        <td style={td}><StatusBadge label="pending" bg="#fef3c7" color="#92400e" /></td>
+                        <td style={{ ...td, whiteSpace: "nowrap" }}>
+                          <button
+                            onClick={() => handleApproveService(svc.serviceId)}
+                            disabled={approvingServiceId === svc.serviceId || rejectingServiceId === svc.serviceId}
+                            style={{ ...actionBtnBase, marginRight: 6, background: approvingServiceId === svc.serviceId ? "#94a3b8" : "#16a34a", color: "#fff" }}
+                          >
+                            {approvingServiceId === svc.serviceId ? "Approving..." : "Approve"}
+                          </button>
+                          <button
+                            onClick={() => setRejectServiceModal(svc)}
+                            disabled={approvingServiceId === svc.serviceId || rejectingServiceId === svc.serviceId}
+                            style={{ ...actionBtnBase, background: rejectingServiceId === svc.serviceId ? "#94a3b8" : "#fef2f2", color: rejectingServiceId === svc.serviceId ? "#fff" : "#dc2626", border: "1px solid #fca5a5" }}
+                          >
+                            {rejectingServiceId === svc.serviceId ? "Rejecting..." : "Reject"}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </section>
         )}
@@ -625,45 +731,47 @@ const AdminPage = () => {
               <p style={{ color: "#64748b", fontStyle: "italic", fontSize: 14 }}>No inquiries found.</p>
             )}
             {!inquiriesLoading && inquiries.length > 0 && (
-              <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
-                <thead>
-                  <tr style={{ background: "#e2e8f0" }}>
-                    <th style={th}>ID</th><th style={th}>Name</th><th style={th}>Email</th>
-                    <th style={th}>Subject</th><th style={th}>Message</th><th style={th}>Date</th>
-                    <th style={th}>Status</th><th style={th}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {inquiries.map((inq) => (
-                    <tr key={inq.id} style={{ borderBottom: "1px solid #e2e8f0", verticalAlign: "top" }}>
-                      <td style={td}>{inq.id}</td>
-                      <td style={td}>{inq.name}</td>
-                      <td style={td}>{inq.email}</td>
-                      <td style={td}>{inq.subject}</td>
-                      <td style={{ ...td, maxWidth: 240 }}>
-                        <span style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                          {inq.message}
-                        </span>
-                      </td>
-                      <td style={td}>{new Date(inq.created_at).toLocaleDateString()}</td>
-                      <td style={td}>{inquiryStatusBadge(inq.status)}</td>
-                      <td style={{ ...td, whiteSpace: "nowrap" }}>
-                        <select
-                          value={inq.status}
-                          disabled={updatingInquiryId === inq.id}
-                          onChange={(e) => handleUpdateInquiryStatus(inq.id, e.target.value)}
-                          style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", fontSize: 13, cursor: "pointer" }}
-                        >
-                          <option value="new">new</option>
-                          <option value="read">read</option>
-                          <option value="resolved">resolved</option>
-                          <option value="archived">archived</option>
-                        </select>
-                      </td>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+                  <thead>
+                    <tr style={{ background: "#e2e8f0" }}>
+                      <th style={th}>ID</th><th style={th}>Name</th><th style={th}>Email</th>
+                      <th style={th}>Subject</th><th style={th}>Message</th><th style={th}>Date</th>
+                      <th style={th}>Status</th><th style={th}>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {inquiries.map((inq) => (
+                      <tr key={inq.id} style={{ borderBottom: "1px solid #e2e8f0", verticalAlign: "top" }}>
+                        <td style={td}>{inq.id}</td>
+                        <td style={td}>{inq.name}</td>
+                        <td style={td}>{inq.email}</td>
+                        <td style={td}>{inq.subject}</td>
+                        <td style={{ ...td, maxWidth: 240 }}>
+                          <span style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {inq.message}
+                          </span>
+                        </td>
+                        <td style={td}>{new Date(inq.created_at).toLocaleDateString()}</td>
+                        <td style={td}>{inquiryStatusBadge(inq.status)}</td>
+                        <td style={{ ...td, whiteSpace: "nowrap" }}>
+                          <select
+                            value={inq.status}
+                            disabled={updatingInquiryId === inq.id}
+                            onChange={(e) => handleUpdateInquiryStatus(inq.id, e.target.value)}
+                            style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", fontSize: 13, cursor: "pointer" }}
+                          >
+                            <option value="new">new</option>
+                            <option value="read">read</option>
+                            <option value="resolved">resolved</option>
+                            <option value="archived">archived</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </section>
         )}
@@ -685,6 +793,28 @@ const AdminPage = () => {
         )}
 
       </div>
+
+      {/* ── Reject user modal ── */}
+      {rejectUserModal && (
+        <RejectModal
+          title="Reject User Registration"
+          itemLabel={`${rejectUserModal.first_name} ${rejectUserModal.last_name} (${rejectUserModal.email})`}
+          onConfirm={handleRejectUser}
+          onClose={() => setRejectUserModal(null)}
+          loading={rejectingUserId === rejectUserModal.id}
+        />
+      )}
+
+      {/* ── Reject service modal ── */}
+      {rejectServiceModal && (
+        <RejectModal
+          title="Reject Service Submission"
+          itemLabel={rejectServiceModal.title}
+          onConfirm={handleRejectService}
+          onClose={() => setRejectServiceModal(null)}
+          loading={rejectingServiceId === rejectServiceModal.serviceId}
+        />
+      )}
     </div>
   );
 };

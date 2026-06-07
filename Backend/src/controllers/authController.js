@@ -20,7 +20,7 @@ import {
   sendPasswordResetEmail,
 } from "../services/emailService.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET = process.env.JWT_SECRET;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
 
@@ -32,14 +32,6 @@ const formatUser = (user) => ({
   phoneNumber: user.phoneNumber,
   role: user.role ?? "client",
 });
-
-const getUserIdFromRequest = (req) => {
-  const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) return null;
-  const decoded = jwt.verify(token, JWT_SECRET);
-  return Number(decoded.userId);
-};
 
 export const registerUser = async (req, res) => {
   try {
@@ -69,10 +61,7 @@ export const loginUser = async (req, res) => {
 
 export const getCurrentUserProfile = async (req, res) => {
   try {
-    const userId = getUserIdFromRequest(req);
-    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
-
-    const profile = await findUserProfileById(userId);
+    const profile = await findUserProfileById(req.userId);
     if (!profile) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json({
@@ -102,27 +91,21 @@ export const getCurrentUserProfile = async (req, res) => {
         : null,
     });
   } catch (err) {
-    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Invalid or expired token" });
-    }
     res.status(500).json({ message: "Failed to load profile" });
   }
 };
 
 export const updateCurrentUserProfile = async (req, res) => {
   try {
-    const userId = getUserIdFromRequest(req);
-    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
-
     const { firstName, lastName, phoneNumber } = req.body;
 
     if (!firstName || !lastName || !phoneNumber) {
       return res.status(400).json({ message: "First name, last name, and phone number are required" });
     }
 
-    await updateUserProfileById(userId, { firstName, lastName, phoneNumber });
+    await updateUserProfileById(req.userId, { firstName, lastName, phoneNumber });
 
-    const updated = await findUserProfileById(userId);
+    const updated = await findUserProfileById(req.userId);
 
     res.status(200).json({
       message: "Profile updated successfully",
@@ -137,22 +120,16 @@ export const updateCurrentUserProfile = async (req, res) => {
       },
     });
   } catch (err) {
-    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Invalid or expired token" });
-    }
     res.status(500).json({ message: "Failed to update profile" });
   }
 };
 
 export const verifyCurrentUserPassword = async (req, res) => {
   try {
-    const userId = getUserIdFromRequest(req);
-    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
-
     const { currentPassword } = req.body;
     if (!currentPassword) return res.status(400).json({ message: "Current password is required" });
 
-    const user = await findUserPasswordById(userId);
+    const user = await findUserPasswordById(req.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isValid = await bcrypt.compare(currentPassword, user.password_hash);
@@ -160,9 +137,6 @@ export const verifyCurrentUserPassword = async (req, res) => {
 
     res.status(200).json({ message: "Password verified" });
   } catch (err) {
-    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Invalid or expired token" });
-    }
     res.status(500).json({ message: "Failed to verify password" });
   }
 };
@@ -189,9 +163,6 @@ export const getMe = async (req, res) => {
 
 export const changeCurrentUserPassword = async (req, res) => {
   try {
-    const userId = getUserIdFromRequest(req);
-    if (!userId) return res.status(401).json({ message: "Missing authorization token" });
-
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
     if (!currentPassword || !newPassword || !confirmPassword) {
@@ -202,20 +173,23 @@ export const changeCurrentUserPassword = async (req, res) => {
       return res.status(400).json({ message: "New passwords do not match" });
     }
 
-    const user = await findUserPasswordById(userId);
+    if (!PASSWORD_REGEX.test(newPassword)) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters and include at least one letter and one number",
+      });
+    }
+
+    const user = await findUserPasswordById(req.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isValid = await bcrypt.compare(currentPassword, user.password_hash);
     if (!isValid) return res.status(400).json({ message: "Current password is incorrect" });
 
     const newHash = await bcrypt.hash(newPassword, 10);
-    await updateUserPasswordById(userId, newHash);
+    await updateUserPasswordById(req.userId, newHash);
 
-    res.status(200).json({ message: "Password updated successfully" });
+    res.status(200).json({ message: "Password updated successfully. Please log in again." });
   } catch (err) {
-    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Invalid or expired token" });
-    }
     res.status(500).json({ message: "Failed to update password" });
   }
 };

@@ -101,6 +101,17 @@ export const approveUser = async (userId) => {
   return data;
 };
 
+export const rejectUser = async (userId, reason) => {
+  const res = await fetch(`${BASE_URL}/users/${userId}/reject`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify({ reason: reason || null }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to reject user");
+  return data;
+};
+
 export const fetchPendingServices = async () => {
   const res = await fetch(`${BASE_URL}/pending-services`, { headers: authHeaders() });
   const data = await res.json();
@@ -115,5 +126,16 @@ export const approveProviderService = async (serviceId) => {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to approve service");
+  return data;
+};
+
+export const rejectProviderService = async (serviceId, reason) => {
+  const res = await fetch(`${BASE_URL}/services/${serviceId}/reject`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify({ reason: reason || null }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to reject service");
   return data;
 };

@@ -68,10 +68,18 @@ export const findUserPasswordById = async (userId) => {
 
 export const updateUserPasswordById = async (userId, passwordHash) => {
   const [result] = await database.execute(
-    `UPDATE users SET password_hash = ? WHERE id = ?`,
+    `UPDATE users SET password_hash = ?, password_changed_at = NOW() WHERE id = ?`,
     [passwordHash, userId]
   );
   return result;
+};
+
+export const findPasswordChangedAtById = async (userId) => {
+  const [rows] = await database.execute(
+    `SELECT password_changed_at FROM users WHERE id = ?`,
+    [userId]
+  );
+  return rows[0] ?? null;
 };
 
 export const findAllAdminIds = async () => {
@@ -93,6 +101,14 @@ export const approveUserById = async (userId, adminId) => {
   const [result] = await database.execute(
     `UPDATE users SET approval_status = 'approved', approved_at = NOW(), approved_by = ? WHERE id = ?`,
     [adminId, userId]
+  );
+  return result;
+};
+
+export const rejectUserById = async (userId, adminId, reason) => {
+  const [result] = await database.execute(
+    `UPDATE users SET approval_status = 'rejected', approved_by = ?, rejection_reason = ? WHERE id = ?`,
+    [adminId, reason ?? null, userId]
   );
   return result;
 };

@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAuth } from "../middleware/auth.js";
 import {
   getMyProviderProfile,
   updateMyProviderProfile,
@@ -10,6 +11,8 @@ import {
 } from "../controllers/providerController.js";
 
 const router = express.Router();
+
+router.use(requireAuth);
 
 router.get("/profile", getMyProviderProfile);
 router.put("/profile", updateMyProviderProfile);

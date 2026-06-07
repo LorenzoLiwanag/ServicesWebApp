@@ -1,4 +1,4 @@
-import { findPendingUsers, approveUserById } from "../models/userModel.js";
+import { findPendingUsers, approveUserById, rejectUserById } from "../models/userModel.js";
 import { createNotification } from "../models/notificationModel.js";
 import { sendAccountApprovedEmail } from "../services/emailService.js";
 import database from "../config/Database.js";
@@ -63,6 +63,43 @@ export const approveUser = async (req, res) => {
   }
 };
 
+export const rejectUser = async (req, res) => {
+  try {
+    const targetId = Number(req.params.id);
+    if (!targetId) return res.status(400).json({ message: "Invalid user ID" });
+
+    const [rows] = await database.execute(
+      `SELECT id, first_name, approval_status FROM users WHERE id = ?`,
+      [targetId]
+    );
+    const target = rows[0];
+    if (!target) return res.status(404).json({ message: "User not found" });
+    if (target.approval_status !== "pending") {
+      return res.status(400).json({ message: "Only pending users can be rejected" });
+    }
+
+    const { reason } = req.body;
+    await rejectUserById(targetId, req.userId, reason || null);
+
+    createNotification({
+      userId: targetId,
+      type: "account_rejected",
+      title: "Account not approved",
+      message: "Your Subic Bay Home Services account registration was not approved." +
+        (reason ? ` Reason: ${reason}` : ""),
+    }).catch((err) => {
+      console.error("[NOTIFICATION ERROR] Failed to create account rejected notification:", err.message);
+    });
+
+    res.status(200).json({
+      message: "User rejected successfully",
+      user: { id: targetId, approval_status: "rejected" },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to reject user" });
+  }
+};
+
 export const getPendingServices = async (req, res) => {
   try {
     const [rows] = await database.execute(`
@@ -102,6 +139,14 @@ export const getPendingServices = async (req, res) => {
 
 export const getMessageLogs = async (req, res) => {
   try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 25));
+    const offset = (page - 1) * limit;
+
+    const [[{ total }]] = await database.execute(
+      `SELECT COUNT(*) AS total FROM message`
+    );
+
     const [rows] = await database.execute(`
       SELECT
         m.id                                                                        AS messageId,
@@ -122,8 +167,18 @@ export const getMessageLogs = async (req, res) => {
       JOIN users receiver ON receiver.id = IF(m.sender_id = c.client_id, c.provider_id, c.client_id)
       LEFT JOIN provider_service ps ON ps.id = c.provider_service_id
       ORDER BY m.created_at DESC
-    `);
-    res.status(200).json({ messages: rows });
+      LIMIT ? OFFSET ?
+    `, [limit, offset]);
+
+    res.status(200).json({
+      messages: rows,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to load message logs" });
@@ -292,5 +347,47 @@ export const approveProviderService = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Failed to approve service" });
+  }
+};
+
+export const rejectProviderService = async (req, res) => {
+  try {
+    const serviceId = Number(req.params.id);
+    if (!serviceId) return res.status(400).json({ message: "Invalid service ID" });
+
+    const [rows] = await database.execute(
+      `SELECT id, provider_id, title, approval_status FROM provider_service WHERE id = ? AND is_deleted = FALSE`,
+      [serviceId]
+    );
+    const service = rows[0];
+    if (!service) return res.status(404).json({ message: "Service not found" });
+    if (service.approval_status !== "pending") {
+      return res.status(400).json({ message: "Only pending services can be rejected" });
+    }
+
+    const { reason } = req.body;
+    await database.execute(
+      `UPDATE provider_service
+       SET approval_status = 'rejected', approved_by = ?, rejection_reason = ?
+       WHERE id = ?`,
+      [req.userId, reason ?? null, serviceId]
+    );
+
+    createNotification({
+      userId: service.provider_id,
+      type: "service_rejected",
+      title: "Service not approved",
+      message: `Your service "${service.title}" was not approved.` +
+        (reason ? ` Reason: ${reason}` : " Please review your listing and contact support if you have questions."),
+    }).catch((err) => {
+      console.error("[NOTIFICATION ERROR] Failed to create service rejected notification:", err.message);
+    });
+
+    res.status(200).json({
+      message: "Service rejected successfully",
+      service: { id: serviceId, approval_status: "rejected" },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to reject service" });
   }
 };

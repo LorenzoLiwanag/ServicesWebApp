@@ -15,28 +15,28 @@ import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-const makeLimiter = (max, message) =>
+const makeLimiter = (windowMs, max, message) =>
   rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs,
     max,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { message },
+    message: { error: message },
   });
 
-const registerLimiter = makeLimiter(5, "Too many registration attempts. Please try again later.");
-const loginLimiter = makeLimiter(10, "Too many login attempts. Please try again later.");
-const forgotPasswordLimiter = makeLimiter(5, "Too many password reset requests. Please try again later.");
-const resetPasswordLimiter = makeLimiter(5, "Too many password reset attempts. Please try again later.");
+const loginLimiter = makeLimiter(15 * 60 * 1000, 5, "Too many login attempts. Please try again later.");
+const registerLimiter = makeLimiter(60 * 60 * 1000, 10, "Too many registration attempts. Please try again later.");
+const forgotPasswordLimiter = makeLimiter(15 * 60 * 1000, 5, "Too many password reset requests. Please try again later.");
+const resetPasswordLimiter = makeLimiter(15 * 60 * 1000, 5, "Too many password reset attempts. Please try again later.");
 
 router.post("/register", registerLimiter, registerUser);
 router.post("/login", loginLimiter, loginUser);
 router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
 router.post("/reset-password", resetPasswordLimiter, resetPassword);
 router.get("/me", requireAuth, getMe);
-router.get("/profile", getCurrentUserProfile);
-router.patch("/profile", updateCurrentUserProfile);
-router.post("/password/verify", verifyCurrentUserPassword);
-router.patch("/password", changeCurrentUserPassword);
+router.get("/profile", requireAuth, getCurrentUserProfile);
+router.patch("/profile", requireAuth, updateCurrentUserProfile);
+router.post("/password/verify", requireAuth, verifyCurrentUserPassword);
+router.patch("/password", requireAuth, changeCurrentUserPassword);
 
 export default router;

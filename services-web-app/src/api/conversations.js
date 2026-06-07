@@ -142,11 +142,11 @@ export const permanentlyDeleteAllNotifications = async (token) => {
   await requireOk(res, "Failed to permanently delete notifications");
 };
 
-export const fetchAdminMessageLogs = async (token) => {
-  const res = await fetch(`${API}/api/admin/message-logs`, {
+export const fetchAdminMessageLogs = async (token, page = 1, limit = 25) => {
+  const res = await fetch(`${API}/api/admin/message-logs?page=${page}&limit=${limit}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to load message logs");
-  return data.messages ?? [];
+  return { messages: data.messages ?? [], pagination: data.pagination };
 };
