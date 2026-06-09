@@ -12,6 +12,33 @@ import { findAllAdminIds } from "../models/userModel.js";
 
 const getUserId = (req) => Number(req.userId);
 
+// Pricing types that require a concrete price amount.
+const PRICED_TYPES = ["fixed", "hourly"];
+
+// Server-side validation for service title/description/price. Returns an error
+// message string when invalid, or null when the input passes.
+const validateServiceContent = ({ title, description, pricingType, priceAmount }) => {
+  if (typeof title !== "string" || title.trim().length < 3) {
+    return "Title must be at least 3 characters long";
+  }
+  if (typeof description !== "string" || description.trim().length < 10) {
+    return "Description must be at least 10 characters long";
+  }
+  if (PRICED_TYPES.includes(pricingType)) {
+    const amount = Number(priceAmount);
+    if (
+      priceAmount === null ||
+      priceAmount === undefined ||
+      priceAmount === "" ||
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
+      return "Price must be a positive number greater than 0 for fixed or hourly pricing";
+    }
+  }
+  return null;
+};
+
 export const getMyProviderProfile = async (req, res) => {
   try {
     const userId = getUserId(req);
@@ -64,8 +91,13 @@ export const createProviderService = async (req, res) => {
 
     const { title, categoryId, description, pricingType, priceAmount, currency, serviceLocationType, isVisible } = req.body;
 
-    if (!title || !pricingType) {
-      return res.status(400).json({ message: "Title and pricing type are required" });
+    if (!pricingType) {
+      return res.status(400).json({ message: "Pricing type is required" });
+    }
+
+    const validationError = validateServiceContent({ title, description, pricingType, priceAmount });
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
     }
 
     const service = await createProviderServiceForUser(userId, {
@@ -103,6 +135,11 @@ export const updateProviderService = async (req, res) => {
 
     if (!userId || !providerServiceId) {
       return res.status(400).json({ message: "Missing required ids" });
+    }
+
+    const validationError = validateServiceContent(req.body);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
     }
 
     const service = await updateProviderServiceForUser(userId, providerServiceId, req.body);

@@ -74,9 +74,11 @@ export const updateUserPasswordById = async (userId, passwordHash) => {
   return result;
 };
 
-export const findPasswordChangedAtById = async (userId) => {
+// Lightweight auth-state lookup used by requireAuth to revalidate a token on
+// every protected request: password rotation, approval status, and active flag.
+export const findAuthStateById = async (userId) => {
   const [rows] = await database.execute(
-    `SELECT password_changed_at FROM users WHERE id = ?`,
+    `SELECT password_changed_at, approval_status, is_active FROM users WHERE id = ?`,
     [userId]
   );
   return rows[0] ?? null;

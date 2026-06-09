@@ -147,6 +147,10 @@ export const getMessageLogs = async (req, res) => {
       `SELECT COUNT(*) AS total FROM message`
     );
 
+    // NOTE: LIMIT/OFFSET are inlined (not bound) because mysql2's db.execute
+    // (prepared statements) rejects placeholders in LIMIT/OFFSET on many MySQL
+    // versions, which previously caused a 500. `limit` and `offset` are derived
+    // from validated, clamped integers above, so inlining them is injection-safe.
     const [rows] = await database.execute(`
       SELECT
         m.id                                                                        AS messageId,
@@ -167,8 +171,8 @@ export const getMessageLogs = async (req, res) => {
       JOIN users receiver ON receiver.id = IF(m.sender_id = c.client_id, c.provider_id, c.client_id)
       LEFT JOIN provider_service ps ON ps.id = c.provider_service_id
       ORDER BY m.created_at DESC
-      LIMIT ? OFFSET ?
-    `, [limit, offset]);
+      LIMIT ${limit} OFFSET ${offset}
+    `);
 
     res.status(200).json({
       messages: rows,

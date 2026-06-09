@@ -2,16 +2,17 @@
 import { useEffect, useState } from "react";
 import "../../styles/provider-mode/providerModeHeader.css";
 
-const ProviderModeHeader = ({ providerProfile, onAvailabilityChange }) => {
+const ProviderModeHeader = ({ providerProfile, onAvailabilityChange, saving, saveError }) => {
   const [isAvailable, setIsAvailable] = useState(true);
 
   useEffect(() => {
     if (providerProfile) {
-      setIsAvailable(providerProfile.is_provider_active ?? true);
+      setIsAvailable(providerProfile.isProviderActive ?? true);
     }
   }, [providerProfile]);
 
   const handleToggle = () => {
+    if (saving) return;
     const updatedValue = !isAvailable;
     setIsAvailable(updatedValue);
 
@@ -25,7 +26,7 @@ const ProviderModeHeader = ({ providerProfile, onAvailabilityChange }) => {
       <div className="provider-header-left">
         <h1 className="provider-title">Provider Dashboard</h1>
         <p className="provider-subtitle">
-          {providerProfile?.bio || "Manage your services and bookings"}
+          {providerProfile?.bio || "No provider bio added yet."}
         </p>
       </div>
 
@@ -33,18 +34,24 @@ const ProviderModeHeader = ({ providerProfile, onAvailabilityChange }) => {
         <div className="availability-section">
           <span className="availability-label">Available to clients</span>
           <button
-            className={`availability-toggle ${isAvailable ? "active" : ""}`}
+            className={`availability-toggle ${isAvailable ? "active" : ""} ${saving ? "saving" : ""}`}
             onClick={handleToggle}
             aria-label="Toggle availability"
+            disabled={saving}
           >
             <span className="toggle-circle"></span>
           </button>
           <p className="availability-hint">
-            {isAvailable
+            {saving
+              ? "Saving..."
+              : isAvailable
               ? "Your services are visible to clients"
               : "Your services are hidden from search"}
           </p>
         </div>
+        {saveError && (
+          <p className="availability-save-error">{saveError}</p>
+        )}
       </div>
     </div>
   );

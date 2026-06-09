@@ -84,6 +84,12 @@ const ProfilePage = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [toast, setToast] = useState(null);
+
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -243,8 +249,8 @@ const ProfilePage = () => {
       }
 
       resetPasswordFields();
-      window.alert("Password updated successfully");
       setIsPasswordModalOpen(false);
+      showToast("Password changed successfully.");
       setIsEditMode(false);
     } catch (err) {
       setPasswordError(err.message || "Failed to update password.");
@@ -313,7 +319,7 @@ const ProfilePage = () => {
       setProfileFormData(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setIsEditMode(false);
-      window.alert("Profile updated successfully");
+      showToast("Profile updated successfully.");
     } catch (err) {
       setProfileError(err.message || "Failed to update profile.");
     }
@@ -325,7 +331,13 @@ const ProfilePage = () => {
   };
 
   const handleBackToDashboard = () => {
-    navigate("/client-dashboard");
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      const role = profileUser.role;
+      if (role === "admin") navigate("/admin");
+      else navigate("/client-dashboard");
+    }
   };
 
   const profileDisplayName =
@@ -376,6 +388,9 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
+      {toast && (
+        <div className={`mbp-toast mbp-toast-${toast.type}`} role="status">{toast.msg}</div>
+      )}
       <div className="profile-header">
         <button className="back-btn" onClick={handleBackToDashboard}>
           Back
@@ -404,7 +419,9 @@ const ProfilePage = () => {
               {profileDisplayName.charAt(0).toUpperCase()}
             </div>
             <p className="user-name">{profileDisplayName}</p>
-            <span className="user-badge client-badge">User</span>
+            <span className="user-badge client-badge">
+              {profileUser.role === "admin" ? "Admin" : "User"}
+            </span>
           </div>
         </div>
 

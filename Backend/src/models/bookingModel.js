@@ -81,10 +81,17 @@ export const createBooking = async ({
   scheduledEnd,
   clientMessage,
 }) => {
-  // Prevent self-booking; also verify service is approved, visible, and not deleted
+  // Prevent self-booking; also verify service is approved, visible, and not deleted.
+  // Join the provider's account + profile so we can enforce that the provider is
+  // still active/available (the frontend hides inactive providers, but the API
+  // must enforce it too).
   const [serviceRows] = await db.execute(
-    `SELECT provider_id FROM provider_service
-     WHERE id = ? AND is_deleted = FALSE AND is_visible = TRUE AND approval_status = 'approved'`,
+    `SELECT ps.provider_id, u.is_active AS userActive, pp.is_provider_active AS providerActive
+     FROM provider_service ps
+     JOIN users u ON u.id = ps.provider_id
+     LEFT JOIN provider_profile pp ON pp.provider_id = ps.provider_id
+     WHERE ps.id = ? AND ps.is_deleted = FALSE AND ps.is_visible = TRUE
+       AND ps.approval_status = 'approved'`,
     [providerServiceId]
   );
 
@@ -94,6 +101,23 @@ export const createBooking = async ({
 
   if (serviceRows[0].provider_id === clientId) {
     throw new Error("You cannot book your own service");
+  }
+
+  // Reject if the provider's account is deactivated or they have toggled
+  // themselves unavailable.
+  if (serviceRows[0].userActive === 0 || serviceRows[0].providerActive === 0) {
+    throw new Error("This provider is not currently accepting bookings");
+  }
+
+  const [dupRows] = await db.execute(
+    `SELECT id FROM booking_request
+     WHERE client_id = ? AND provider_service_id = ? AND status IN ('pending', 'accepted')
+     LIMIT 1`,
+    [clientId, providerServiceId]
+  );
+
+  if (dupRows.length > 0) {
+    throw new Error("You already have an active booking request for this service.");
   }
 
   const [result] = await db.execute(
@@ -129,6 +153,16 @@ export const updateBookingStatus = async (bookingId, status, responseMessage, ac
   const booking = rows[0];
   const currentStatus = booking.status;
 
+  // Allowed state transitions a provider may drive.
+  //   pending  -> accepted | declined
+  //   accepted -> completed
+  // Anything else (e.g. cancelled -> accepted, declined -> accepted,
+  // completed -> declined, accepted -> declined) is rejected.
+  const PROVIDER_TRANSITIONS = {
+    pending: ["accepted", "declined"],
+    accepted: ["completed"],
+  };
+
   // Authorization rules
   if (actorRole === "provider") {
     if (booking.provider_id !== actorId) {
@@ -136,6 +170,10 @@ export const updateBookingStatus = async (bookingId, status, responseMessage, ac
     }
     if (!["accepted", "declined", "completed"].includes(status)) {
       throw new Error("Providers can only accept, decline, or complete bookings");
+    }
+    const allowed = PROVIDER_TRANSITIONS[currentStatus] || [];
+    if (!allowed.includes(status)) {
+      throw new Error(`Cannot change a booking from ${currentStatus} to ${status}`);
     }
   } else if (actorRole === "client") {
     if (booking.client_id !== actorId) {

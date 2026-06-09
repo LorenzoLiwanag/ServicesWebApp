@@ -294,11 +294,9 @@ const ProviderServicesWidget = () => {
   const formatPrice = (s) => {
     if (s.pricingType === "quote") return "Get Quote";
     if (s.priceAmount === null) return "—";
-    const sym = "CA$";
+    const sym = "₱";
     return s.pricingType === "hourly" ? `${sym}${s.priceAmount}/hr` : `${sym}${s.priceAmount}`;
   };
-
-  const COL = "2fr 1fr 1fr 1fr 1fr";
 
   return (
     <>
@@ -323,7 +321,7 @@ const ProviderServicesWidget = () => {
           <p className="empty-state">No services yet. Click "+ Add Service" to get started.</p>
         ) : (
           <div className="services-table">
-            <div className="table-header" style={{ gridTemplateColumns: COL }}>
+            <div className="table-header">
               <div>Service Title</div>
               <div>Category</div>
               <div>Price</div>
@@ -332,7 +330,7 @@ const ProviderServicesWidget = () => {
             </div>
             <div className="table-body">
               {services.map((svc) => (
-                <div key={svc.providerServiceId} className="table-row" style={{ gridTemplateColumns: COL }}>
+                <div key={svc.providerServiceId} className="table-row">
                   <div className="col-name">
                     <span className="service-name">{svc.title}</span>
                     <span style={{ display: "block", fontSize: 11, color: "#94a3b8", marginTop: 2 }}>

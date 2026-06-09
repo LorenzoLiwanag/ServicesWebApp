@@ -101,10 +101,16 @@ export const submitBooking = async (req, res) => {
 
     res.status(201).json({ message: "Booking request submitted", booking });
   } catch (err) {
-    if (err.message === "You cannot book your own service") {
+    if (
+      err.message === "You cannot book your own service" ||
+      err.message === "You already have an active booking request for this service."
+    ) {
       return res.status(400).json({ message: err.message });
     }
-    if (err.message === "Service not found or unavailable") {
+    if (
+      err.message === "Service not found or unavailable" ||
+      err.message === "This provider is not currently accepting bookings"
+    ) {
       return res.status(404).json({ message: err.message });
     }
     console.error("Error submitting booking:", err);
@@ -160,6 +166,12 @@ export const respondToBooking = async (req, res) => {
   } catch (err) {
     if (err.message === "Not authorized" || err.message === "Booking not found") {
       return res.status(err.message === "Booking not found" ? 404 : 403).json({ message: err.message });
+    }
+    if (
+      err.message.startsWith("Cannot change") ||
+      err.message.startsWith("Providers can only")
+    ) {
+      return res.status(400).json({ message: err.message });
     }
     console.error("Error responding to booking:", err);
     res.status(500).json({ message: "Failed to update booking" });

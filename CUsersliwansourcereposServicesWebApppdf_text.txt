@@ -1,0 +1,333 @@
+QA Audit Report
+ Subic Bay Home Services
+ Branch: UXRefinements | Method: Live server + browser automation
+ Date: June 02, 2026 | Auditor: Claude Code
+Scope & Method
+Both servers were started locally (backend port 3000, frontend port 3001). Every flow was exercised against running code
+with seeded data using three accounts: Alice (client), Carol (provider), and Admin. Security exploits were executed live with
+curl against the real API. Mobile layout was tested at 375x812 (iPhone viewport).
+Accounts tested
+alice@example.com (client), carol@example.com (provider), admin@example.com (admin)
+Seed credentials
+password123 / admin1234
+API base
+http://localhost:3000
+Frontend base
+http://localhost:3001
+Console errors
+Zero JavaScript errors across all pages
+Warnings
+React Router v6 future flag warnings only (non-breaking)
+Security Findings
+1. Provider API has zero authentication — exploit confirmed live
+[CRITICAL]
+Tested with
+curl — no JWT token, only a spoofed x-user-id header
+Routes affected
+ALL 7 routes in /api/provider/* — no requireAuth middleware on any
+Root cause
+getUserId() in providerController.js reads req.userId (never set) then falls back to req.headers['x-user-id'] — a header any attacker controls
+All four attacks executed successfully against the live server:
+Read Carol's services — 200 OK with no token
+ 
+Create service on Carol's account — 201 Created with no token
+ 
+Delete Carol's service — 200 OK with no token
+ 
+Overwrite Carol's display name, bio, availability — 200 OK with no token
+ 
+---PAGE---
+Fix: Add router.use(requireAuth) at the top of providerRoutes.js — one line.
+Launch blocker: YES
+2. JWT secret has a publicly known hardcoded fallback
+[CRITICAL]
+Location
+middleware/auth.js and authController.js
+Fallback value
+"your-secret-key-change-in-production"
+Impact
+Any attacker can forge admin-role JWTs and impersonate any user if JWT_SECRET env var is not set in production
+Fix: Remove the fallback. Throw a startup error if JWT_SECRET is missing.
+Launch blocker: YES
+3. No rate limiting on any endpoint
+[HIGH]
+Affected routes
+POST /api/auth/login, POST /api/auth/register, POST /api/bookings, POST /contact
+Risk
+Login brute force, registration spam, booking spam, contact form abuse
+Fix
+Add express-rate-limit middleware to all public-facing and auth endpoints
+Launch blocker: YES
+4. /forgot-password renders a completely blank white page
+[HIGH]
+Tested
+Navigated to http://localhost:3001/forgot-password
+Result
+document.body.innerText === "" — completely blank, no route exists in App.js
+The link
+Prominently shown on the login page as a clickable link
+Fix
+Remove the link or implement the route; either way do not ship a dead link
+Launch blocker: YES
+5. Booking IDOR correctly blocked
+[LOW]
+Test
+Alice (authenticated) attempted PATCH /api/bookings/16/cancel (Bob's booking)
+Result
+403 — Not authorized
+Status
+PASS — ownership check works correctly
+6. Conversation IDOR correctly blocked
+[LOW]
+
+---PAGE---
+Test
+Carol (authenticated) attempted GET /api/conversations/1/messages (unrelated conv)
+Result
+403 — Access denied
+Status
+PASS — participant check works correctly
+7. Password change allows trivially weak new passwords
+[MEDIUM]
+Location
+PATCH /api/auth/password — changeCurrentUserPassword controller
+Issue
+No PASSWORD_REGEX check on newPassword — user can downgrade to '1'
+Registration does validate
+Yes — the gap is only in the change-password flow
+Fix
+Apply the same PASSWORD_REGEX used in authService.js to the change endpoint
+Launch blocker: NO
+
+---PAGE---
+Bug Report
+Bug 1 — CA$ currency symbol in provider services widget
+Severity: High
+Steps to reproduce
+Log in as Carol → Switch to Provider Mode → My Services table shows CA$90, CA$38/hr instead of the correct PHP peso symbol.
+Actual result
+CONFIRMED LIVE — all 3 checked rows showed wrong symbol.
+Suggested fix
+Change const sym = "CA$" to const sym = "\u20b1" in ProviderServicesWidget.jsx line 297.
+Priority
+Must fix before launch
+Bug 2 — Availability toggle makes zero API calls — doesn't persist
+Severity: High
+Steps to reproduce
+Switch to Provider Mode → click the 'Available to clients' toggle → refresh.
+Actual result
+CONFIRMED LIVE — network log shows zero calls to PUT /api/provider/profile on toggle click. UI text changes but state is lost on reload.
+Suggested fix
+Wire the toggle click to PUT /api/provider/profile with the updated isProviderActive value.
+Priority
+Must fix before launch
+Bug 3 — Provider dashboard bio is hardcoded
+Severity: High
+Steps to reproduce
+Switch to Provider Mode as any user.
+Actual result
+CONFIRMED LIVE — all providers see 'Manage your services and bookings'. ProviderDashboard.jsx constructs the profile object from localStorage and hardcodes the bio string. No call to GET /api/provider/profile is made.
+Suggested fix
+Add a useEffect that calls GET /api/provider/profile on mount and uses the real data.
+Priority
+Must fix before launch
+Bug 4 — No Reject button for pending users or services in admin panel
+Severity: High
+Steps to reproduce
+Log in as admin → view Pending User Registrations.
+Actual result
+Only an 'Approve' button exists. No way to formally reject a bad actor's registration or an inappropriate service.
+Suggested fix
+Add PATCH /api/admin/users/:id/reject and /services/:id/reject endpoints and corresponding UI buttons.
+Priority
+Must fix before launch
+
+---PAGE---
+Bug 5 — My Bookings missing from dashboard navbar
+Severity: Medium
+Steps to reproduce
+Log in as client → inspect navigation links.
+Actual result
+CONFIRMED LIVE — nav contains: Home, Browse Services, Messages, Switch to Provider Mode, Profile, Logout. No My Bookings link.
+Suggested fix
+Add <Link to='/my-bookings'>My Bookings</Link> to DashboardNavbar.
+Priority
+Must fix before launch
+Bug 6 — Admin panel shows client navbar with 'Switch to Provider Mode'
+Severity: Medium
+Steps to reproduce
+Log in as admin → /admin.
+Actual result
+CONFIRMED LIVE — admin sees the standard client DashboardNavbar including 'Switch to Provider Mode', which is meaningless for an admin account.
+Suggested fix
+Create an AdminNavbar or conditionally hide provider-mode option based on user role.
+Priority
+Should fix soon
+Bug 7 — Profile Back button always navigates to /client-dashboard
+Severity: Medium
+Steps to reproduce
+Navigate to /profile from provider mode → click Back.
+Actual result
+CONFIRMED LIVE — page went to /client-dashboard regardless of origin. Hardcoded navigate('/client-dashboard') in ProfilePage.jsx line 328.
+Suggested fix
+Replace with navigate(-1) to return to the previous page.
+Priority
+Should fix soon
+Bug 8 — Seed data contains 4 identical duplicate bookings
+Severity: Medium
+Steps to reproduce
+Log in as Carol (provider) → Switch to Provider Mode.
+Actual result
+CONFIRMED LIVE — Booking Requests shows 4 identical pending 'House Cleaning' requests from Alice, same date/time/message. Alice's dashboard shows 8 active bookings from 2 unique services.
+Suggested fix
+Clean seed data + add a server-side duplicate booking check (reject if client already has a pending/accepted booking for the same service).
+Priority
+Should fix soon
+Bug 9 — Live garbage test service visible in Browse Services
+Severity: Medium
+Steps to reproduce
+Log in as any client → Browse Services.
+
+---PAGE---
+Actual result
+CONFIRMED LIVE — a service titled 'dirty house clean' with description 'pisdjfiosdjfi' by 'Ridge Liwanag' appears in the public listing. It passed admin approval.
+Suggested fix
+Delete the record from the database. Consider adding a content quality check in the approval workflow.
+Priority
+Fix before demo
+Bug 10 — Profile role badge always shows 'USER'
+Severity: Low
+Steps to reproduce
+Log in as admin or any role → /profile.
+Actual result
+CONFIRMED LIVE — both Alice (client) and Admin account see 'USER' badge. The badge text is a hardcoded static string.
+Suggested fix
+Conditionally render badge label from profileUser.role.
+Priority
+Nice to fix later
+
+---PAGE---
+Confirmed Working (Verified Live)
+Flow
+Result
+Landing page load
+All sections render, images load, no console errors
+Contact form submission
+201 Created, success banner shown, form resets
+Registration — empty validation
+All 7 field-level error messages display correctly
+Registration success
+201 Created, redirect to login after 2.5s
+Pending account login
+Correct 'awaiting approval' message shown
+Client login + dashboard redirect
+Works, welcome name displays correctly
+Browse Services search filter
+Filters results in real time, empty state shown
+Book Now modal
+Opens with correct service data, submits (201), modal closes
+Booking cancel (confirm dialog)
+Dialog shows, PATCH 200, success toast fires
+My Bookings page + status tabs
+All bookings load, tabs filter correctly
+Service detail page
+Title, description, pricing, provider bio, reviews correct
+Service 404 handling
+'Service not found' message + back link
+Provider mode access
+Accessible to any authenticated user by design
+Provider booking request list
+Loads real pending requests with client/price details
+Provider My Services list
+Loads from API, correct approval status badges
+Notifications bell
+Opens dropdown, shows real notifications, mark read works
+Messages page empty state
+'No conversations yet' shown correctly
+Admin login redirect
+Admin role correctly routes to /admin
+Non-admin blocked from /admin
+Redirected to /client-dashboard
+Admin approve user
+PATCH 200, success message, row removed from queue
+Admin message logs
+All conversation messages displayed
+Logout session clearing
+localStorage wiped, protected routes redirect to /login
+Booking IDOR prevention
+403 'Not authorized' — ownership check enforced
+Conversation IDOR prevention
+403 'Access denied' — participant check enforced
+Admin routes (no token)
+401 'Missing authorization token'
+Admin routes (wrong role)
+403 'Admin access required'
+Console errors (all pages)
+ZERO JavaScript errors throughout entire audit session
+Mobile / Responsive Results (375x812)
+Page
+Status
+Notes
+Landing page
+PASS
+Fits correctly
+
+---PAGE---
+Services page
+PASS
+No overflow, hamburger nav works
+Messages page
+WARN
+Panels stack vertically — usable but no toggle between thread list and
+conversation
+Provider Dashboard
+FAIL
+Body overflows to 469px (94px wider than viewport) — .provider-column-left and
+widget rows overflow
+Admin page
+FAIL
+Body overflows to 903px — tables are 879px wide with no horizontal scroll
+Launch Readiness Verdict
+DO NOT SHIP until all Critical / High security findings are resolved:
+Provider API authentication gap — unauthenticated attacker can read, create, edit, and delete any provider's services and
+ profile
+JWT secret hardcoded fallback — if JWT_SECRET env var not set in production, all accounts are compromisable
+ 
+No rate limiting on login, registration, booking, or contact form
+ 
+/forgot-password blank page — live dead link on the login page
+ 
+No Reject button in admin panel
+ 
+Fix before client demo:
+CA$ currency bug in provider services widget (immediately visible)
+ 
+Availability toggle has no effect (prominent provider feature that does nothing)
+ 
+Provider dashboard bio is hardcoded for all users
+ 
+Delete 'dirty house clean' / 'pisdjfiosdjfi' test record from the database
+ 
+Provider dashboard mobile overflow (unusable at 375px)
+ 
+Fix before public launch:
+My Bookings in dashboard navigation
+ 
+Admin panel responsive tables (903px overflow on mobile)
+ 
+Admin navbar should not show 'Switch to Provider Mode'
+ 
+Profile Back button should use navigate(-1)
+ 
+Profile role badge should reflect actual role
+ 
+Server-side password strength check on change-password endpoint
+ 
+Duplicate booking prevention (server-side guard)
+ 
+Seed data cleanup — 4 identical duplicate bookings in DB
+ 
+Report generated by Claude Code automated live audit.
+
+---PAGE---
+

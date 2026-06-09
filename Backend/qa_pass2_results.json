@@ -1,0 +1,438 @@
+{
+  "results": [
+    {
+      "area": "Edge",
+      "name": "Booking missing providerId",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Booking nonexistent service",
+      "expected": "404",
+      "actual": 404,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Booking rejected service",
+      "expected": "404 unavailable",
+      "actual": "404",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Booking soft-deleted service",
+      "expected": "404 unavailable",
+      "actual": "404",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Respond with invalid status",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Cancel already-cancelled booking",
+      "expected": "400 Cannot cancel",
+      "actual": "404:Booking not found",
+      "status": "FAIL",
+      "severity": "Low"
+    },
+    {
+      "area": "Edge",
+      "name": "Provider accepts a CANCELLED booking (state machine)",
+      "expected": "should block (400)",
+      "actual": "404/undefined",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Edge",
+      "name": "Start conversation empty message",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Start conversation about rejected service",
+      "expected": "400 not approved",
+      "actual": "400",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Reply to nonexistent conversation",
+      "expected": "404",
+      "actual": 404,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Profile update missing fields",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Password change mismatched confirm",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Create duplicate category",
+      "expected": "409",
+      "actual": 409,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Delete category with services",
+      "expected": "409",
+      "actual": 409,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Update nonexistent category",
+      "expected": "404",
+      "actual": 404,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Dup",
+      "name": "Approve already-approved service",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Reject already-approved service",
+      "expected": "400 only pending",
+      "actual": "400",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Approve nonexistent service",
+      "expected": "404",
+      "actual": 404,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Dup",
+      "name": "Approve already-approved user",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Edge",
+      "name": "Reject already-approved user",
+      "expected": "400 only pending",
+      "actual": "400",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Provider updates another provider's service",
+      "expected": "404 not found",
+      "actual": "404",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Provider toggles another provider's service visibility",
+      "expected": "404",
+      "actual": "404",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Provider deletes another provider's service",
+      "expected": "404",
+      "actual": "404",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Victim service intact after cross-provider attempts",
+      "expected": "Electrical Repair/not deleted",
+      "actual": "Electrical Repair/0",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Client uses provider respond endpoint on own booking",
+      "expected": "403 not authorized",
+      "actual": "403:Not authorized",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Unrelated user responds to booking",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Non-participant replies to conversation",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Non-admin GET admin categories",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Non-admin GET contact submissions",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Cannot soft-delete another user's notification",
+      "expected": "unchanged (null)",
+      "actual": "deleted_at=null",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Perm",
+      "name": "Provider bookings list isolated to self",
+      "expected": "no other provider rows",
+      "actual": "ok",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Persist",
+      "name": "Service visibility toggle persists",
+      "expected": "isVisible=false",
+      "actual": false,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Persist",
+      "name": "Hidden service removed from Browse",
+      "expected": "absent",
+      "actual": "absent",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Persist",
+      "name": "Service visibility restore persists",
+      "expected": "isVisible=true",
+      "actual": true,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Persist",
+      "name": "Profile update persists across re-fetch",
+      "expected": "firstName=Persisted",
+      "actual": "Persisted",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Persist",
+      "name": "Booking status persists across re-fetch",
+      "expected": "accepted",
+      "actual": "accepted",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Dup",
+      "name": "Double-accept same booking",
+      "expected": "idempotent/blocked (200 or 400)",
+      "actual": "200/accepted",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Dup",
+      "name": "Provider flips accepted→declined (state machine)",
+      "expected": "should block (400)",
+      "actual": "200/declined",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Dup",
+      "name": "Re-start conversation reuses same thread",
+      "expected": "same conversationId",
+      "actual": "2==2",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Dup",
+      "name": "Mark-all-read twice (idempotent)",
+      "expected": "200",
+      "actual": 200,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Booking created → provider notified",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Booking declined → client notified",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Booking cancelled → provider notified",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Booking completed → BOTH parties notified",
+      "expected": "client>=1 & provider>=1",
+      "actual": "c:1 p:1",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Provider reply → client gets reply_received",
+      "expected": "reply_received",
+      "actual": "reply_received",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Client message → provider gets message_received",
+      "expected": "message_received",
+      "actual": "message_received",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Mark-all-read zeroes unread count",
+      "expected": "0",
+      "actual": "undefined→undefined",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Notif",
+      "name": "Soft-deleted notification leaves main list",
+      "expected": "absent in main",
+      "actual": "absent",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Soft-deleted notification appears in /deleted",
+      "expected": "present",
+      "actual": "present",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notif",
+      "name": "Notifications ordered unread-first",
+      "expected": "unread before read",
+      "actual": "ok",
+      "status": "PASS",
+      "severity": ""
+    }
+  ],
+  "fail": [
+    {
+      "area": "Edge",
+      "name": "Cancel already-cancelled booking",
+      "expected": "400 Cannot cancel",
+      "actual": "404:Booking not found",
+      "status": "FAIL",
+      "severity": "Low"
+    },
+    {
+      "area": "Edge",
+      "name": "Provider accepts a CANCELLED booking (state machine)",
+      "expected": "should block (400)",
+      "actual": "404/undefined",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Dup",
+      "name": "Provider flips accepted→declined (state machine)",
+      "expected": "should block (400)",
+      "actual": "200/declined",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Notif",
+      "name": "Mark-all-read zeroes unread count",
+      "expected": "0",
+      "actual": "undefined→undefined",
+      "status": "FAIL",
+      "severity": "Medium"
+    }
+  ]
+}

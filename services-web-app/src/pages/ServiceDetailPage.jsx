@@ -156,9 +156,15 @@ const ServiceDetailPage = () => {
                   <button
                     className="sdp-btn-contact"
                     onClick={() => setContactModal(true)}
+                    disabled={!service.isProviderActive}
                   >
                     Contact
                   </button>
+                  {!service.isProviderActive && (
+                    <p className="sdp-unavailable-hint">
+                      This provider is currently unavailable.
+                    </p>
+                  )}
                 </div>
               </div>
             </aside>

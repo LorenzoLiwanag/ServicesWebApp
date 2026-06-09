@@ -1,0 +1,65 @@
+[
+  {
+    "id": "BUG-001",
+    "title": "Admin message logs endpoint",
+    "expectedFixed": "200 with messages",
+    "actual": "status 200 (ok, 5 msgs)",
+    "verdict": "FIXED"
+  },
+  {
+    "id": "BUG-002",
+    "title": "Duplicate booking status code",
+    "expectedFixed": "400 + clear message",
+    "actual": "status 400 \"You already have an active booking request for this service.\"",
+    "verdict": "FIXED"
+  },
+  {
+    "id": "BUG-003",
+    "title": "Booking inactive provider blocked",
+    "expectedFixed": "blocked 400/404",
+    "actual": "provider_active=0, POST -> 404",
+    "verdict": "FIXED"
+  },
+  {
+    "id": "BUG-004",
+    "title": "Negative price validation",
+    "expectedFixed": "400 rejected",
+    "actual": "status 400",
+    "verdict": "FIXED"
+  },
+  {
+    "id": "BUG-005",
+    "title": "Content length validation",
+    "expectedFixed": "400 rejected",
+    "actual": "status 400",
+    "verdict": "FIXED"
+  },
+  {
+    "id": "BUG-006",
+    "title": "Email verification flow",
+    "expectedFixed": "verification endpoint/column exists",
+    "actual": "verify endpoint found=false, verif column=false",
+    "verdict": "STILL FAILING"
+  },
+  {
+    "id": "BUG-007",
+    "title": "Pre-issued token for rejected user blocked",
+    "expectedFixed": "401/403",
+    "actual": "approval=rejected, GET /profile -> 403",
+    "verdict": "FIXED"
+  },
+  {
+    "id": "BUG-D01",
+    "title": "Invalid booking status transition blocked",
+    "expectedFixed": "400 + DB state unchanged",
+    "actual": "from=completed -> accepted => 400 \"Cannot change a booking from completed to accepted\", dbStatus now=completed",
+    "verdict": "FIXED"
+  },
+  {
+    "id": "BUG-008",
+    "title": "Currency code consistency (stored)",
+    "expectedFixed": "all PHP (matches ₱ shown)",
+    "actual": "stored currencies: CAD,PHP",
+    "verdict": "STILL FAILING (UI hardcodes ₱)"
+  }
+]

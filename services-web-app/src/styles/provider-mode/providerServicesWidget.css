@@ -4,6 +4,9 @@
   border-radius: var(--app-radius);
   padding: 24px;
   box-shadow: var(--app-shadow);
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .btn-add-service {
@@ -30,7 +33,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 1.5fr 0.8fr 1fr 0.6fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 12px;
   padding: 12px 8px;
   border-bottom: 2px solid rgba(15, 42, 68, 0.10);
@@ -49,7 +52,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 1.5fr 0.8fr 1fr 0.6fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 12px;
   padding: 12px 8px;
   border-radius: var(--app-radius-sm);

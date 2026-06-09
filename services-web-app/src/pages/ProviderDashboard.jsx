@@ -5,38 +5,67 @@ import ProviderModeHeader from "../components/provider-mode/ProviderModeHeader";
 import ProviderRequestsWidget from "../components/provider-mode/ProviderRequestsWidget";
 import ProviderUpcomingJobsWidget from "../components/provider-mode/ProviderUpcomingJobsWidget";
 import ProviderServicesWidget from "../components/provider-mode/ProviderServicesWidget";
-import { getUserFullName } from "../utils/auth.js";
+import { getStoredAuthSession } from "../utils/auth.js";
+import { fetchProviderProfile, updateProviderProfile } from "../api/provider.js";
 import "../styles/provider-mode/providerDashboard.css";
 
 const ProviderDashboard = () => {
   const [providerProfile, setProviderProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState(null);
+  const [availabilitySaving, setAvailabilitySaving] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState(null);
   const [jobsRefreshKey, setJobsRefreshKey] = useState(0);
 
   const handleBookingResponded = () => setJobsRefreshKey((k) => k + 1);
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
-    if (storedUser) {
-      const fullName = getUserFullName(storedUser);
-
-      setProviderProfile({
-        provider_id: storedUser.id,
-        display_name: fullName,
-        bio: "Manage your services and bookings",
-        is_provider_active: true,
-      });
+    const session = getStoredAuthSession();
+    if (!session) {
+      setProfileError("Not authenticated");
+      setLoading(false);
+      return;
     }
 
-    setLoading(false);
+    fetchProviderProfile(session.token)
+      .then((profile) => {
+        setProviderProfile(profile);
+      })
+      .catch((err) => {
+        setProfileError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
-  const handleAvailabilityChange = (isActive) => {
-    setProviderProfile((prev) => ({
-      ...prev,
-      is_provider_active: isActive,
-    }));
+  const handleAvailabilityChange = async (isActive) => {
+    if (!providerProfile) return;
+
+    const session = getStoredAuthSession();
+    if (!session) return;
+
+    const previous = providerProfile.isProviderActive;
+    setAvailabilityError(null);
+    setAvailabilitySaving(true);
+
+    // Optimistically update UI
+    setProviderProfile((prev) => ({ ...prev, isProviderActive: isActive }));
+
+    try {
+      const updated = await updateProviderProfile(session.token, {
+        displayName: providerProfile.displayName,
+        bio: providerProfile.bio,
+        isProviderActive: isActive,
+      });
+      setProviderProfile(updated);
+    } catch (err) {
+      // Revert on failure
+      setProviderProfile((prev) => ({ ...prev, isProviderActive: previous }));
+      setAvailabilityError("Failed to save availability. Please try again.");
+    } finally {
+      setAvailabilitySaving(false);
+    }
   };
 
   if (loading) {
@@ -52,6 +81,19 @@ const ProviderDashboard = () => {
     );
   }
 
+  if (profileError) {
+    return (
+      <>
+        <ProviderNavbar isProviderMode={true} />
+        <div className="provider-dashboard">
+          <div style={{ textAlign: "center", padding: "50px", color: "#dc2626" }}>
+            {profileError}
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <ProviderNavbar isProviderMode={true} />
@@ -60,6 +102,8 @@ const ProviderDashboard = () => {
         <ProviderModeHeader
           providerProfile={providerProfile}
           onAvailabilityChange={handleAvailabilityChange}
+          saving={availabilitySaving}
+          saveError={availabilityError}
         />
 
         <div className="provider-content-wrapper">

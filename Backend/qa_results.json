@@ -1,0 +1,898 @@
+{
+  "summary": {
+    "total": 80,
+    "passed": 71,
+    "failed": 9,
+    "critical": 0,
+    "high": 3,
+    "medium": 4,
+    "low": 2,
+    "accounts": {
+      "clients": 10,
+      "providers": 8,
+      "approved": 16,
+      "rejected": 2
+    },
+    "bookings": {
+      "attempts": 16,
+      "created": 15
+    }
+  },
+  "results": [
+    {
+      "area": "Signup",
+      "name": "Valid client registration",
+      "expected": "201 pending-approval",
+      "actual": 201,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Signup",
+      "name": "Empty form submission",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Signup",
+      "name": "Invalid email format",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Signup",
+      "name": "Weak password rejected",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Signup",
+      "name": "Password mismatch rejected",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Signup",
+      "name": "Duplicate email rejected",
+      "expected": "400 already registered",
+      "actual": "400:Email already registered",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Signup",
+      "name": "Login before admin approval blocked",
+      "expected": "400 pending",
+      "actual": "400:Your account is being reviewed",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Signup",
+      "name": "Email verification token flow",
+      "expected": "verification link/token endpoint exists",
+      "actual": "NOT IMPLEMENTED — gating is admin-approval only (no token)",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Security",
+      "name": "Register rate limit triggers (10/hr)",
+      "expected": "429 after limit",
+      "actual": "429",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Non-admin blocked from /admin/pending-users",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Unauthenticated blocked from admin API",
+      "expected": "401",
+      "actual": 401,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Admin views pending users",
+      "expected": ">=18 pending",
+      "actual": 23,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Approve users",
+      "expected": "16 approved",
+      "actual": 16,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Reject users",
+      "expected": "2 rejected",
+      "actual": 2,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Pending list shrinks after approve/reject",
+      "expected": "< before",
+      "actual": "5 (was 23)",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Approved user can log in",
+      "expected": "200 + token",
+      "actual": "200/token",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Admin",
+      "name": "Rejected user blocked at login",
+      "expected": "400 not approved",
+      "actual": "400:Your registration was not",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Account-approved notification created",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Account-rejected notification created",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Provider",
+      "name": "Update provider display name + bio",
+      "expected": "200",
+      "actual": 200,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Provider",
+      "name": "Provider bio persists (not hardcoded)",
+      "expected": "bio matches",
+      "actual": "Trusted ho",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Provider",
+      "name": "Availability toggle persists",
+      "expected": "isProviderActive=0",
+      "actual": 0,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Provider",
+      "name": "Provider services endpoint returns own list",
+      "expected": "array",
+      "actual": "array",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Providers create services",
+      "expected": "8 created",
+      "actual": 8,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Service missing title rejected",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Service negative price handling",
+      "expected": "400 or rejected",
+      "actual": "201",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Service",
+      "name": "Service gibberish/too-short content handling",
+      "expected": "400 validation",
+      "actual": "201",
+      "status": "FAIL",
+      "severity": "Low"
+    },
+    {
+      "area": "Service",
+      "name": "Pending service NOT in Browse",
+      "expected": "absent",
+      "actual": "absent",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Admin views pending services",
+      "expected": ">=8",
+      "actual": 10,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Admin approves services",
+      "expected": "7",
+      "actual": 7,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Admin rejects service",
+      "expected": "1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Approved service appears in Browse",
+      "expected": "present",
+      "actual": "present",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Rejected service NOT in Browse",
+      "expected": "absent",
+      "actual": "absent",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Rejected service detail returns 404 (public)",
+      "expected": "404",
+      "actual": 404,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Approved service detail loads with fields",
+      "expected": "title+provider+currency",
+      "actual": "House Cleaning/Provider One Services/PHP",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Service-approved notification to provider",
+      "expected": ">=1",
+      "actual": 2,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Service-rejected notification to provider",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Service",
+      "name": "Nonexistent service detail 404",
+      "expected": "404",
+      "actual": 404,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Booking attempts performed",
+      "expected": ">=20",
+      "actual": 15,
+      "status": "FAIL",
+      "severity": "High"
+    },
+    {
+      "area": "Booking",
+      "name": "Valid bookings created",
+      "expected": ">=15",
+      "actual": 15,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Duplicate active booking blocked",
+      "expected": "400 already active",
+      "actual": "500:Failed to submit booking",
+      "status": "FAIL",
+      "severity": "High"
+    },
+    {
+      "area": "Booking",
+      "name": "Self-booking blocked",
+      "expected": "400 own service",
+      "actual": "400:You cannot book your",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Inactive-provider service hidden from Browse",
+      "expected": "absent",
+      "actual": "absent",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Booking inactive provider via API blocked",
+      "expected": "should block (400/404)",
+      "actual": "500",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Booking",
+      "name": "Provider accepts booking",
+      "expected": "200 accepted",
+      "actual": "200/accepted",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Provider declines booking",
+      "expected": "200 declined",
+      "actual": "200/declined",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Provider completes booking",
+      "expected": "200 completed",
+      "actual": "200/completed",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Client cancels booking",
+      "expected": "200 cancelled",
+      "actual": "200/cancelled",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Client cannot cancel another user's booking",
+      "expected": "403/Not authorized",
+      "actual": "403:Not authorized",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Client bookings status filter works",
+      "expected": "all pending",
+      "actual": "ok",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Booking",
+      "name": "Provider bookings list loads",
+      "expected": "array",
+      "actual": "array",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Booking-created notifications generated",
+      "expected": ">=1",
+      "actual": 16,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Booking-accepted notification to client",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Messaging",
+      "name": "Client starts conversation",
+      "expected": "201 + conversationId",
+      "actual": "201/id",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Messaging",
+      "name": "Provider replies",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Messaging",
+      "name": "Message order correct (3 msgs)",
+      "expected": "ordered ascending",
+      "actual": "3 msgs",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Non-participant cannot read conversation",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Messaging",
+      "name": "Conversation list shows convo",
+      "expected": ">=1",
+      "actual": 1,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Messaging",
+      "name": "Admin message logs load w/ pagination",
+      "expected": "messages+pagination",
+      "actual": "0 / total undefined",
+      "status": "FAIL",
+      "severity": "Low"
+    },
+    {
+      "area": "Security",
+      "name": "Non-admin blocked from message logs",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "User notification list loads",
+      "expected": "array",
+      "actual": "array",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Notifications isolated to owner",
+      "expected": "all userId match",
+      "actual": "ok",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Unread count endpoint",
+      "expected": "number",
+      "actual": 5,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Mark notification read",
+      "expected": "200",
+      "actual": 200,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Notification",
+      "name": "Read state persists after refresh",
+      "expected": "isRead true",
+      "actual": true,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Cannot mark another user's notification read",
+      "expected": "unchanged (0)",
+      "actual": "is_read=0",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Profile",
+      "name": "Update profile",
+      "expected": "200",
+      "actual": 200,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Profile",
+      "name": "Profile role badge shows role",
+      "expected": "role present",
+      "actual": "client",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Profile",
+      "name": "Password verify (correct)",
+      "expected": "200",
+      "actual": 200,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Profile",
+      "name": "Password verify (wrong) rejected",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Profile",
+      "name": "Weak new password rejected",
+      "expected": "400",
+      "actual": 400,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Profile",
+      "name": "Change password",
+      "expected": "200",
+      "actual": 200,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Profile",
+      "name": "Old password rejected after change",
+      "expected": "400 invalid",
+      "actual": "400",
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Old JWT invalidated after password change",
+      "expected": "401 session expired",
+      "actual": "200:undefined",
+      "status": "FAIL",
+      "severity": "High"
+    },
+    {
+      "area": "Security",
+      "name": "Provider API requires auth",
+      "expected": "401",
+      "actual": 401,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Invalid token rejected",
+      "expected": "401",
+      "actual": 401,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Spoofed x-user-id header ignored (no token)",
+      "expected": "401",
+      "actual": 401,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Non-admin cannot approve users",
+      "expected": "403",
+      "actual": 403,
+      "status": "PASS",
+      "severity": ""
+    },
+    {
+      "area": "Security",
+      "name": "Rejected user with minted token reaches protected route",
+      "expected": "ideally blocked",
+      "actual": "200 (approval not re-checked in requireAuth)",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Security",
+      "name": "Login rate limit triggers (5/15min)",
+      "expected": "429",
+      "actual": "429",
+      "status": "PASS",
+      "severity": ""
+    }
+  ],
+  "bookingMatrix": [
+    {
+      "client": "client01@test.local",
+      "provider": "provider01@test.local",
+      "service": "House Cleaning",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 5
+    },
+    {
+      "client": "client02@test.local",
+      "provider": "provider02@test.local",
+      "service": "Plumbing Repair",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 6
+    },
+    {
+      "client": "client03@test.local",
+      "provider": "provider03@test.local",
+      "service": "Electrical Repair",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 7
+    },
+    {
+      "client": "client04@test.local",
+      "provider": "provider04@test.local",
+      "service": "Lawn Care",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 8
+    },
+    {
+      "client": "client05@test.local",
+      "provider": "provider05@test.local",
+      "service": "Appliance Repair",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 9
+    },
+    {
+      "client": "client06@test.local",
+      "provider": "provider06@test.local",
+      "service": "Moving Help",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 10
+    },
+    {
+      "client": "client07@test.local",
+      "provider": "provider01@test.local",
+      "service": "House Cleaning",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 11
+    },
+    {
+      "client": "client08@test.local",
+      "provider": "provider02@test.local",
+      "service": "Plumbing Repair",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 12
+    },
+    {
+      "client": "client09@test.local",
+      "provider": "provider03@test.local",
+      "service": "Electrical Repair",
+      "action": "book",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 13
+    },
+    {
+      "client": "client01@test.local",
+      "provider": "provider03@test.local",
+      "service": "Electrical Repair",
+      "action": "book2",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 14
+    },
+    {
+      "client": "client02@test.local",
+      "provider": "provider04@test.local",
+      "service": "Lawn Care",
+      "action": "book2",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 15
+    },
+    {
+      "client": "client03@test.local",
+      "provider": "provider05@test.local",
+      "service": "Appliance Repair",
+      "action": "book2",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 16
+    },
+    {
+      "client": "client04@test.local",
+      "provider": "provider06@test.local",
+      "service": "Moving Help",
+      "action": "book2",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 17
+    },
+    {
+      "client": "client05@test.local",
+      "provider": "provider01@test.local",
+      "service": "House Cleaning",
+      "action": "book2",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 18
+    },
+    {
+      "client": "client06@test.local",
+      "provider": "provider02@test.local",
+      "service": "Plumbing Repair",
+      "action": "book2",
+      "expected": "201",
+      "actual": 201,
+      "status": "PASS",
+      "bookingId": 19
+    },
+    {
+      "client": "client01@test.local",
+      "provider": "provider01@test.local",
+      "service": "House Cleaning",
+      "action": "duplicate",
+      "expected": "400 blocked",
+      "actual": 500,
+      "status": "FAIL"
+    }
+  ],
+  "failures": [
+    {
+      "area": "Signup",
+      "name": "Email verification token flow",
+      "expected": "verification link/token endpoint exists",
+      "actual": "NOT IMPLEMENTED — gating is admin-approval only (no token)",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Service",
+      "name": "Service negative price handling",
+      "expected": "400 or rejected",
+      "actual": "201",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Service",
+      "name": "Service gibberish/too-short content handling",
+      "expected": "400 validation",
+      "actual": "201",
+      "status": "FAIL",
+      "severity": "Low"
+    },
+    {
+      "area": "Booking",
+      "name": "Booking attempts performed",
+      "expected": ">=20",
+      "actual": 15,
+      "status": "FAIL",
+      "severity": "High"
+    },
+    {
+      "area": "Booking",
+      "name": "Duplicate active booking blocked",
+      "expected": "400 already active",
+      "actual": "500:Failed to submit booking",
+      "status": "FAIL",
+      "severity": "High"
+    },
+    {
+      "area": "Booking",
+      "name": "Booking inactive provider via API blocked",
+      "expected": "should block (400/404)",
+      "actual": "500",
+      "status": "FAIL",
+      "severity": "Medium"
+    },
+    {
+      "area": "Messaging",
+      "name": "Admin message logs load w/ pagination",
+      "expected": "messages+pagination",
+      "actual": "0 / total undefined",
+      "status": "FAIL",
+      "severity": "Low"
+    },
+    {
+      "area": "Security",
+      "name": "Old JWT invalidated after password change",
+      "expected": "401 session expired",
+      "actual": "200:undefined",
+      "status": "FAIL",
+      "severity": "High"
+    },
+    {
+      "area": "Security",
+      "name": "Rejected user with minted token reaches protected route",
+      "expected": "ideally blocked",
+      "actual": "200 (approval not re-checked in requireAuth)",
+      "status": "FAIL",
+      "severity": "Medium"
+    }
+  ]
+}
