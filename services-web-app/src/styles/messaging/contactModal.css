@@ -44,7 +44,7 @@
 }
 
 .modal-close:hover {
-  color: #333;
+  color: var(--app-text);
 }
 
 .modal-textarea {
@@ -61,7 +61,7 @@
 }
 
 .modal-textarea:focus {
-  border-color: #0d6efd;
+  border-color: var(--app-primary);
   box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
 }
 
@@ -116,15 +116,15 @@
 }
 
 .modal-toast.success {
-  background: #e8f5e9;
-  border: 1px solid #a5d6a7;
-  color: #2e7d32;
+  background: var(--app-success-bg);
+  border: 1px solid var(--app-success-bg);
+  color: var(--app-success-text);
 }
 
 .modal-toast.error {
-  background: #fdecea;
-  border: 1px solid #f5c6cb;
-  color: #c62828;
+  background: var(--app-danger-bg);
+  border: 1px solid var(--app-danger-bg);
+  color: var(--app-danger-text);
 }
 
 .modal-toast-link {
@@ -144,6 +144,6 @@
 
 .modal-error {
   font-size: 13px;
-  color: #c62828;
+  color: var(--app-danger-text);
   margin: 0;
 }

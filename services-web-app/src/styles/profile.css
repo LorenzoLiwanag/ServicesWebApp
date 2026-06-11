@@ -168,7 +168,7 @@
 .stat-label {
   margin: 0 0 4px 0;
   font-size: 12px;
-  color: #666;
+  color: var(--app-muted);
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -252,7 +252,7 @@
 
 .form-input:disabled {
   background: #f8f9fa;
-  color: #666;
+  color: var(--app-muted);
   cursor: not-allowed;
   border-color: #e9ecef;
 }
@@ -278,7 +278,7 @@
 
 .change-password-btn:disabled {
   background: #f8f9fa;
-  color: #666;
+  color: var(--app-muted);
   cursor: not-allowed;
   border-color: #e9ecef;
 }
@@ -322,7 +322,7 @@
   border: none;
   border-radius: 50%;
   background: #f8f9fa;
-  color: #333;
+  color: var(--app-text);
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
@@ -337,8 +337,8 @@
 .password-modal-error {
   padding: 12px;
   border-radius: 8px;
-  background: #ffebee;
-  color: #b71c1c;
+  background: var(--app-danger-bg);
+  color: var(--app-danger-text);
   font-size: 13px;
 }
 
@@ -353,10 +353,10 @@
 }
 
 .password-modal-error-actions button {
-  border: 1px solid #ffcdd2;
+  border: 1px solid var(--app-danger-bg);
   border-radius: 6px;
   background: white;
-  color: #b71c1c;
+  color: var(--app-danger-text);
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
@@ -386,7 +386,7 @@
   margin: 0;
   font-size: 13px;
   font-weight: 600;
-  color: #666;
+  color: var(--app-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -394,7 +394,7 @@
 .info-value {
   margin: 0;
   font-size: 14px;
-  color: #333;
+  color: var(--app-text);
   line-height: 1.6;
 }
 
@@ -409,18 +409,18 @@
 }
 
 .status-badge.verified {
-  background: #e8f5e9;
-  color: #388e3c;
+  background: var(--app-success-bg);
+  color: var(--app-success);
 }
 
 .status-badge.pending {
-  background: #fff3e0;
-  color: #f57c00;
+  background: var(--app-warning-bg);
+  color: var(--app-warning);
 }
 
 .status-badge.unverified {
-  background: #ffebee;
-  color: #d32f2f;
+  background: var(--app-danger-bg);
+  color: var(--app-danger);
 }
 
 /* Form Actions */
@@ -457,7 +457,7 @@
 
 .btn-cancel {
   background: #f8f9fa;
-  color: #666;
+  color: var(--app-muted);
   border: 1px solid #e9ecef;
   flex: 1;
 }
@@ -635,6 +635,6 @@
   color: #fff;
 }
 .mbp-toast-error {
-  background: #dc2626;
+  background: var(--app-danger);
   color: #fff;
 }

@@ -183,25 +183,25 @@
   .col-name::before {
     content: "Service: ";
     font-weight: 700;
-    color: #999;
+    color: var(--app-muted);
   }
 
   .col-price::before {
     content: "Price: ";
     font-weight: 700;
-    color: #999;
+    color: var(--app-muted);
   }
 
   .col-visibility::before {
     content: "Visibility: ";
     font-weight: 700;
-    color: #999;
+    color: var(--app-muted);
   }
 
   .col-actions::before {
     content: "Actions: ";
     font-weight: 700;
-    color: #999;
+    color: var(--app-muted);
   }
 }
 

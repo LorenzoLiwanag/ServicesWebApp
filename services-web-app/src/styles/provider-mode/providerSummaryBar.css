@@ -49,8 +49,8 @@
 }
 
 .summary-card-icon.next-job-icon {
-  background: #e8f5e9;
-  color: #388e3c;
+  background: var(--app-success-bg);
+  color: var(--app-success);
 }
 
 .summary-card-content {

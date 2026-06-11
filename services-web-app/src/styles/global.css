@@ -1,6 +1,7 @@
 :root {
   --navbar-height: 64px;
-  --app-font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --app-font: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --app-font-display: 'Poppins', 'Lato', sans-serif;
   --app-navy: #0f2a44;
   --app-heading: #223d68;
   --app-text: #334155;
@@ -26,6 +27,16 @@
   --app-shadow-strong: 0 16px 34px rgba(13, 110, 253, 0.28);
   --app-radius: 14px;
   --app-radius-sm: 8px;
+  /* shared status colors (identical across themes) */
+  --app-success: #16a34a;
+  --app-success-bg: #e8f5e9;
+  --app-success-text: #166534;
+  --app-danger: #dc2626;
+  --app-danger-bg: #fee2e2;
+  --app-danger-text: #991b1b;
+  --app-warning: #f57c00;
+  --app-warning-bg: #fef3c7;
+  --app-warning-text: #92400e;
 }
 
 * {
@@ -46,6 +57,13 @@ body {
   color: var(--app-text);
   background: var(--app-bg);
   background-attachment: fixed;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--app-font-display);
 }
 
 li {

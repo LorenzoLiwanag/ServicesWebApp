@@ -250,12 +250,12 @@
 .price-quote {
   font-size: 14px;
   font-weight: 600;
-  color: #f57c00;
+  color: var(--app-warning);
 }
 
 .pricing-type {
   font-size: 11px;
-  color: #999;
+  color: var(--app-muted);
 }
 
 .card-actions {
@@ -311,7 +311,7 @@
 
 .card-badge.unavailable {
   background: rgba(211, 47, 47, 0.1);
-  color: #d32f2f;
+  color: var(--app-danger);
 }
 
 /* Load More Button */

@@ -46,7 +46,7 @@
   transition: color 0.15s, border-color 0.15s;
   border-radius: 0;
 }
-.mbp-tab:hover { color: #111; }
+.mbp-tab:hover { color: var(--app-text); }
 .mbp-tab-active {
   color: var(--app-primary);
   border-bottom-color: var(--app-primary);
@@ -61,7 +61,7 @@
   font-size: 15px;
 }
 
-.mbp-error-msg { color: #991b1b; }
+.mbp-error-msg { color: var(--app-danger-text); }
 
 .mbp-empty {
   text-align: center;
@@ -174,7 +174,7 @@
   border: 1px solid rgba(220, 38, 38, 0.35);
   border-radius: 10px;
   background: transparent;
-  color: #991b1b;
+  color: var(--app-danger-text);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -231,7 +231,7 @@
   color: #fff;
 }
 .mbp-toast-error {
-  background: #dc2626;
+  background: var(--app-danger);
   color: #fff;
 }
 
@@ -292,13 +292,13 @@
   padding: 12px;
   border: none;
   border-radius: 12px;
-  background: #dc2626;
+  background: var(--app-danger);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
 }
-.mbp-confirm-btn-yes:hover { background: #b91c1c; }
+.mbp-confirm-btn-yes:hover { background: var(--app-danger-text); }
 
 @media (max-width: 480px) {
   .mbp-container { padding: 20px 16px; }

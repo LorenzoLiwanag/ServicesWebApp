@@ -197,13 +197,13 @@
 }
 
 .form-group input:focus {
-  border-color: #1e90ff;
+  border-color: var(--app-primary);
   box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
 }
 
 .field-error {
   margin: 8px 0 0;
-  color: #dc2626;
+  color: var(--app-danger);
   font-size: 14px;
   font-weight: 600;
   text-align: left;
@@ -223,7 +223,7 @@
   font-weight: 800;
   color: #fff;
 
-  background: linear-gradient(135deg, #0d6efd, #60a5fa);
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-light));
   box-shadow: 0 12px 30px rgba(13, 110, 253, 0.35);
 }
 
@@ -236,7 +236,7 @@
 }
 
 .login-links a {
-  color: #0d6efd;
+  color: var(--app-primary);
   font-weight: 600;
   text-decoration: none;
   text-align: center;
