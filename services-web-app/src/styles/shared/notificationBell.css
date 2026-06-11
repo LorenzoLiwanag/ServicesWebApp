@@ -270,3 +270,25 @@
   color: var(--app-danger);
   border-color: var(--app-danger-bg);
 }
+
+@media screen and (max-width: 1050px) {
+  .notif-dropdown {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100vh - var(--navbar-height));
+    max-height: calc(100vh - var(--navbar-height));
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notif-list {
+    flex: 1;
+    max-height: none;
+  }
+}

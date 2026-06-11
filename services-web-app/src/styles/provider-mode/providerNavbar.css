@@ -133,6 +133,15 @@
 @media screen and (max-width: 1050px) {
   .provider-nav-toggler {
     display: block;
+    order: 1;
+  }
+
+  .provider-site-logo {
+    order: 2;
+  }
+
+  .provider-nav-actions {
+    order: 3;
   }
 
   .provider-nav-menu {
