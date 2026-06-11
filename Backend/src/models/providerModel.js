@@ -120,7 +120,7 @@ export const createProviderServiceForUser = async (userId, data) => {
       description || null,
       pricingType || "quote",
       pricingType === "quote" ? null : priceAmount || null,
-      currency || "CAD",
+      currency || "PHP",
       serviceLocationType || "client_home",
       isVisible !== false ? 1 : 0,
     ]
@@ -167,7 +167,7 @@ export const updateProviderServiceForUser = async (userId, providerServiceId, da
       description || null,
       pricingType || "quote",
       pricingType === "quote" ? null : priceAmount || null,
-      currency || "CAD",
+      currency || "PHP",
       serviceLocationType || "client_home",
       isVisible !== false ? 1 : 0,
       providerServiceId,

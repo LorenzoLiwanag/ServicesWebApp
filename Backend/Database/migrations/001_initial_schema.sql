@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS provider_service (
     description TEXT,
     pricing_type ENUM('fixed', 'hourly', 'quote') DEFAULT 'quote',
     price_amount DECIMAL(10,2),
-    currency VARCHAR(10) DEFAULT 'CAD',
+    currency VARCHAR(10) DEFAULT 'PHP',
     service_location_type ENUM('client_home', 'provider_location', 'remote', 'flexible') DEFAULT 'client_home',
     is_visible BOOLEAN DEFAULT TRUE,
     is_deleted BOOLEAN DEFAULT FALSE,

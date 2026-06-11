@@ -538,7 +538,8 @@ const AdminPage = () => {
   const formatPrice = (svc) => {
     if (svc.pricingType === "quote") return "Get Quote";
     if (svc.priceAmount === null) return "—";
-    const sym = svc.currency === "CAD" ? "CA$" : (svc.currency || "");
+    const symbols = { PHP: "₱", CAD: "CA$", USD: "$" };
+    const sym = symbols[svc.currency] || `${svc.currency || ""} `;
     return svc.pricingType === "hourly" ? `${sym}${svc.priceAmount}/hr` : `${sym}${svc.priceAmount}`;
   };
 

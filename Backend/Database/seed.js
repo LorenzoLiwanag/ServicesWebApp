@@ -179,7 +179,7 @@ const run = async () => {
       description,
       pricingType,
       priceAmount,
-      currency: "CAD",
+      currency: "PHP",
       locationType,
     });
 

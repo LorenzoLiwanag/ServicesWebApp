@@ -1,0 +1,349 @@
+Database connected successfully
+Server is running on port 3000
+
+[DEV EMAIL]
+  To:      signup_valid@test.local
+  Subject: Your Subic Bay Home Services account was created
+  Body:
+    Hi Signup,
+    
+    Your Subic Bay Home Services account has been created successfully.
+    
+    Your account is currently pending admin approval. You will receive another email once your account has been approved.
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      rl_0_1781102469411@test.local
+  Subject: Your Subic Bay Home Services account was created
+  Body:
+    Hi Signup,
+    
+    Your Subic Bay Home Services account has been created successfully.
+    
+    Your account is currently pending admin approval. You will receive another email once your account has been approved.
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      rl_1_1781102469467@test.local
+  Subject: Your Subic Bay Home Services account was created
+  Body:
+    Hi Signup,
+    
+    Your Subic Bay Home Services account has been created successfully.
+    
+    Your account is currently pending admin approval. You will receive another email once your account has been approved.
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      rl_2_1781102469521@test.local
+  Subject: Your Subic Bay Home Services account was created
+  Body:
+    Hi Signup,
+    
+    Your Subic Bay Home Services account has been created successfully.
+    
+    Your account is currently pending admin approval. You will receive another email once your account has been approved.
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      rl_3_1781102469576@test.local
+  Subject: Your Subic Bay Home Services account was created
+  Body:
+    Hi Signup,
+    
+    Your Subic Bay Home Services account has been created successfully.
+    
+    Your account is currently pending admin approval. You will receive another email once your account has been approved.
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client01@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client02@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client03@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client04@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client05@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client06@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client07@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client08@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      client09@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Client,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      provider01@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Provider,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      provider02@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Provider,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      provider03@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Provider,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      provider04@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Provider,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      provider05@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Provider,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      provider06@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Provider,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+
+
+[DEV EMAIL]
+  To:      provider07@test.local
+  Subject: Your Subic Bay Home Services account has been approved
+  Body:
+    Hi Provider,
+    
+    Your Subic Bay Home Services account has been approved.
+    
+    You can now log in and start using the platform.
+    
+    Login here: http://localhost:3001/login
+    
+    Thank you,
+    Subic Bay Home Services
+────────────────────────────────────────────────────────────
+

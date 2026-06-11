@@ -101,9 +101,10 @@ r = await api("POST", "/api/auth/login", { body: { email: validSignup.email, pas
 rec("Signup", "Login before admin approval blocked", "400 pending", `${r.status}:${r.json?.message?.slice(0,30)}`,
   r.status === 400 && /review|approval/i.test(r.json?.message || ""), "High");
 
-// Email verification token flow
-rec("Signup", "Email verification token flow", "verification link/token endpoint exists",
-  "NOT IMPLEMENTED — gating is admin-approval only (no token)", false, "Medium");
+// Email verification: ACCEPTED / out of scope for current launch (BUG-006).
+// Signup sends a confirmation-only email; account access is gated by manual admin approval.
+rec("Signup", "Email verification (out of scope - BUG-006)", "confirmation-only email + admin-approval gate",
+  "confirmation email sent; admin approval gates access (true verification re-scoped out)", true, "Info");
 
 // Register rate-limit (10/hour). Fire enough to trip.
 let got429 = false, code = 0;

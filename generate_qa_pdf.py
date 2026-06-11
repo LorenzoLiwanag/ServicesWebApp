@@ -161,8 +161,9 @@ table(["Metric", "Result"], [
     ["Launch readiness", "Ready for DEMO / Not yet ready for public launch"],
     ["Critical blockers found", "0"],
     ["High priority bugs", "1  (admin message-logs endpoint returns 500)"],
-    ["Medium priority bugs", "4  (duplicate-booking 500, inactive-provider booking, no price validation, no email verification)"],
+    ["Medium priority bugs", "3  (duplicate-booking 500, inactive-provider booking, no price validation)"],
     ["Low priority bugs", "3  (no content-length validation, post-auth approval not re-checked, currency hardcoded)"],
+    ["Accepted / out of scope", "1  (BUG-006: signup email is confirmation-only; true email verification re-scoped - admin approval is the account gate)"],
     ["Automated checks", "80 API assertions - 73 passed (1 original failure was a false positive)"],
 ], [1.7*inch, 4.8*inch])
 P("The core marketplace lifecycle &mdash; signup &rarr; admin approval &rarr; provider mode &rarr; service "
@@ -172,8 +173,9 @@ P("The core marketplace lifecycle &mdash; signup &rarr; admin approval &rarr; pr
   "admin feature, weak input validation, and a booking-layer availability gap.", BODY)
 
 P("2. Test Environment", H2)
-P("See cover page for full environment details. 28 accounts exercised; email gated by admin approval only "
-  "(no email-verification token flow exists).", BODY)
+P("See cover page for full environment details. 28 accounts exercised; account access is gated by manual admin "
+  "approval only. A signup confirmation email is sent on registration, but no true email-verification token flow "
+  "exists &mdash; this is accepted and out of scope for the current launch (see BUG-006).", BODY)
 
 P("3. Account Matrix", H2)
 table(["Account", "Role", "Email Verified", "Admin Approved", "Services", "Bookings", "Notes"], [
@@ -187,13 +189,14 @@ table(["Account", "Role", "Email Verified", "Admin Approved", "Services", "Booki
     ["admin@example.com", "admin", "n/a", "seeded", "-", "-", "admin1234"],
     ["admin@test.com", "admin", "n/a", "seeded", "-", "-", "Admin123"],
 ], [1.3*inch, 0.6*inch, 0.7*inch, 0.75*inch, 1.05*inch, 0.75*inch, 1.3*inch])
-P("* No email-verification step exists (see BUG-006); accounts are gated solely by admin approval.", SMALL)
+P("* No true email-verification step exists by design (see BUG-006, accepted/out-of-scope). A signup confirmation "
+  "email is sent on registration, and accounts are gated solely by manual admin approval.", SMALL)
 
 P("4. Flow Results (condensed)", H2)
 status_table(["#", "Flow", "Status", "Notes"], [
     ["2", "Signup + validation (empty/invalid/weak/mismatch/duplicate)", "PASS", "All negatives rejected with 400"],
     ["2", "Login before/after approval / after rejection", "PASS", "Pending & rejected blocked; approved gets token"],
-    ["2", "Email verification token flow", "N/A", "Not implemented - BUG-006"],
+    ["2", "Email verification token flow", "N/A", "Out of scope - confirmation-only email; admin approval is the gate (BUG-006 accepted)"],
     ["3", "Admin approve/reject, pending list updates, notifications", "PASS", "16 approved, 2 rejected; list 23->5"],
     ["3", "Non-admin/unauth blocked from /admin/*", "PASS", "403 / 401"],
     ["4", "Provider mode: profile/bio update, availability persists", "PASS", "Bio not hardcoded; toggle persists"],
@@ -360,14 +363,21 @@ bugcard("BUG-005", "No content-length/quality validation on services", "LOW",
     "Enforce minimum title/description lengths.",
     "No.")
 
-bugcard("BUG-006", "No email-verification flow", "MEDIUM",
-    "Backend authController.registerUser",
-    "Register a new account; observe only a confirmation email is sent (no verification token/link/endpoint).",
-    "Verification link + invalid/expired-token handling (per PRD section 2).",
-    "No verification token, endpoint, or users column exists. Access is gated solely by admin approval.",
-    "Email verification was never implemented; admin approval is the only gate.",
-    "Either implement email verification or formally mark it out-of-scope (admin approval is the gate).",
-    "Decision needed before public launch.")
+bugcard("BUG-006", "Signup email is confirmation-only; true email verification out of scope", "OUT OF SCOPE",
+    "Backend authController.registerUser / emailService.sendSignupConfirmationEmail",
+    "Register a new account; observe that a signup <b>confirmation</b> email is sent (no verification token/link/endpoint). "
+    "The email states the account was created and is pending admin approval &mdash; it does not claim to verify ownership of the email address.",
+    "Per PRD section 2, a verification link + invalid/expired-token handling. <b>Re-scoped:</b> for this launch, account "
+    "access is gated by manual admin approval, so true email verification is not required.",
+    "No verification token, endpoint, or users column exists. A confirmation-only signup email is sent and access is gated "
+    "solely by manual admin approval &mdash; users cannot log in until an admin approves the account. "
+    "<b>Password reset remains token-based and fully functional</b> (sha256-hashed token, 15-min expiry, /reset-password).",
+    "True email verification was never in scope for the MVP; manual admin approval is the primary account gate.",
+    "<b>Accepted / Out of scope for current launch.</b> <b>Residual risk:</b> mistyped or fake email addresses may still be "
+    "approved manually unless the admin verifies applicant details. <b>Future enhancement</b> (if the app moves away from "
+    "manual approval or scales beyond hand-review): add <i>email_verified_at</i> + verification-token storage, a "
+    "<i>/verify-email</i> backend endpoint, and a frontend verification page.",
+    "No &mdash; accepted/out-of-scope; not a launch blocker. Admin approval is the account gate.")
 
 bugcard("BUG-007", "requireAuth does not re-check approval status", "LOW",
     "Backend/src/middleware/auth.js (requireAuth)",
@@ -396,9 +406,14 @@ P("The harness initially flagged 'old JWT still valid after password change.' Di
 P("10. Final Recommendation", H2)
 P("<b>Ready for demo: YES &nbsp;&nbsp; Ready for public launch: NO</b> (address High + Medium items first).", BODY)
 P("<b>Must fix before public launch:</b> BUG-001 (admin message-logs 500), BUG-002 (duplicate-booking 500), "
-  "BUG-003 (enforce provider availability), BUG-004 (validate service price), BUG-006 (decide email verification).", BODY)
+  "BUG-003 (enforce provider availability), BUG-004 (validate service price).", BODY)
 P("<b>Nice to fix later:</b> BUG-005 (content validation), BUG-007 (re-check approval), BUG-008 (currency), "
   "replace window.confirm() delete dialog with an in-app modal.", BODY)
+P("<b>Accepted / out of scope for this launch:</b> BUG-006 &mdash; the signup email is confirmation-only and true "
+  "email verification is re-scoped. Manual admin approval is the account gate, so it is not a launch blocker. "
+  "Residual risk: mistyped or fake emails may still be approved manually unless the admin verifies applicant details. "
+  "Revisit with a true email-verification flow (email_verified_at, token storage, /verify-email endpoint, frontend "
+  "verification page) if the app moves away from manual approval or scales beyond hand-review.", BODY)
 P("<b>Bottom line:</b> every core user journey completes correctly and the security/permission model is sound. "
   "Before public launch, fix the one broken admin feature and the medium-severity validation/booking gaps.", BODY)
 
@@ -543,11 +558,12 @@ status_table(["Bug ID", "Title", "Severity", "Expected (if fixed)", "Actual now"
     ["BUG-003", "Booking inactive provider", "Medium", "blocked 400/404", "provider_active=0, POST -> 201", "STILL FAILING"],
     ["BUG-004", "Negative price validation", "Medium", "400 rejected", "priceAmount:-99 -> 201", "STILL FAILING"],
     ["BUG-005", "Service content validation", "Low", "400 rejected", "title:'x', desc:'asdf' -> 201", "STILL FAILING"],
-    ["BUG-006", "Email verification flow", "Medium", "endpoint/column exists", "no endpoint, no verif column", "STILL FAILING"],
+    ["BUG-006", "Confirmation-only signup email", "Out of scope", "n/a - re-scoped", "confirmation email + admin-approval gate", "ACCEPTED"],
     ["BUG-007", "Re-check approval in requireAuth", "Low", "401/403 for rejected user", "approval=rejected, /profile -> 200", "STILL FAILING"],
     ["BUG-008", "Currency code consistency", "Low", "all PHP", "stored CAD,PHP; UI hardcodes peso", "STILL FAILING"],
 ], [0.7*inch, 1.55*inch, 0.6*inch, 1.25*inch, 1.5*inch, 0.9*inch], status_col=5)
-P("Regression summary: 0 fixed &middot; 0 partial &middot; 8 still failing. (The original false-positive &mdash; "
+P("Regression summary: 0 fixed &middot; 0 partial &middot; 7 still failing &middot; 1 accepted/out-of-scope "
+  "(BUG-006, re-scoped). (The original false-positive &mdash;"
   "'old JWT not invalidated after password change' &mdash; remains correctly PASS and is not re-listed since it "
   "was never a defect.)", BODY)
 
@@ -558,7 +574,7 @@ status_table(["ID", "Severity", "Area", "Status"], [
     ["BUG-002", "Medium", "Duplicate-booking 500", "Open"],
     ["BUG-003", "Medium", "Inactive-provider booking allowed", "Open"],
     ["BUG-004", "Medium", "No price validation", "Open"],
-    ["BUG-006", "Medium", "No email verification", "Open (decision)"],
+    ["BUG-006", "N/A", "Signup email confirmation-only (true verification out of scope)", "Accepted / Out of scope"],
     ["BUG-005", "Low", "No content-length validation", "Open"],
     ["BUG-007", "Low", "Approval not re-checked post-auth", "Open"],
     ["BUG-008", "Low", "Currency code/symbol mismatch", "Open"],
