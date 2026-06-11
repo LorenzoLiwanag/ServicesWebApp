@@ -121,7 +121,12 @@ const ServiceFormModal = ({ title: modalTitle, formData, categories, onChange, o
   </div>
 );
 
-const ProviderServicesWidget = () => {
+const ProviderServicesWidget = ({
+  providerProfile,
+  onAvailabilityChange,
+  availabilitySaving,
+  availabilityError,
+}) => {
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -298,14 +303,42 @@ const ProviderServicesWidget = () => {
     return s.pricingType === "hourly" ? `${sym}${s.priceAmount}/hr` : `${sym}${s.priceAmount}`;
   };
 
+  const isAvailable = providerProfile?.isProviderActive ?? true;
+
   return (
     <>
       <div className="services-widget">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <div className="services-widget-header">
           <h2 className="widget-title" style={{ margin: 0 }}>My Services</h2>
-          <button className="btn-add-service" onClick={() => { setFormError(""); setAddForm(EMPTY_FORM); setShowAdd(true); }}>
-            + Add Service
-          </button>
+          <div className="services-widget-actions">
+            <button className="btn-add-service" onClick={() => { setFormError(""); setAddForm(EMPTY_FORM); setShowAdd(true); }}>
+              + Add Service
+            </button>
+            <div className="services-availability">
+              <div className="services-availability-control">
+                <span className="availability-label">Available to clients</span>
+                <button
+                  className={`availability-toggle ${isAvailable ? "active" : ""} ${availabilitySaving ? "saving" : ""}`}
+                  onClick={() => onAvailabilityChange?.(!isAvailable)}
+                  aria-label="Toggle availability"
+                  aria-pressed={isAvailable}
+                  disabled={availabilitySaving}
+                >
+                  <span className="toggle-circle"></span>
+                </button>
+              </div>
+              <p className="availability-hint">
+                {availabilitySaving
+                  ? "Saving..."
+                  : isAvailable
+                  ? "Your services are visible to clients"
+                  : "Your services are hidden from search"}
+              </p>
+              {availabilityError && (
+                <p className="availability-save-error">{availabilityError}</p>
+              )}
+            </div>
+          </div>
         </div>
 
         {success && (
@@ -338,14 +371,14 @@ const ProviderServicesWidget = () => {
                       {!svc.isVisible && " · Hidden"}
                     </span>
                   </div>
-                  <div style={{ fontSize: 13, color: "#475569" }}>{svc.categoryName || "—"}</div>
-                  <div>
+                  <div className="col-category" style={{ fontSize: 13, color: "#475569" }}>{svc.categoryName || "—"}</div>
+                  <div className="col-price">
                     <span className="service-price" style={{ fontSize: 13 }}>{formatPrice(svc)}</span>
                   </div>
-                  <div>
+                  <div className="col-status">
                     <ApprovalBadge status={svc.approvalStatus} />
                   </div>
-                  <div className="col-actions" style={{ display: "flex", gap: 6 }}>
+                  <div className="col-actions">
                     <button className="btn-edit" onClick={() => handleOpenEdit(svc)}>Edit</button>
                     <button
                       className="btn-edit"

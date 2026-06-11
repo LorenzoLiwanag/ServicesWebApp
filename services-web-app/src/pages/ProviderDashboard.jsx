@@ -99,12 +99,7 @@ const ProviderDashboard = () => {
       <ProviderNavbar isProviderMode={true} />
 
       <div className="provider-dashboard">
-        <ProviderModeHeader
-          providerProfile={providerProfile}
-          onAvailabilityChange={handleAvailabilityChange}
-          saving={availabilitySaving}
-          saveError={availabilityError}
-        />
+        <ProviderModeHeader />
 
         <div className="provider-content-wrapper">
           <div className="provider-column-left">
@@ -113,7 +108,12 @@ const ProviderDashboard = () => {
           </div>
 
           <div className="provider-column-right">
-            <ProviderServicesWidget />
+            <ProviderServicesWidget
+              providerProfile={providerProfile}
+              onAvailabilityChange={handleAvailabilityChange}
+              availabilitySaving={availabilitySaving}
+              availabilityError={availabilityError}
+            />
           </div>
         </div>
       </div>
