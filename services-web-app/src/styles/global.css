@@ -176,7 +176,6 @@ button {
   .bm-btn-cancel,
   .btn-cancel,
   .review-button,
-  .view-all-button,
   .change-password-btn
 ) {
   background: rgba(255, 255, 255, 0.72);
@@ -200,7 +199,6 @@ button {
   .bm-btn-cancel,
   .btn-cancel,
   .review-button,
-  .view-all-button,
   .change-password-btn
 ):hover:not(:disabled) {
   background: #fff;

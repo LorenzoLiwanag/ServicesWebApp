@@ -9,7 +9,6 @@ import ProviderDashboard from './pages/ProviderDashboard.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
 import ServiceDetailPage from './pages/ServiceDetailPage.jsx';
-import MyBookingsPage from './pages/MyBookingsPage.jsx';
 import MessagesPage from './pages/MessagesPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import AdminMessagesPage from './pages/AdminMessagesPage.jsx';
@@ -84,11 +83,7 @@ function App() {
         />
         <Route
           path="/my-bookings"
-          element={
-            <RequireAuth>
-              <MyBookingsPage />
-            </RequireAuth>
-          }
+          element={<Navigate to="/client-dashboard#my-bookings" replace />}
         />
         <Route
           path="/messages"
