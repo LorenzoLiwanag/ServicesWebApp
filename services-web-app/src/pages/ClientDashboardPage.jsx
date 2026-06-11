@@ -15,6 +15,14 @@ const ClientDashboard = () => {
     setUser(storedUser ? JSON.parse(storedUser) : null);
   }, []);
 
+  useEffect(() => {
+    if (window.location.hash === "#my-bookings") {
+      requestAnimationFrame(() => {
+        document.getElementById("my-bookings")?.scrollIntoView();
+      });
+    }
+  }, []);
+
   const fullName = getUserFullName(user);
 
   return (
