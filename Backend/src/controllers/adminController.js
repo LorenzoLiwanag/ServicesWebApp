@@ -1,6 +1,9 @@
 import { findPendingUsers, approveUserById, rejectUserById } from "../models/userModel.js";
 import { createNotification } from "../models/notificationModel.js";
-import { sendAccountApprovedEmail } from "../services/emailService.js";
+import {
+  sendAccountApprovedEmail,
+  sendAccountRejectedEmail,
+} from "../services/emailService.js";
 import database from "../config/Database.js";
 import {
   listCategoriesWithCounts,
@@ -69,7 +72,7 @@ export const rejectUser = async (req, res) => {
     if (!targetId) return res.status(400).json({ message: "Invalid user ID" });
 
     const [rows] = await database.execute(
-      `SELECT id, first_name, approval_status FROM users WHERE id = ?`,
+      `SELECT id, first_name, email, approval_status FROM users WHERE id = ?`,
       [targetId]
     );
     const target = rows[0];
@@ -89,6 +92,14 @@ export const rejectUser = async (req, res) => {
         (reason ? ` Reason: ${reason}` : ""),
     }).catch((err) => {
       console.error("[NOTIFICATION ERROR] Failed to create account rejected notification:", err.message);
+    });
+
+    sendAccountRejectedEmail({
+      to: target.email,
+      firstName: target.first_name,
+      reason,
+    }).catch((err) => {
+      console.error("[EMAIL ERROR] Failed to send account rejected email:", err.message);
     });
 
     res.status(200).json({

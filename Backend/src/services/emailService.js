@@ -56,13 +56,21 @@ export const sendEmail = async ({ to, subject, html, text }) => {
 
 const frontendUrl = () => process.env.FRONTEND_URL || "http://localhost:3001";
 
+const escapeHtml = (value) =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
 export const sendSignupConfirmationEmail = async ({ to, firstName }) => {
   const text = [
     `Hi ${firstName},`,
     "",
     "Your Subic Bay Home Services account has been created successfully.",
     "",
-    "Your account is currently pending admin approval. You will receive another email once your account has been approved.",
+    "Your account is currently pending admin review. You will receive another email once a decision has been made.",
     "",
     "Thank you,",
     "Subic Bay Home Services",
@@ -73,7 +81,7 @@ export const sendSignupConfirmationEmail = async ({ to, firstName }) => {
   <h2 style="color:#2563eb">Subic Bay Home Services</h2>
   <p>Hi ${firstName},</p>
   <p>Your Subic Bay Home Services account has been created successfully.</p>
-  <p>Your account is currently <strong>pending admin approval</strong>. You will receive another email once your account has been approved.</p>
+  <p>Your account is currently <strong>pending admin review</strong>. You will receive another email once a decision has been made.</p>
   <p>Thank you,<br>Subic Bay Home Services</p>
 </div>`.trim();
 
@@ -113,6 +121,42 @@ export const sendAccountApprovedEmail = async ({ to, firstName }) => {
   await sendEmail({
     to,
     subject: "Your Subic Bay Home Services account has been approved",
+    html,
+    text,
+  });
+};
+
+export const sendAccountRejectedEmail = async ({ to, firstName, reason }) => {
+  const trimmedReason = reason?.trim();
+  const text = [
+    `Hi ${firstName},`,
+    "",
+    "Your Subic Bay Home Services account registration was not approved.",
+    ...(trimmedReason ? ["", `Reason: ${trimmedReason}`] : []),
+    "",
+    "Please contact support if you have questions about this decision.",
+    "",
+    "Thank you,",
+    "Subic Bay Home Services",
+  ].join("\n");
+
+  const reasonHtml = trimmedReason
+    ? `<p><strong>Reason:</strong> ${escapeHtml(trimmedReason)}</p>`
+    : "";
+
+  const html = `
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
+  <h2 style="color:#2563eb">Subic Bay Home Services</h2>
+  <p>Hi ${escapeHtml(firstName)},</p>
+  <p>Your Subic Bay Home Services account registration was <strong>not approved</strong>.</p>
+  ${reasonHtml}
+  <p>Please contact support if you have questions about this decision.</p>
+  <p>Thank you,<br>Subic Bay Home Services</p>
+</div>`.trim();
+
+  await sendEmail({
+    to,
+    subject: "Update on your Subic Bay Home Services registration",
     html,
     text,
   });
