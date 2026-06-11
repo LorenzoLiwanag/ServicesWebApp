@@ -88,22 +88,17 @@ const ProviderUpcomingJobsWidget = ({ refreshKey }) => {
                 )}
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-end" }}>
+              <div className="job-actions">
                 <span className="status-badge status-confirmed">✓ Confirmed</span>
                 <button
-                  className="btn-contact"
-                  style={{ fontSize: "12px", padding: "4px 10px" }}
+                  className="btn-contact job-action-btn"
                   onClick={() => navigate("/messages")}
                 >
                   Messages
                 </button>
                 <button
-                  style={{
-                    fontSize: "12px", padding: "4px 10px", border: "none",
-                    borderRadius: 8, background: "linear-gradient(135deg, #0d6efd, #60a5fa)",
-                    color: "#fff", fontWeight: 700, cursor: "pointer",
-                    opacity: completing === job.bookingId ? 0.6 : 1,
-                  }}
+                  className="job-complete-btn"
+                  style={{ opacity: completing === job.bookingId ? 0.6 : 1 }}
                   onClick={() => handleComplete(job.bookingId)}
                   disabled={completing === job.bookingId}
                 >

@@ -9,6 +9,96 @@
   overflow-x: hidden;
 }
 
+.services-widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.services-widget-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.services-availability {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.services-availability-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.availability-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--app-navy);
+  white-space: nowrap;
+}
+
+.availability-toggle {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border: none;
+  background: #ccc;
+  border-radius: 14px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.availability-toggle.active {
+  background: var(--app-primary-gradient);
+}
+
+.toggle-circle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.availability-toggle.active .toggle-circle {
+  left: 26px;
+}
+
+.availability-toggle.saving,
+.availability-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.availability-hint,
+.availability-save-error {
+  margin: 0;
+  font-size: 12px;
+  text-align: right;
+}
+
+.availability-hint {
+  color: var(--app-muted);
+}
+
+.availability-save-error {
+  color: var(--app-danger);
+}
+
 .btn-add-service {
   padding: 8px 16px;
   background: var(--app-primary-gradient);
@@ -135,7 +225,9 @@
 }
 
 .col-actions {
-  text-align: center;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
 }
 
 .btn-edit {
@@ -163,51 +255,98 @@
   font-size: 14px;
 }
 
-/* Responsive */
+/* Responsive - stacked card layout */
 @media (max-width: 768px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
+  /* Header labels are redundant once rows become labelled cards */
+  .table-header {
+    display: none;
   }
 
-  .col-name,
+  .services-table {
+    margin-top: 12px;
+  }
+
+  .table-body {
+    gap: 12px;
+  }
+
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  /* Service name is the card title - full width, can wrap */
+  .col-name {
+    overflow: visible;
+  }
+
+  .service-name {
+    white-space: normal;
+    font-size: 15px;
+  }
+
+  /* Each detail cell becomes a labelled row */
+  .col-category,
   .col-price,
-  .col-visibility,
-  .col-actions {
+  .col-status {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--app-border);
   }
 
-  .col-name::before {
-    content: "Service: ";
+  .col-category::before {
+    content: "Category";
     font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
     color: var(--app-muted);
   }
 
   .col-price::before {
-    content: "Price: ";
+    content: "Price";
     font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
     color: var(--app-muted);
   }
 
-  .col-visibility::before {
-    content: "Visibility: ";
+  .col-status::before {
+    content: "Status";
     font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
     color: var(--app-muted);
   }
 
-  .col-actions::before {
-    content: "Actions: ";
-    font-weight: 700;
-    color: var(--app-muted);
+  /* Actions span the full width as equal buttons */
+  .col-actions {
+    padding-top: 10px;
+    border-top: 1px solid var(--app-border);
+  }
+
+  .col-actions .btn-edit {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
   .services-widget {
     padding: 16px;
+  }
+
+  .services-widget-header,
+  .services-widget-actions,
+  .services-availability {
+    width: 100%;
   }
 
   .btn-add-service {

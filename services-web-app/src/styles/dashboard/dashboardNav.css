@@ -133,6 +133,15 @@
 @media screen and (max-width: 1050px) {
   .dash-nav-toggler {
     display: block;
+    order: 1;
+  }
+
+  .dash-site-logo {
+    order: 2;
+  }
+
+  .dash-nav-actions {
+    order: 3;
   }
 
   .dash-nav-menu {
