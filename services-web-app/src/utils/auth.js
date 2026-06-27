@@ -1,3 +1,5 @@
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+
 export const clearAuthSession = () => {
   localStorage.removeItem("user");
   localStorage.removeItem("token");
@@ -35,11 +37,20 @@ export const validateStoredSession = async () => {
   if (!session) return;
 
   try {
-    const res = await fetch("http://localhost:3000/api/auth/me", {
+    const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
       headers: { Authorization: `Bearer ${session.token}` }
     });
     if (!res.ok) {
       clearAuthSession();
+      return;
+    }
+
+    // Treat the server as the source of truth: overwrite the locally stored
+    // user with the server's copy so a tampered role (e.g. localStorage edited
+    // to "admin") is corrected rather than trusted.
+    const data = await res.json();
+    if (data?.user) {
+      localStorage.setItem("user", JSON.stringify({ ...session.user, ...data.user }));
     }
   } catch {
     // Network error — keep session, user may be temporarily offline

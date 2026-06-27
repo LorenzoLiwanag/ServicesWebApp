@@ -79,7 +79,7 @@ export const sendSignupConfirmationEmail = async ({ to, firstName }) => {
   const html = `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
   <h2 style="color:#2563eb">Subic Bay Home Services</h2>
-  <p>Hi ${firstName},</p>
+  <p>Hi ${escapeHtml(firstName)},</p>
   <p>Your Subic Bay Home Services account has been created successfully.</p>
   <p>Your account is currently <strong>pending admin review</strong>. You will receive another email once a decision has been made.</p>
   <p>Thank you,<br>Subic Bay Home Services</p>
@@ -112,7 +112,7 @@ export const sendAccountApprovedEmail = async ({ to, firstName }) => {
   const html = `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
   <h2 style="color:#2563eb">Subic Bay Home Services</h2>
-  <p>Hi ${firstName},</p>
+  <p>Hi ${escapeHtml(firstName)},</p>
   <p>Your Subic Bay Home Services account has been <strong>approved</strong>. You can now log in and start using the platform.</p>
   <p><a href="${loginLink}" style="background:#2563eb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block">Log In</a></p>
   <p>Thank you,<br>Subic Bay Home Services</p>

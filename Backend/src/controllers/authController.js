@@ -41,6 +41,17 @@ export const registerUser = async (req, res) => {
       console.error("[EMAIL ERROR] Failed to send signup confirmation:", err.message);
     });
   } catch (err) {
+    // Duplicate email that slipped past the app-level check (race condition) is
+    // caught by the DB's UNIQUE constraint — report it cleanly.
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({ message: "Email already registered" });
+    }
+    // Any other database/driver error: log server-side, return a generic message
+    // so we never leak raw SQL errors, column names, or stack traces.
+    if (err.code) {
+      console.error("[REGISTER ERROR]", err);
+      return res.status(500).json({ message: "Something went wrong. Please try again." });
+    }
     res.status(400).json({ message: err.message });
   }
 };
@@ -55,6 +66,11 @@ export const loginUser = async (req, res) => {
     );
     res.status(200).json({ message: "Login successful", user: formatUser(user), token });
   } catch (err) {
+    // Unexpected database/driver errors must not leak to the client.
+    if (err.code) {
+      console.error("[LOGIN ERROR]", err);
+      return res.status(500).json({ message: "Something went wrong. Please try again." });
+    }
     res.status(400).json({ message: err.message });
   }
 };
