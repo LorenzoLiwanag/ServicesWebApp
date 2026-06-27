@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "../../styles/landing-page/contact.css";
 import { submitContact } from "../../api/contact.js";
 
@@ -152,7 +153,11 @@ const Contact = () => {
           </form>
 
           <p className="contact-footnote">
-            By clicking "Send message", you agree to our terms and privacy policy.
+            By clicking "Send message", you agree to our terms and{" "}
+            <Link to="/privacy-policy" className="contact-policy-link">
+              privacy policy
+            </Link>
+            .
           </p>
         </div>
       </div>
