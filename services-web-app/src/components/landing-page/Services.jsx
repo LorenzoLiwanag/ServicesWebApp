@@ -1,33 +1,46 @@
+import { Link } from "react-router-dom";
 import "../../styles/landing-page/services.css";
+import handymanImg from "../../assets/service-handyman.jpg";
+import cleaningImg from "../../assets/service-cleaning.jpg";
+import deepCleaningImg from "../../assets/service-deep-cleaning.jpg";
+import movingImg from "../../assets/service-moving.jpg";
+import yardImg from "../../assets/service-yard.jpg";
+import repairsImg from "../../assets/service-repairs.jpg";
 
 const services = [
   {
-    icon: "\u{1F6E0}\uFE0F",
+    image: handymanImg,
+    alt: "Handyman tool kit with screwdriver bits",
     title: "Handyman Services",
     description: "Repairs, installations, and odd jobs handled by trusted pros.",
   },
   {
-    icon: "\u{1F9F9}",
+    image: cleaningImg,
+    alt: "Professional cleaning a home window",
     title: "General Cleaning",
     description: "Routine home cleaning to keep your space fresh and tidy.",
   },
   {
-    icon: "\u{1F9FC}",
+    image: deepCleaningImg,
+    alt: "Gloved hand holding a cleaning spray bottle",
     title: "Deep Cleaning",
     description: "A detailed clean for kitchens, bathrooms, and hard-to-reach areas.",
   },
   {
-    icon: "\u{1F69A}",
+    image: movingImg,
+    alt: "Movers loading a moving truck",
     title: "Moving Help",
     description: "Packing support, loading/unloading, and light moving assistance.",
   },
   {
-    icon: "\u{1FAB4}",
+    image: yardImg,
+    alt: "Freshly maintained green lawn",
     title: "Yard & Outdoor",
     description: "Basic yard cleanup, trimming, and outdoor maintenance help.",
   },
   {
-    icon: "\u{1F527}",
+    image: repairsImg,
+    alt: "Cordless power drill for minor repairs",
     title: "Minor Repairs",
     description: "Quick fixes around the house to keep everything working smoothly.",
   },
@@ -47,13 +60,27 @@ const Services = () => {
         <div className="services-grid">
           {services.map((service) => (
             <article className="service-card" key={service.title}>
+              <div className="service-image-wrap">
+                <img
+                  className="service-image"
+                  src={service.image}
+                  alt={service.alt}
+                  loading="lazy"
+                />
+              </div>
               <h3 className="service-title">{service.title}</h3>
               <p className="service-desc">{service.description}</p>
-              <div className="service-icon" aria-hidden="true">
-                {service.icon}
-              </div>
             </article>
           ))}
+        </div>
+
+        <div className="services-cta">
+          <Link className="btn btn-primary" to="/register">
+            Get Started now
+          </Link>
+          <a className="btn btn-secondary" href="#contact">
+            Get in Touch with us
+          </a>
         </div>
 
         <span className="services-dot services-dot-1" />

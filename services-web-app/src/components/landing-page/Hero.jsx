@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "../../styles/landing-page/hero.css";
 import heroImage from "../../assets/heroimg.jpg";
 
@@ -14,7 +15,7 @@ const Hero = () => {
             </p>
 
             <div className="hero-actions">
-              <a className="btn btn-primary" href="#services">Get Started</a>
+              <Link className="btn btn-primary" to="/register">Get Started</Link>
               <a className="btn btn-secondary" href="#contact">Contact</a>
             </div>
 

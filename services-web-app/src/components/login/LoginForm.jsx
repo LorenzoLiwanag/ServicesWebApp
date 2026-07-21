@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getDashboardPath } from "../../utils/auth.js";
+import { getDashboardPath, getStoredAuthSession } from "../../utils/auth.js";
 import "../../styles/login/login.css";
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -13,6 +15,15 @@ const LoginForm = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Already-authenticated users shouldn't land back on the login form.
+  useEffect(() => {
+    const session = getStoredAuthSession();
+    if (session) {
+      navigate(getDashboardPath(session.user), { replace: true });
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -27,12 +38,15 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          password: formData.password
+        })
       });
 
       const data = await response.json();
@@ -74,6 +88,7 @@ const LoginForm = () => {
           <path d="M5 9.5V21h14V9.5" />
           <path d="M9 21v-7h6v7" />
         </svg>
+        <span className="auth-home-text">Back to home</span>
       </Link>
 
       <div className="login-card">
@@ -90,8 +105,9 @@ const LoginForm = () => {
           <form className="loginForm" onSubmit={handleSubmit}>
 
             <div className="form-group">
-              <label>Email</label>
+              <label htmlFor="login-email">Email</label>
               <input
+                id="login-email"
                 type="email"
                 name="email"
                 placeholder="Enter your email"
@@ -102,18 +118,30 @@ const LoginForm = () => {
             </div>
 
             <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <label htmlFor="login-password">Password</label>
+              <div className="password-field">
+                <input
+                  id="login-password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  aria-pressed={showPassword}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </div>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
 
             <button type="submit" className="login-btn" disabled={loading}>
               {loading ? "Logging in..." : "Login"}

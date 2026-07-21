@@ -154,9 +154,18 @@
 
 .auth-home-link {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   margin-bottom: 24px;
+  color: #0b2b52;
+  text-decoration: none;
+}
+
+.auth-home-text {
+  font-size: 13px;
+  font-weight: 600;
   color: #0b2b52;
 }
 
@@ -270,4 +279,53 @@
   .auth-bubble {
     animation: none;
   }
+}
+
+/* PASSWORD FIELD + SHOW/HIDE TOGGLE */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 70px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--app-primary);
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  text-decoration: underline;
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* AUTH MESSAGES */
+.auth-error {
+  color: #c92a2a;
+  font-weight: 600;
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.auth-success {
+  color: #1b7f3b;
+  font-weight: 600;
+  margin: 0 0 12px;
+  text-align: left;
 }

@@ -14,6 +14,7 @@ import AdminPage from './pages/AdminPage.jsx';
 import AdminMessagesPage from './pages/AdminMessagesPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx';
 import { getStoredAuthSession, validateStoredSession } from './utils/auth.js';
 
 const RequireAuth = ({ children }) => {
@@ -37,6 +38,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

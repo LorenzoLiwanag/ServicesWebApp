@@ -129,6 +129,16 @@
   color: var(--app-muted);
 }
 
+.contact-policy-link {
+  color: var(--app-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.contact-policy-link:hover {
+  text-decoration: underline;
+}
+
 .contact-banner {
   margin: 0 0 16px;
   padding: 12px 16px;
