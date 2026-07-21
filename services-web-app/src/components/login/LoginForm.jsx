@@ -81,7 +81,7 @@ const LoginForm = () => {
         <div className="login-left">
           <h1>Login to your account</h1>
           <p>
-            Access your Subic Bay Home Services dashboard to manage services,
+            Access your Works For You dashboard to manage services,
             bookings, and requests all in one place.
           </p>
         </div>

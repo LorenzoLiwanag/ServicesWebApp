@@ -164,7 +164,7 @@ const RegistrationForm = () => {
         <div className="registration-left">
           <h1>Create your account</h1>
           <p>
-            Join Subic Bay Home Services today to access a wide range of home
+            Join Works For You today to access a wide range of home
             services and manage your bookings with ease.
           </p>
         </div>

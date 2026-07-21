@@ -10,7 +10,7 @@ const hasSmtpConfig = () =>
   );
 
 const getSenderAddress = () => {
-  const name = process.env.EMAIL_FROM_NAME || "Subic Bay Home Services";
+  const name = process.env.EMAIL_FROM_NAME || "Works For You";
   const address = process.env.EMAIL_FROM_ADDRESS || "noreply@example.com";
   return `"${name}" <${address}>`;
 };
@@ -68,26 +68,26 @@ export const sendSignupConfirmationEmail = async ({ to, firstName }) => {
   const text = [
     `Hi ${firstName},`,
     "",
-    "Your Subic Bay Home Services account has been created successfully.",
+    "Your Works For You account has been created successfully.",
     "",
     "Your account is currently pending admin review. You will receive another email once a decision has been made.",
     "",
     "Thank you,",
-    "Subic Bay Home Services",
+    "Works For You",
   ].join("\n");
 
   const html = `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-  <h2 style="color:#2563eb">Subic Bay Home Services</h2>
+  <h2 style="color:#2563eb">Works For You</h2>
   <p>Hi ${firstName},</p>
-  <p>Your Subic Bay Home Services account has been created successfully.</p>
+  <p>Your Works For You account has been created successfully.</p>
   <p>Your account is currently <strong>pending admin review</strong>. You will receive another email once a decision has been made.</p>
-  <p>Thank you,<br>Subic Bay Home Services</p>
+  <p>Thank you,<br>Works For You</p>
 </div>`.trim();
 
   await sendEmail({
     to,
-    subject: "Your Subic Bay Home Services account was created",
+    subject: "Your Works For You account was created",
     html,
     text,
   });
@@ -99,28 +99,28 @@ export const sendAccountApprovedEmail = async ({ to, firstName }) => {
   const text = [
     `Hi ${firstName},`,
     "",
-    "Your Subic Bay Home Services account has been approved.",
+    "Your Works For You account has been approved.",
     "",
     "You can now log in and start using the platform.",
     "",
     `Login here: ${loginLink}`,
     "",
     "Thank you,",
-    "Subic Bay Home Services",
+    "Works For You",
   ].join("\n");
 
   const html = `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-  <h2 style="color:#2563eb">Subic Bay Home Services</h2>
+  <h2 style="color:#2563eb">Works For You</h2>
   <p>Hi ${firstName},</p>
-  <p>Your Subic Bay Home Services account has been <strong>approved</strong>. You can now log in and start using the platform.</p>
+  <p>Your Works For You account has been <strong>approved</strong>. You can now log in and start using the platform.</p>
   <p><a href="${loginLink}" style="background:#2563eb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block">Log In</a></p>
-  <p>Thank you,<br>Subic Bay Home Services</p>
+  <p>Thank you,<br>Works For You</p>
 </div>`.trim();
 
   await sendEmail({
     to,
-    subject: "Your Subic Bay Home Services account has been approved",
+    subject: "Your Works For You account has been approved",
     html,
     text,
   });
@@ -131,13 +131,13 @@ export const sendAccountRejectedEmail = async ({ to, firstName, reason }) => {
   const text = [
     `Hi ${firstName},`,
     "",
-    "Your Subic Bay Home Services account registration was not approved.",
+    "Your Works For You account registration was not approved.",
     ...(trimmedReason ? ["", `Reason: ${trimmedReason}`] : []),
     "",
     "Please contact support if you have questions about this decision.",
     "",
     "Thank you,",
-    "Subic Bay Home Services",
+    "Works For You",
   ].join("\n");
 
   const reasonHtml = trimmedReason
@@ -146,17 +146,17 @@ export const sendAccountRejectedEmail = async ({ to, firstName, reason }) => {
 
   const html = `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-  <h2 style="color:#2563eb">Subic Bay Home Services</h2>
+  <h2 style="color:#2563eb">Works For You</h2>
   <p>Hi ${escapeHtml(firstName)},</p>
-  <p>Your Subic Bay Home Services account registration was <strong>not approved</strong>.</p>
+  <p>Your Works For You account registration was <strong>not approved</strong>.</p>
   ${reasonHtml}
   <p>Please contact support if you have questions about this decision.</p>
-  <p>Thank you,<br>Subic Bay Home Services</p>
+  <p>Thank you,<br>Works For You</p>
 </div>`.trim();
 
   await sendEmail({
     to,
-    subject: "Update on your Subic Bay Home Services registration",
+    subject: "Update on your Works For You registration",
     html,
     text,
   });
@@ -176,24 +176,24 @@ export const sendPasswordResetEmail = async ({ to, firstName, resetLink }) => {
     "If you did not request this password reset, you can safely ignore this email.",
     "",
     "Thank you,",
-    "Subic Bay Home Services",
+    "Works For You",
   ].join("\n");
 
   const html = `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-  <h2 style="color:#2563eb">Subic Bay Home Services</h2>
+  <h2 style="color:#2563eb">Works For You</h2>
   <p>Hi ${firstName},</p>
   <p>We received a request to reset your password. Click the button below to choose a new password.</p>
   <p><a href="${resetLink}" style="background:#2563eb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block">Reset Password</a></p>
   <p style="font-size:13px;color:#666">Or copy and paste this link into your browser:<br><a href="${resetLink}">${resetLink}</a></p>
   <p style="font-size:13px;color:#666">This link will expire in <strong>15 minutes</strong>.</p>
   <p style="font-size:13px;color:#666">If you did not request this password reset, you can safely ignore this email.</p>
-  <p>Thank you,<br>Subic Bay Home Services</p>
+  <p>Thank you,<br>Works For You</p>
 </div>`.trim();
 
   await sendEmail({
     to,
-    subject: "Reset your Subic Bay Home Services password",
+    subject: "Reset your Works For You password",
     html,
     text,
   });

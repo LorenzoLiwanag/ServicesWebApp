@@ -48,7 +48,7 @@ export const approveUser = async (req, res) => {
       userId: targetId,
       type: "account_approved",
       title: "Account approved",
-      message: "Your account has been approved. You can now log in and use Subic Bay Home Services.",
+      message: "Your account has been approved. You can now log in and use Works For You.",
     }).catch((err) => {
       console.error("[NOTIFICATION ERROR] Failed to create account approved notification:", err.message);
     });
@@ -88,7 +88,7 @@ export const rejectUser = async (req, res) => {
       userId: targetId,
       type: "account_rejected",
       title: "Account not approved",
-      message: "Your Subic Bay Home Services account registration was not approved." +
+      message: "Your Works For You account registration was not approved." +
         (reason ? ` Reason: ${reason}` : ""),
     }).catch((err) => {
       console.error("[NOTIFICATION ERROR] Failed to create account rejected notification:", err.message);

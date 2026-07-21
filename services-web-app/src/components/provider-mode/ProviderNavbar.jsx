@@ -50,7 +50,7 @@ const ProviderNavbar = ({ isProviderMode = true }) => {
         <div className="provider-navbar-container">
           <nav className="provider-site-navbar" aria-label="Provider navigation">
             <Link to="/" className="provider-site-logo" onClick={closeMenu}>
-              Subic Bay Home Services
+              Works For You
             </Link>
 
             <ul

@@ -44,7 +44,7 @@ const DashboardNavbar = () => {
             <div className="dash-container">
               <nav className="dash-site-navbar" aria-label="Dashboard navigation">
                 <Link to="/" className="dash-site-logo" onClick={closeMenu}>
-                  Subic Bay Home Services
+                  Works For You
                 </Link>
 
                 <ul

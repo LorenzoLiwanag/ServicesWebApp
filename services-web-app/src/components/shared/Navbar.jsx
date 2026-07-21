@@ -30,7 +30,7 @@ const Navbar = () => {
         <div className="container">
           <nav className="site-navbar" aria-label="Main navigation">
             <a href="#home" className="site-logo" onClick={closeMenu}>
-              Subic Bay Home Services
+              Works For You
             </a>
 
             <ul

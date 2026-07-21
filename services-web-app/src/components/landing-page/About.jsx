@@ -28,11 +28,11 @@ const About = () => {
       <div className="about-container">
         <div className="about-content">
           <div className="about-card">
-            <h2>About Subic Bay Home Services</h2>
+            <h2>About Works For You</h2>
 
             <p>
               Whether you're a service provider looking for new opportunities or a
-              client searching for dependable home services, Subic Bay Home Services
+              client searching for dependable home services, Works For You
               connects you in one secure platform. We focus on quality,
               transparency, and making every service experience simple and reliable.
             </p>
