@@ -84,13 +84,23 @@
 .contact-field input,
 .contact-field textarea {
   width: 100%;
-  border-radius: 14px;
+  border-radius: var(--app-radius);
   border: 1px solid rgba(15, 42, 68, 0.16);
-  background: #ffffff;
+  background: var(--app-surface-soft);
   padding: 16px 18px;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.contact-field input:hover:not(:focus),
+.contact-field textarea:hover:not(:focus) {
+  border-color: var(--app-border-strong);
+}
+
+.contact-field input:focus,
+.contact-field textarea:focus {
+  background: #ffffff;
 }
 
 .contact-field textarea {

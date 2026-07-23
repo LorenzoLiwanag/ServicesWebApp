@@ -23,10 +23,50 @@
     rgba(0, 37, 84, 1) 11.2%,
     rgba(0, 37, 84, 0.32) 100.2%
   );
+
+  /* spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* typography scale */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 38px;
+
+  /* elevation tiers */
+  --app-shadow-xs: 0 1px 2px rgba(15, 42, 68, 0.05);
+  --app-shadow-sm: 0 2px 8px rgba(15, 42, 68, 0.06);
   --app-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+  --app-shadow-lg: 0 18px 40px rgba(15, 42, 68, 0.12);
   --app-shadow-strong: 0 16px 34px rgba(13, 110, 253, 0.28);
+
+  /* radius scale */
   --app-radius: 14px;
   --app-radius-sm: 8px;
+  --app-radius-lg: 20px;
+  --app-radius-full: 999px;
+
+  /* motion */
+  --app-transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  --app-transition-slow: 280ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* focus ring */
+  --app-focus-ring: 0 0 0 3px rgba(13, 110, 253, 0.22);
+
   /* shared status colors (identical across themes) */
   --app-success: #16a34a;
   --app-success-bg: #e8f5e9;
@@ -51,12 +91,13 @@ html {
 
 body {
   font-family: var(--app-font);
-  font-size: 14px;
+  font-size: var(--text-base);
   font-weight: 400;
-  line-height: 20px;
+  line-height: 1.55;
   color: var(--app-text);
   background: var(--app-bg);
   background-attachment: fixed;
+  text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -64,17 +105,24 @@ h2,
 h3,
 h4 {
   font-family: var(--app-font-display);
+  color: var(--app-heading);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
 }
 
 li {
   list-style: none;
 }
 
+::selection {
+  background: rgba(13, 110, 253, 0.16);
+}
+
 .container {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 var(--space-6);
 }
 
 button,
@@ -86,6 +134,18 @@ textarea {
 
 button {
   letter-spacing: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* accessible keyboard focus */
+:where(button, a, [role='button'], input, select, textarea):focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
 }
 
 :where(
@@ -110,8 +170,11 @@ button {
   .re-book-button
 ) {
   border-radius: var(--app-radius);
-  font-weight: 800;
-  letter-spacing: 0;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: transform var(--app-transition), box-shadow var(--app-transition),
+    background var(--app-transition), color var(--app-transition),
+    border-color var(--app-transition), opacity var(--app-transition);
 }
 
 :where(
@@ -136,7 +199,7 @@ button {
   background: var(--app-primary-gradient);
   color: #fff;
   border: none;
-  box-shadow: 0 12px 28px rgba(13, 110, 253, 0.25);
+  box-shadow: 0 8px 20px rgba(13, 110, 253, 0.22);
 }
 
 :where(
@@ -163,6 +226,29 @@ button {
 }
 
 :where(
+  .btn-primary,
+  .nav-btn-primary,
+  .about-btn,
+  .contact-submit,
+  .btn-book-now,
+  .btn-reset-filters,
+  .btn-add-service,
+  .btn-accept,
+  .provider-submit-btn,
+  .sdp-btn-book,
+  .mbp-btn-browse,
+  .mbp-btn-rebook,
+  .reply-send-btn,
+  .modal-btn-send,
+  .bm-btn-submit,
+  .btn-save,
+  .re-book-button
+):active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+}
+
+:where(
   .btn-secondary,
   .btn-contact,
   .btn-clear-filters,
@@ -182,7 +268,10 @@ button {
   color: var(--app-heading);
   border: 1px solid var(--app-border-strong);
   border-radius: var(--app-radius);
-  font-weight: 800;
+  font-weight: 700;
+  transition: transform var(--app-transition), box-shadow var(--app-transition),
+    background var(--app-transition), color var(--app-transition),
+    border-color var(--app-transition);
 }
 
 :where(
@@ -204,16 +293,55 @@ button {
   background: #fff;
   border-color: rgba(13, 110, 253, 0.35);
   color: var(--app-primary);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+}
+
+:where(input, select, textarea) {
+  transition: border-color var(--app-transition), box-shadow var(--app-transition),
+    background var(--app-transition);
 }
 
 :where(input, select, textarea):focus {
   border-color: var(--app-primary) !important;
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.14) !important;
+  box-shadow: var(--app-focus-ring) !important;
+  outline: none;
+}
+
+/* subtle, consistent scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 42, 68, 0.22) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(15, 42, 68, 0.22);
+  border-radius: var(--app-radius-full);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media screen and (max-width: 767px) {
   .container {
     max-width: 720px;
+    padding: 0 var(--space-4);
   }
 }

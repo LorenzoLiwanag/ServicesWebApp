@@ -105,6 +105,14 @@
   background: #fff;
 }
 
+.admin-row {
+  transition: background var(--app-transition);
+}
+
+.admin-row:hover td {
+  background: rgba(13, 110, 253, 0.03);
+}
+
 .admin-row--archived {
   background: var(--app-surface-soft);
   opacity: 0.75;

@@ -188,10 +188,12 @@
 /* Service Card */
 .service-card {
   background: white;
+  border: 1px solid var(--app-border);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  box-shadow: var(--app-shadow-sm);
+  transition: transform var(--app-transition), box-shadow var(--app-transition),
+    border-color var(--app-transition);
   cursor: pointer;
   position: relative;
   display: flex;
@@ -202,7 +204,8 @@
 
 .service-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  border-color: rgba(13, 110, 253, 0.24);
+  box-shadow: 0 14px 32px rgba(15, 42, 68, 0.12);
 }
 
 .card-header {
@@ -343,10 +346,11 @@
 /* Empty State */
 .empty-state {
   background: white;
-  border-radius: 12px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
   padding: 60px 40px;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--app-shadow-sm);
   margin: 40px 0;
 }
 

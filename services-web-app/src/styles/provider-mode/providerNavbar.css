@@ -10,6 +10,8 @@
     rgba(0, 37, 84, 0.32) 100.2%
   );
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), var(--app-shadow-sm);
 }
 
 .provider-navbar-container {
@@ -30,9 +32,15 @@
   color: #fff;
   font-size: 15px;
   font-weight: 800;
+  letter-spacing: 0.04em;
   text-decoration: none;
   text-transform: uppercase;
   white-space: nowrap;
+  transition: opacity var(--app-transition);
+}
+
+.provider-site-logo:hover {
+  opacity: 0.85;
 }
 
 .provider-nav-menu {

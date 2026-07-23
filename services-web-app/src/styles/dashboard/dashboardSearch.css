@@ -34,7 +34,8 @@
   color: #9e9ea7;
 }
 
-.input:focus, input:hover {
+.input:focus,
+.input:hover {
   outline: none;
   border-color: rgba(13, 110, 253, 0.4);
   background-color: #fff;
@@ -87,9 +88,22 @@
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius);
   box-shadow: var(--app-shadow);
+  backdrop-filter: blur(8px);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 16px;
+  animation: filters-menu-in 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes filters-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .filter-group {

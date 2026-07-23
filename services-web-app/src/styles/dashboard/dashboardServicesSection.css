@@ -49,6 +49,9 @@
 
 .dashboard-featured-section .featured-scroll-button:hover {
     transform: translateY(-50%) translateY(-1px);
+    border-color: rgba(13, 110, 253, 0.35);
+    color: var(--app-primary);
+    box-shadow: var(--app-shadow-sm);
 }
 
 .dashboard-featured-section .featured-scroll-button-left {

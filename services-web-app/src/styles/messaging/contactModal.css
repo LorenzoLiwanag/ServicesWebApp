@@ -1,11 +1,19 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(15, 42, 68, 0.45);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
+  animation: contact-overlay-in 0.15s ease;
+}
+
+@keyframes contact-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-box {
@@ -18,6 +26,18 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  animation: contact-modal-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes contact-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-header {

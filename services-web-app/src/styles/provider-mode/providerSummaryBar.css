@@ -22,8 +22,8 @@
 }
 
 .summary-card:hover {
-  border-color: #d3d9e3;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-color: rgba(13, 110, 253, 0.24);
+  box-shadow: var(--app-shadow-lg);
   transform: translateY(-2px);
 }
 

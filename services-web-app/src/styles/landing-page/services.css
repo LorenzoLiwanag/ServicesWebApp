@@ -64,9 +64,10 @@
 }
 
 .service-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
-  background-color: #8cd5ff;
+  transform: translateY(-4px);
+  box-shadow: 0 18px 44px rgba(13, 110, 253, 0.14);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(13, 110, 253, 0.28);
 }
 
 .service-image-wrap {

@@ -10,6 +10,8 @@
     rgba(0, 37, 84, 0.32) 100.2%
   );
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), var(--app-shadow-sm);
 }
 
 .container {
@@ -30,9 +32,15 @@
   color: #fff;
   font-size: 15px;
   font-weight: 800;
+  letter-spacing: 0.04em;
   text-decoration: none;
   text-transform: uppercase;
   white-space: nowrap;
+  transition: opacity var(--app-transition);
+}
+
+.site-logo:hover {
+  opacity: 0.85;
 }
 
 .nav-menu {
@@ -92,11 +100,13 @@
   justify-content: center;
   min-height: 40px;
   padding: 10px 18px;
-  border-radius: 14px;
+  border-radius: var(--app-radius);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
+  transition: background var(--app-transition), box-shadow var(--app-transition),
+    transform var(--app-transition), border-color var(--app-transition);
 }
 
 .nav-btn-primary {
@@ -109,6 +119,12 @@
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.nav-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
 }
 
 .nav-toggler {

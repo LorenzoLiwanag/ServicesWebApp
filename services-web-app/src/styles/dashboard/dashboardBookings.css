@@ -178,6 +178,14 @@
   border-radius: var(--radius-md);
   background: rgba(17, 17, 17, 0.03);
   border: 1px solid rgba(17, 17, 17, 0.08);
+  transition: background var(--app-transition), border-color var(--app-transition),
+    box-shadow var(--app-transition);
+}
+
+.booking-row:hover {
+  background: #fff;
+  border-color: rgba(13, 110, 253, 0.18);
+  box-shadow: var(--app-shadow-sm);
 }
 
 /* ---- Text hierarchy inside rows ---- */
@@ -291,6 +299,14 @@
   border-radius: var(--radius-md);
   background: rgba(17, 17, 17, 0.03);
   border: 1px solid rgba(17, 17, 17, 0.08);
+  transition: background var(--app-transition), border-color var(--app-transition),
+    box-shadow var(--app-transition);
+}
+
+.history-card:hover {
+  background: #fff;
+  border-color: rgba(13, 110, 253, 0.18);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .history-actions {
@@ -365,6 +381,18 @@
   font-size: 14px;
   font-weight: 700;
   text-align: center;
+  animation: toast-in 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .bookings-toast-success {
@@ -383,7 +411,14 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 42, 68, 0.45);
+  backdrop-filter: blur(3px);
+  animation: overlay-in 0.15s ease;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .booking-confirm-box {
@@ -393,6 +428,18 @@
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  animation: modal-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .booking-confirm-title {
