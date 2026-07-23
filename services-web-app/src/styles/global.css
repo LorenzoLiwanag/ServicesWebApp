@@ -105,7 +105,6 @@ h2,
 h3,
 h4 {
   font-family: var(--app-font-display);
-  color: var(--app-heading);
   letter-spacing: -0.01em;
   line-height: 1.25;
 }
