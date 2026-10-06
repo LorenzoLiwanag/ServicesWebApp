@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProviderBookings, respondToBooking } from "../../api/bookings.js";
+import { AcceptBookingDialog } from "../booking/BookingPayment";
+import { parseCalendarDate } from "../../utils/payments.js";
 import "../../styles/provider-mode/providerRequestsWidget.css";
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "—";
-  const d = new Date(dateStr);
+  const d = parseCalendarDate(dateStr);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 };
 
@@ -21,6 +23,7 @@ const ProviderRequestsWidget = ({ onResponded }) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(null);
+  const [accepting, setAccepting] = useState(null);
   const [toast, setToast] = useState(null);
 
   const load = useCallback(() => {
@@ -38,11 +41,11 @@ const ProviderRequestsWidget = ({ onResponded }) => {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleRespond = async (bookingId, status) => {
+  const handleDecline = async (bookingId) => {
     setActing(bookingId);
     try {
-      await respondToBooking(bookingId, { status });
-      showToast(status === "accepted" ? "Booking accepted." : "Booking declined.");
+      await respondToBooking(bookingId, { status: "declined" });
+      showToast("Booking declined.");
       load();
       if (onResponded) onResponded();
     } catch (err) {
@@ -50,6 +53,13 @@ const ProviderRequestsWidget = ({ onResponded }) => {
     } finally {
       setActing(null);
     }
+  };
+
+  const handleAccepted = () => {
+    setAccepting(null);
+    showToast("Booking accepted. The client has been asked to pay the deposit.");
+    load();
+    if (onResponded) onResponded();
   };
 
   return (
@@ -97,14 +107,14 @@ const ProviderRequestsWidget = ({ onResponded }) => {
               <div className="request-actions">
                 <button
                   className="btn-accept"
-                  onClick={() => handleRespond(r.bookingId, "accepted")}
+                  onClick={() => setAccepting(r)}
                   disabled={acting === r.bookingId}
                 >
                   Accept
                 </button>
                 <button
                   className="btn-decline"
-                  onClick={() => handleRespond(r.bookingId, "declined")}
+                  onClick={() => handleDecline(r.bookingId)}
                   disabled={acting === r.bookingId}
                 >
                   Decline
@@ -121,6 +131,14 @@ const ProviderRequestsWidget = ({ onResponded }) => {
           ))
         )}
       </div>
+
+      {accepting && (
+        <AcceptBookingDialog
+          booking={accepting}
+          onClose={() => setAccepting(null)}
+          onAccepted={handleAccepted}
+        />
+      )}
     </div>
   );
 };

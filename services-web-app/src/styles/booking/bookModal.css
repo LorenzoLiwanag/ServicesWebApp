@@ -207,3 +207,14 @@
   .bm-footer { flex-direction: column; }
   .bm-btn-cancel, .bm-btn-submit { flex: none; }
 }
+
+.bm-policy {
+  margin: 4px 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--app-surface-soft);
+  border: 1px solid var(--app-border);
+  color: var(--app-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}

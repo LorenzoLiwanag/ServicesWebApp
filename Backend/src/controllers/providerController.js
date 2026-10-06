@@ -6,7 +6,10 @@ import {
   updateProviderServiceForUser,
   toggleProviderServiceVisibility,
   deleteProviderServiceForUser,
+  updatePayoutDetails,
 } from "../models/providerModel.js";
+import { normalizeGcashNumber } from "../models/paymentModel.js";
+import { sendError } from "../utils/http.js";
 import { createNotification } from "../models/notificationModel.js";
 import { findAllAdminIds } from "../models/userModel.js";
 
@@ -68,6 +71,21 @@ export const updateMyProviderProfile = async (req, res) => {
   } catch (err) {
     console.error("Error saving provider profile:", err);
     res.status(500).json({ message: "Failed to save provider profile" });
+  }
+};
+
+// Where the platform sends this provider's payouts (PRD_PAYMENT_SYSTEM_V2.md §5.6).
+export const updateMyPayoutDetails = async (req, res) => {
+  try {
+    const gcashName = typeof req.body.gcashName === "string" ? req.body.gcashName.trim() : "";
+    if (!gcashName || gcashName.length > 150) {
+      return res.status(400).json({ message: "Enter the name on your GCash account." });
+    }
+    const gcashNumber = normalizeGcashNumber(req.body.gcashNumber);
+    const profile = await updatePayoutDetails(getUserId(req), { gcashName, gcashNumber });
+    res.status(200).json({ message: "Payout details saved", profile });
+  } catch (err) {
+    sendError(res, err, "Failed to save payout details");
   }
 };
 

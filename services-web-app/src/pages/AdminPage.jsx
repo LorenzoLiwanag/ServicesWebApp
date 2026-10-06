@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AdminNavbar from "../components/dashboard/AdminNavbar";
+import AdminPaymentsTab from "../components/admin/AdminPaymentsTab";
 import {
   fetchPendingUsers,
   approveUser,
@@ -24,7 +25,7 @@ const StatusBadge = ({ label, bg, color }) => (
   </span>
 );
 
-const TABS = ["Users", "Services", "Categories", "Inquiries", "Messages"];
+const TABS = ["Users", "Services", "Payments", "Categories", "Inquiries", "Messages"];
 
 const LoadingSkeleton = () => (
   <div className="ap-skeleton" aria-label="Loading">
@@ -746,6 +747,9 @@ const AdminPage = () => {
             )}
           </section>
         )}
+
+        {/* ── Payments tab ── */}
+        {activeTab === "Payments" && <AdminPaymentsTab />}
 
         {/* ── Categories tab ── */}
         {activeTab === "Categories" && <CategoriesTab />}

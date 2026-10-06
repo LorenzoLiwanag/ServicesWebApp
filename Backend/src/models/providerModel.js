@@ -26,7 +26,7 @@ const mapService = (row) => ({
   approvalStatus: row.approvalStatus || "pending",
 });
 
-const ensureProviderProfile = async (userId) => {
+export const ensureProviderProfile = async (userId) => {
   const [rows] = await db.execute(
     `SELECT provider_id FROM provider_profile WHERE provider_id = ?`,
     [userId]
@@ -55,11 +55,22 @@ export const getProviderProfile = async (userId) => {
     `SELECT provider_id AS providerId, display_name AS displayName, bio,
             profile_photo_url AS profilePhotoUrl, is_provider_active AS isProviderActive,
             verification_status AS verificationStatus, average_rating AS averageRating,
-            total_reviews AS totalReviews
+            total_reviews AS totalReviews, gcash_name AS gcashName,
+            gcash_number AS gcashNumber, penalty_balance AS penaltyBalance
      FROM provider_profile WHERE provider_id = ?`,
     [userId]
   );
-  return rows[0] || null;
+  if (!rows[0]) return null;
+  return { ...rows[0], penaltyBalance: Number(rows[0].penaltyBalance) };
+};
+
+export const updatePayoutDetails = async (userId, { gcashName, gcashNumber }) => {
+  await ensureProviderProfile(userId);
+  await db.execute(
+    `UPDATE provider_profile SET gcash_name = ?, gcash_number = ? WHERE provider_id = ?`,
+    [gcashName, gcashNumber, userId]
+  );
+  return getProviderProfile(userId);
 };
 
 export const upsertProviderProfile = async (userId, { displayName, bio, isProviderActive }) => {

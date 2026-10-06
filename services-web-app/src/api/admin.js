@@ -139,3 +139,52 @@ export const rejectProviderService = async (serviceId, reason) => {
   if (!res.ok) throw new Error(data.message || "Failed to reject service");
   return data;
 };
+
+// ── Payments ─────────────────────────────────────────────────────────────────
+
+const adminRequest = async (path, { method = "GET", body, fallback }) => {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers: authHeaders(),
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || fallback);
+  return data;
+};
+
+export const fetchDepositsToVerify = async () =>
+  (await adminRequest("/payments/deposits", { fallback: "Failed to load deposits" })).deposits;
+
+export const verifyDeposit = (paymentId) =>
+  adminRequest(`/payments/${paymentId}/verify`, { method: "PATCH", fallback: "Failed to verify deposit" });
+
+export const rejectDeposit = (paymentId, reason) =>
+  adminRequest(`/payments/${paymentId}/reject`, { method: "PATCH", body: { reason }, fallback: "Failed to reject deposit" });
+
+export const fetchPayoutsDue = async () =>
+  (await adminRequest("/payments/payouts", { fallback: "Failed to load payouts" })).payouts;
+
+export const sendPayout = (bookingId, gcashReference) =>
+  adminRequest(`/bookings/${bookingId}/payout`, { method: "POST", body: { gcashReference }, fallback: "Failed to record payout" });
+
+export const fetchRefundsDue = async () =>
+  (await adminRequest("/payments/refunds", { fallback: "Failed to load refunds" })).refunds;
+
+export const sendRefund = (bookingId, gcashReference) =>
+  adminRequest(`/bookings/${bookingId}/refund`, { method: "POST", body: { gcashReference }, fallback: "Failed to record refund" });
+
+export const fetchHolds = async () =>
+  (await adminRequest("/holds", { fallback: "Failed to load holds" })).holds;
+
+export const resolveHold = (bookingId, body) =>
+  adminRequest(`/bookings/${bookingId}/resolve`, { method: "POST", body, fallback: "Failed to resolve" });
+
+// Proofs need the auth header, so they can't be a plain <img src>. Caller revokes the URL.
+export const fetchProofObjectUrl = async (paymentId) => {
+  const res = await fetch(`${BASE_URL.replace(/\/admin$/, "")}/payments/${paymentId}/proof`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+  if (!res.ok) throw new Error("Could not load the payment screenshot");
+  return URL.createObjectURL(await res.blob());
+};

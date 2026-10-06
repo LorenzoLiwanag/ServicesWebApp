@@ -87,7 +87,8 @@
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--shadow);
-  height: 360px;
+  /* tall enough for the deposit form inside an active booking */
+  height: 520px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -507,7 +508,7 @@
 
   .bookings-widget {
     padding: 18px;
-    height: 340px;
+    height: 480px;
   }
 
   .bookings-containers {
@@ -528,7 +529,7 @@
 
   .bookings-widget {
     padding: 14px;
-    height: 320px;
+    height: 460px;
     min-height: 0;
   }
 

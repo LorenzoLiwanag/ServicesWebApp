@@ -17,6 +17,20 @@ export const fetchProviderProfile = async (token) => {
   return data.profile;
 };
 
+export const updatePayoutDetails = async (token, { gcashName, gcashNumber }) => {
+  const res = await fetch(`${API}/api/provider/payout-details`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ gcashName, gcashNumber }),
+  });
+  const data = await parseJSON(res);
+  if (!res.ok) throw new Error(data.message || "Failed to save payout details");
+  return data.profile;
+};
+
 export const updateProviderProfile = async (token, { displayName, bio, isProviderActive }) => {
   const res = await fetch(`${API}/api/provider/profile`, {
     method: "PUT",
