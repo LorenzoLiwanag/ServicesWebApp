@@ -1,10 +1,13 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import DashboardMyBookings from "./DashboardMyBookings";
-import { cancelBooking, fetchClientBookings } from "../../api/bookings.js";
+import { cancelBooking, fetchCancelPreview, fetchClientBookings } from "../../api/bookings.js";
 
 jest.mock("../../api/bookings.js", () => ({
   cancelBooking: jest.fn(),
+  fetchCancelPreview: jest.fn(),
   fetchClientBookings: jest.fn(),
+  confirmWorkDone: jest.fn(),
+  reportProblem: jest.fn(),
 }));
 
 jest.mock("../messaging/ContactModal", () => () => null);
@@ -51,6 +54,7 @@ const bookings = [
 beforeEach(() => {
   fetchClientBookings.mockResolvedValue(bookings);
   cancelBooking.mockResolvedValue({});
+  fetchCancelPreview.mockResolvedValue({ by: "client", paid: false, late: false, depositAmount: 0 });
 });
 
 afterEach(() => {
@@ -77,7 +81,7 @@ test("preserves booking cancellation from the dashboard", async () => {
 
   const cancelButtons = await screen.findAllByRole("button", { name: "Cancel" });
   fireEvent.click(cancelButtons[0]);
-  fireEvent.click(screen.getByRole("button", { name: "Yes, Cancel" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Yes, Cancel" }));
 
   await waitFor(() => {
     expect(cancelBooking).toHaveBeenCalledWith(1);

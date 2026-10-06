@@ -11,7 +11,30 @@ const database = mysql.createPool({
   database: process.env.DB_NAME || "Services_Web_App",
   waitForConnections: true,
   connectionLimit: Number(process.env.DB_CONNECTION_LIMIT || 10),
-  queueLimit: 0
+  queueLimit: 0,
+  // Manila time everywhere, so NOW() and the 24h payment rules match the
+  // service dates people pick. DATEs come back as plain "YYYY-MM-DD".
+  timezone: "+08:00",
+  dateStrings: ["DATE"],
+});
+
+database.on("connection", (connection) => {
+  connection.query("SET time_zone = '+08:00'");
 });
 
 export default database;
+
+export const withTransaction = async (work) => {
+  const connection = await database.getConnection();
+  try {
+    await connection.beginTransaction();
+    const result = await work(connection);
+    await connection.commit();
+    return result;
+  } catch (err) {
+    await connection.rollback();
+    throw err;
+  } finally {
+    connection.release();
+  }
+};

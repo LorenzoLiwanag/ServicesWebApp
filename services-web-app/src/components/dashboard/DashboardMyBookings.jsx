@@ -2,12 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import ContactModal from "../messaging/ContactModal";
 import BookModal from "../booking/BookModal";
 import BookingStatusBadge from "../booking/BookingStatusBadge";
-import { cancelBooking, fetchClientBookings } from "../../api/bookings.js";
+import { CancelBookingDialog, DepositPanel, ReasonDialog } from "../booking/BookingPayment";
+import { confirmWorkDone, fetchClientBookings, reportProblem } from "../../api/bookings.js";
+import { formatManilaDateTime, formatPeso, parseCalendarDate } from "../../utils/payments.js";
 import "../../styles/dashboard/dashboardBookings.css";
+
+const ACTIVE_STATUSES = ["pending", "accepted", "confirmed", "work_done"];
+const AUTO_CONFIRM_MS = 48 * 3600 * 1000;
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "—";
-  const d = new Date(dateStr);
+  const d = parseCalendarDate(dateStr);
   return d.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 };
 
@@ -19,6 +24,44 @@ const formatTime = (timeStr) => {
   return `${hour % 12 || 12}:${m} ${suffix}`;
 };
 
+// What the client needs to know (or do) about money for this booking.
+const PaymentStatus = ({ booking: b, onChanged }) => {
+  if (b.onHold) {
+    return (
+      <div className="pay-panel pay-panel-warn">
+        <strong>On hold.</strong> An admin is reviewing the reported problem. Nothing moves until it's resolved.
+      </div>
+    );
+  }
+  if (b.status === "accepted" && b.depositAmount !== null) {
+    return <DepositPanel booking={b} onSubmitted={onChanged} />;
+  }
+  if (b.status === "confirmed") {
+    return (
+      <div className="pay-panel pay-panel-success">
+        <strong>Deposit received.</strong> Pay {b.providerName} {formatPeso(b.balanceOnSite)} on site.
+      </div>
+    );
+  }
+  if (b.status === "work_done") {
+    const autoAt = new Date(new Date(b.workDoneAt).getTime() + AUTO_CONFIRM_MS);
+    return (
+      <div className="pay-panel pay-panel-info">
+        <strong>{b.providerName} marked this job done.</strong> Confirm it or report a problem by{" "}
+        {formatManilaDateTime(autoAt)} (Manila time). After that it's confirmed automatically.
+      </div>
+    );
+  }
+  return null;
+};
+
+const RefundLine = ({ booking: b }) =>
+  b.refundDue > 0 ? (
+    <p className="widget-provider">
+      Refund {formatPeso(b.refundDue)} — {b.refundSentAt ? "sent to your GCash" : "being processed"}
+    </p>
+  ) : null;
+
 const DashboardMyBookings = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [history, setHistory] = useState([]);
@@ -26,14 +69,15 @@ const DashboardMyBookings = () => {
   const [contactModal, setContactModal] = useState(null);
   const [bookModal, setBookModal] = useState(null);
   const [confirmCancel, setConfirmCancel] = useState(null);
-  const [cancelling, setCancelling] = useState(null);
+  const [reporting, setReporting] = useState(null);
+  const [confirming, setConfirming] = useState(null);
   const [toast, setToast] = useState(null);
 
   const loadBookings = useCallback(() => {
     fetchClientBookings()
       .then((all) => {
-        setUpcoming(all.filter((b) => b.status === "pending" || b.status === "accepted"));
-        setHistory(all.filter((b) => b.status === "completed"));
+        setUpcoming(all.filter((b) => ACTIVE_STATUSES.includes(b.status)));
+        setHistory(all.filter((b) => b.status === "completed" || (b.status === "cancelled" && b.refundDue > 0)));
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -48,19 +92,29 @@ const DashboardMyBookings = () => {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const handleCancelConfirm = async () => {
-    const bookingId = confirmCancel;
+  const handleCancelled = () => {
     setConfirmCancel(null);
-    setCancelling(bookingId);
+    showToast("Booking cancelled.");
+    loadBookings();
+  };
 
+  const handleReport = async (reason) => {
+    await reportProblem(reporting, reason);
+    setReporting(null);
+    showToast("Problem reported. An admin will review it.");
+    loadBookings();
+  };
+
+  const handleConfirmDone = async (bookingId) => {
+    setConfirming(bookingId);
     try {
-      await cancelBooking(bookingId);
-      showToast("Booking cancelled.");
+      await confirmWorkDone(bookingId);
+      showToast("Thanks — job confirmed.");
       loadBookings();
     } catch (error) {
-      showToast(error.message || "Could not cancel booking.", "error");
+      showToast(error.message || "Could not confirm the job.", "error");
     } finally {
-      setCancelling(null);
+      setConfirming(null);
     }
   };
 
@@ -105,7 +159,7 @@ const DashboardMyBookings = () => {
                   <p className="bookings-empty">No active bookings.</p>
                 ) : (
                   upcoming.map((b) => (
-                    <div key={b.bookingId} className="booking-row">
+                    <div key={b.bookingId} className="booking-row has-payment">
                       <div className="booking-info">
                         <p className="widget-date">
                           {formatDate(b.requestedDate)}{b.requestedTime ? ` at ${formatTime(b.requestedTime)}` : ""}
@@ -115,23 +169,37 @@ const DashboardMyBookings = () => {
                       </div>
 
                       <div className="booking-actions">
-                        <BookingStatusBadge status={b.status} />
+                        <BookingStatusBadge status={b.status} onHold={b.onHold} />
                         <div className="booking-action-buttons">
+                          {b.status === "work_done" && !b.onHold && (
+                            <button
+                              className="pay-btn pay-btn-primary pay-btn-small"
+                              onClick={() => handleConfirmDone(b.bookingId)}
+                              disabled={confirming === b.bookingId}
+                            >
+                              {confirming === b.bookingId ? "Confirming…" : "Confirm job done"}
+                            </button>
+                          )}
                           <button
                             className="btn-contact compact-action-button"
                             onClick={() => setContactModal({ serviceId: b.serviceId })}
                           >
                             Contact
                           </button>
-                          <button
-                            className="booking-cancel-button"
-                            onClick={() => setConfirmCancel(b.bookingId)}
-                            disabled={cancelling === b.bookingId}
-                          >
-                            {cancelling === b.bookingId ? "Cancelling..." : "Cancel"}
-                          </button>
+                          {["confirmed", "work_done"].includes(b.status) && !b.onHold && (
+                            <button className="booking-cancel-button" onClick={() => setReporting(b.bookingId)}>
+                              Report a problem
+                            </button>
+                          )}
+                          {b.status !== "work_done" && !b.onHold && (
+                            <button className="booking-cancel-button" onClick={() => setConfirmCancel(b.bookingId)}>
+                              Cancel
+                            </button>
+                          )}
                         </div>
                       </div>
+
+                      <PaymentStatus booking={b} onChanged={loadBookings} />
                     </div>
                   ))
                 )}
@@ -161,6 +229,8 @@ const DashboardMyBookings = () => {
                         <p className="widget-date">{formatDate(b.requestedDate)}</p>
                         <p className="widget-service">{b.serviceTitle}</p>
                         <p className="widget-provider">{b.providerName}</p>
+                        {b.status === "cancelled" && <p className="widget-provider">Cancelled</p>}
+                        <RefundLine booking={b} />
                       </div>
 
                       <div className="history-actions">
@@ -180,9 +250,11 @@ const DashboardMyBookings = () => {
                           Book Again
                         </button>
 
-                        <button className="review-button" disabled>
-                          Leave Review
-                        </button>
+                        {b.status === "completed" && (
+                          <button className="review-button" disabled>
+                            Leave Review
+                          </button>
+                        )}
 
                         <button
                           className="btn-contact compact-action-button"
@@ -215,28 +287,22 @@ const DashboardMyBookings = () => {
       />
 
       {confirmCancel && (
-        <div className="booking-confirm-overlay" onClick={() => setConfirmCancel(null)}>
-          <div
-            className="booking-confirm-box"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="booking-cancel-title"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <h3 className="booking-confirm-title" id="booking-cancel-title">Cancel Booking?</h3>
-            <p className="booking-confirm-message">
-              Are you sure you want to cancel this booking? This cannot be undone.
-            </p>
-            <div className="booking-confirm-actions">
-              <button className="booking-confirm-keep" onClick={() => setConfirmCancel(null)}>
-                Keep It
-              </button>
-              <button className="booking-confirm-cancel" onClick={handleCancelConfirm}>
-                Yes, Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <CancelBookingDialog
+          bookingId={confirmCancel}
+          onClose={() => setConfirmCancel(null)}
+          onCancelled={handleCancelled}
+        />
+      )}
+
+      {reporting && (
+        <ReasonDialog
+          title="Report a problem"
+          description="The booking goes on hold and an admin reviews it. Nothing is paid out or refunded until it's resolved."
+          placeholder="e.g. The provider didn't show up."
+          confirmLabel="Report problem"
+          onSubmit={handleReport}
+          onClose={() => setReporting(null)}
+        />
       )}
     </>
   );

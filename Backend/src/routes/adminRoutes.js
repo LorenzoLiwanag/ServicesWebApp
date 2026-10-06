@@ -17,6 +17,17 @@ import {
   getUncategorizedServicesHandler,
   assignServiceCategoryHandler,
 } from "../controllers/adminController.js";
+import {
+  getDepositsToVerify,
+  verifyDeposit,
+  rejectDeposit,
+  getPayoutsDue,
+  sendPayout,
+  getRefundsDue,
+  sendRefund,
+  getHolds,
+  resolveHold,
+} from "../controllers/paymentController.js";
 
 const router = Router();
 
@@ -39,5 +50,15 @@ router.delete("/categories/:id", requireAuth, requireAdmin, deleteCategoryHandle
 
 router.get("/services/uncategorized", requireAuth, requireAdmin, getUncategorizedServicesHandler);
 router.patch("/services/:id/assign-category", requireAuth, requireAdmin, assignServiceCategoryHandler);
+
+router.get("/payments/deposits", requireAuth, requireAdmin, getDepositsToVerify);
+router.patch("/payments/:paymentId/verify", requireAuth, requireAdmin, verifyDeposit);
+router.patch("/payments/:paymentId/reject", requireAuth, requireAdmin, rejectDeposit);
+router.get("/payments/payouts", requireAuth, requireAdmin, getPayoutsDue);
+router.post("/bookings/:bookingId/payout", requireAuth, requireAdmin, sendPayout);
+router.get("/payments/refunds", requireAuth, requireAdmin, getRefundsDue);
+router.post("/bookings/:bookingId/refund", requireAuth, requireAdmin, sendRefund);
+router.get("/holds", requireAuth, requireAdmin, getHolds);
+router.post("/bookings/:bookingId/resolve", requireAuth, requireAdmin, resolveHold);
 
 export default router;

@@ -3,6 +3,7 @@ import { requireAuth } from "../middleware/auth.js";
 import {
   getMyProviderProfile,
   updateMyProviderProfile,
+  updateMyPayoutDetails,
   getMyProviderServices,
   createProviderService,
   updateProviderService,
@@ -16,6 +17,7 @@ router.use(requireAuth);
 
 router.get("/profile", getMyProviderProfile);
 router.put("/profile", updateMyProviderProfile);
+router.put("/payout-details", updateMyPayoutDetails);
 
 router.get("/services", getMyProviderServices);
 router.post("/services", createProviderService);

@@ -8,6 +8,8 @@ import notificationRoutes from "./src/routes/notificationRoutes.js";
 import contactRoutes from "./src/routes/contactRoutes.js";
 import conversationRoutes from "./src/routes/messageRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
+import { requireAuth } from "./src/middleware/auth.js";
+import { streamDepositProof } from "./src/controllers/paymentController.js";
 
 const app = express();
 
@@ -48,5 +50,6 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api", contactRoutes);
 app.use("/api/admin", adminRoutes);
+app.get("/api/payments/:paymentId/proof", requireAuth, streamDepositProof);
 
 export default app;

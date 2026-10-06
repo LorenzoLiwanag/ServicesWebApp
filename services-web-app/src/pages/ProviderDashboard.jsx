@@ -5,6 +5,7 @@ import ProviderModeHeader from "../components/provider-mode/ProviderModeHeader";
 import ProviderRequestsWidget from "../components/provider-mode/ProviderRequestsWidget";
 import ProviderUpcomingJobsWidget from "../components/provider-mode/ProviderUpcomingJobsWidget";
 import ProviderServicesWidget from "../components/provider-mode/ProviderServicesWidget";
+import ProviderPayoutDetails from "../components/provider-mode/ProviderPayoutDetails";
 import { getStoredAuthSession } from "../utils/auth.js";
 import { fetchProviderProfile, updateProviderProfile } from "../api/provider.js";
 import "../styles/provider-mode/providerDashboard.css";
@@ -103,6 +104,7 @@ const ProviderDashboard = () => {
 
         <div className="provider-content-wrapper">
           <div className="provider-column-left">
+            <ProviderPayoutDetails profile={providerProfile} onSaved={setProviderProfile} />
             <ProviderRequestsWidget onResponded={handleBookingResponded} />
             <ProviderUpcomingJobsWidget refreshKey={jobsRefreshKey} />
           </div>

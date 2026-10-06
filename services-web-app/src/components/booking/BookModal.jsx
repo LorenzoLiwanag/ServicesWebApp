@@ -109,6 +109,13 @@ const BookModal = ({ isOpen, onClose, service, onSuccess }) => {
             />
           </div>
 
+          <p className="bm-policy">
+            Once the provider accepts, you pay a 50% deposit through GCash to confirm the booking, and the
+            rest to the provider on site. Cancel 24 hours or more before the service and you get your deposit
+            back minus a 5% fee; cancel later and the deposit isn't refunded. If the provider cancels, you get
+            the full deposit back.
+          </p>
+
           {error && <p className="bm-error" role="alert">{error}</p>}
 
           <div className="bm-footer">
